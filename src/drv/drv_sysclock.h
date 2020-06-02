@@ -26,15 +26,10 @@ uint8_t drvIsTimePased(uint32_t startTime, uint32_t delay);
 
 /**
  * Return SysTick timer value
- * @return SysTick value register
+ * @return SysTick counter value
  */
-u32 drvGetTick(void);
+uint32_t drvSysClockGetTick(void);
 
-/**
- * Function to change SysTick timer value
- * @param ms new register value
- */
-void drvSetTick(u32 ms);
 
 
 #endif /* DRV_DRV_SYSCLOCK_H_ */

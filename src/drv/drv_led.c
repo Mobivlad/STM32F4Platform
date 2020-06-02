@@ -17,13 +17,13 @@ void drvLedInit(drvLedPort port,drvLedPins pins){
 }
 
 void drvLedOn(drvLedPort port,drvLedPins pins){
-    halSetBits(port,pins);
+    halGPIOSetPins(port,pins);
 }
 
 void drvLedOff(drvLedPort port,drvLedPins pins){
-    halResetBits(port,pins);
+    halGPIOResetPins(port,pins);
 }
 
 void drvLedToggle(drvLedPort port,drvLedPins pins){
-    halToggle(port,pins);
+    halGPIOTogglePins(port,pins);
 }

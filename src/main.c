@@ -28,9 +28,8 @@ int main(){
     blInitBlink(&leds[0]);
     blButtonLedToggleInit(&buttons[0],&leds[1]);
 
-
     while(1){
         blBlink(&leds[0],500);
-        blToggleIfClick(&buttons[0],&leds[1]);
+        blToggleLedIfButtonClick(&buttons[0],&leds[1]);
     }
 }

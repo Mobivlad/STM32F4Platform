@@ -7,8 +7,6 @@
 
 #include "bl_button_toggle.h"
 
-
-
 void blButtonLedToggleInit(blButtonData* button,ledData* led){
     drvInitStructButton initStr;
     initStr.drvButtonPins = button->pin;
@@ -21,9 +19,9 @@ void blButtonLedToggleInit(blButtonData* button,ledData* led){
 
 
 uint8_t count;
-uint8_t blIsButtonClick(blButtonData* button){
+uint8_t blButtonIsClick(blButtonData* button){
     uint8_t code = 0;;
-    switch(drvIsButtonClicked(button->port,button->pin)){
+    switch(drvButtonIsClicked(button->port,button->pin)){
         case 1:
             button->numberPress++;
             break;
@@ -35,8 +33,8 @@ uint8_t blIsButtonClick(blButtonData* button){
     return code;
 }
 
-void blToggleIfClick(blButtonData* button,ledData* led){
-    if(blIsButtonClick(button)==1){
+void blToggleLedIfButtonClick(blButtonData* button,ledData* led){
+    if(blButtonIsClick(button)==1){
         drvLedToggle(led->port,led->pin);
     }
 }

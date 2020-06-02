@@ -104,21 +104,21 @@ void halGPIOInit(halPort halPort,halInitGPIOStruct* initStruct);
  * @param port value of halPort enumeration
  * @param pins value of halPin enumeration
  */
-void halSetBits(halPort port,halPins pins);
+void halGPIOSetPins(halPort port,halPins pins);
 
 /**
  * Function to set low level on gpio pin.
  * @param port value of halPort enumeration
  * @param pins value of halPin enumeration
  */
-void halResetBits(halPort port,halPins pins);
+void halGPIOResetPins(halPort port,halPins pins);
 
 /**
  * Function to change logic level on gpio pin.
  * @param port value of halPort enumeration
  * @param pins value of halPin enumeration
  */
-void halToggle(halPort port,halPins pins);
+void halGPIOTogglePins(halPort port,halPins pins);
 
 /**
  * Function that return current pin state.
@@ -126,6 +126,8 @@ void halToggle(halPort port,halPins pins);
  * @param pins value of halPin enumeration
  * @return current pin state from halPinState enumeration
  */
-halPinState halReadPin(halPort port,halPins pin);
+halPinState halGPIOReadPin(halPort port,halPins pin);
+
+static GPIO_TypeDef* halGPIOGetPortByEnum(halPort halPort);
 
 #endif /* HAL_HAL_GPIO_H_ */

@@ -27,9 +27,9 @@ void dvrButtonInit(drvInitStructButton* initStruct){
 }
 
 
-volatile uint8_t buttonClickCount=0;
-uint8_t drvIsButtonClicked(drvButtonPort port,drvButtonPins pin){
-    if(halReadPin(port,pin) && buttonClickCount<110){
+static uint8_t buttonClickCount=0;
+uint8_t drvButtonIsClicked(drvButtonPort port,drvButtonPins pin){
+    if(halGPIOReadPin(port,pin) && buttonClickCount<110){
         buttonClickCount++;
     } else if(buttonClickCount!=0){
         buttonClickCount--;

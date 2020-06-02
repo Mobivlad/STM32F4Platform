@@ -15,6 +15,6 @@ void blInitBlink(ledData* led){
 void blBlink(ledData* led,uint32_t time){
     if(drvIsTimePased(led->timer,time)){
         drvLedToggle(led->port,led->pin);
-        led->timer = drvGetTick();
+        led->timer = drvSysClockGetTick();
     }
 }

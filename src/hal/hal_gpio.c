@@ -1,6 +1,6 @@
 #include "hal_gpio.h"
 
-GPIO_TypeDef* getPort(halPort halPort){
+static GPIO_TypeDef* halGPIOGetPortByEnum(halPort halPort){
     switch(halPort){
         case halPortA:
             return GPIOA;
@@ -16,7 +16,7 @@ GPIO_TypeDef* getPort(halPort halPort){
     return 0;
 }
 
-void enableRCC(halPort halPort){
+static void halGPIOEnableRCC(halPort halPort){
     switch(halPort){
             case halPortA:
                 RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);
@@ -37,30 +37,29 @@ void enableRCC(halPort halPort){
 }
 
 void halGPIOInit(halPort halPort,halInitGPIOStruct* initStruct){
-    enableRCC(halPort);
+    halGPIOEnableRCC(halPort);
     GPIO_InitTypeDef init;
     init.GPIO_Pin = initStruct->halPins;
     init.GPIO_PuPd = initStruct->halPuPd;
     init.GPIO_OType = initStruct->halOutType;
     init.GPIO_Mode = initStruct->halGpioMode;
     init.GPIO_Speed = initStruct->halGpioSpeed;
-    GPIO_Init(getPort(halPort),&init);
-    GPIO_SetBits(getPort(halPort),initStruct->halPins);
+    GPIO_Init(halGPIOGetPortByEnum(halPort),&init);
+    GPIO_SetBits(halGPIOGetPortByEnum(halPort),initStruct->halPins);
 }
 
-void halSetBits(halPort port,halPins pins){
-    GPIO_SetBits(getPort(port),pins);
+void halGPIOSetPins(halPort port,halPins pins){
+    GPIO_SetBits(halGPIOGetPortByEnum(port),pins);
 }
 
-halPinState halReadPin(halPort port,halPins pin){
-    uint8_t x = GPIO_ReadInputDataBit(getPort(port),pin);
-    return x;
+halPinState halGPIOReadPin(halPort port,halPins pin){
+    return GPIO_ReadInputDataBit(halGPIOGetPortByEnum(port),pin);
 }
 
-void halResetBits(halPort port,halPins pins){
-    GPIO_SetBits(getPort(port),pins);
+void halGPIOResetPins(halPort port,halPins pins){
+    GPIO_SetBits(halGPIOGetPortByEnum(port),pins);
 }
 
-void halToggle(halPort port,halPins pins){
-    GPIO_ToggleBits(getPort(port),pins);
+void halGPIOTogglePins(halPort port,halPins pins){
+    GPIO_ToggleBits(halGPIOGetPortByEnum(port),pins);
 }

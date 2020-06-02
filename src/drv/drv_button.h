@@ -71,6 +71,6 @@ void dvrButtonInit(drvInitStructButton* initStruct);
  * @param port button port
  * @param pin button pin
  */
-uint8_t drvIsButtonClicked(drvButtonPort port,drvButtonPins pin);
+uint8_t drvButtonIsClicked(drvButtonPort port,drvButtonPins pin);
 
 #endif /* DRV_DRV_BUTTON_H_ */

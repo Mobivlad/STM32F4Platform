@@ -47,13 +47,13 @@ void blButtonLedToggleInit(blButtonData* button,ledData* led);
  * Button for physical click detection
  * @param button pointer on blButtonData structure
  */
-uint8_t blIsButtonClick(blButtonData* button);
+uint8_t blButtonIsClick(blButtonData* button);
 
 /**
  * Function for one step of main loop for led toggle BL
  * @param button pointer on blButtonData structure
  * @param led pointer on ledData structure
  */
-void blToggleIfClick(blButtonData* button,ledData* led);
+void blToggleLedIfButtonClick(blButtonData* button,ledData* led);
 
 #endif /* BL_BL_BUTTON_TOGGLE_H_ */
