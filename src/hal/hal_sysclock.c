@@ -1,7 +1,7 @@
 /*
  * hal_sysclock.c
  *
- *  Created on: 29 трав. 2020 р.
+ *  Created on: 29 . 2020 .
  *      Author: vladyslav.daliavskyi
  */
 #include "hal_sysclock.h"
@@ -11,6 +11,7 @@ volatile uint32_t milis;
 void halSysClockInit(u32 ms){
     SystemCoreClockUpdate();
     SysTick_Config(SystemCoreClock/1000*ms);
+    milis = 0;
 }
 
 u32 halGetTick(){
