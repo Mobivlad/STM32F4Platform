@@ -11,26 +11,30 @@
 #include "drv_led.h"
 #include "drv_sysclock.h"
 
+///leds pins enumeration
 typedef enum{
-    blRedLedPin = drvLedPin12,
-    blGreenLedPin = drvLedPin14
+    blRedLedPin = drvLedPin12,      /**< red led pin */
+    blGreenLedPin = drvLedPin14     /**< green led pin */
 } blLedPins;
 
+///leds ports enumeration
 typedef enum{
-    blRedLedPort = drvLedPortD,
-    blGreenLedPort = drvLedPortD
+    blRedLedPort = drvLedPortD,     /**< red led port */
+    blGreenLedPort = drvLedPortD    /**< green led port */
 } blLedPorts;
 
+///structure for led data
 typedef struct {
-    blLedPins pin;
-    blLedPorts port;
-    uint32_t timer;
+    blLedPins pin;      /**< led pin */
+    blLedPorts port;    /**< led port */
+    uint32_t timer;     /**< timer for delay */
 } ledData;
 
+///enumeration of leds
 enum
 {
-    blLedRed = 0,
-    blLedGreen,
+    blLedRed = 0,   /**< Red led */
+    blLedGreen,     /**< Green led */
     blLedCount
 };
 

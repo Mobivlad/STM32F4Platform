@@ -66,4 +66,11 @@ typedef struct {
  */
 void dvrButtonInit(drvInitStructButton* initStruct);
 
+/**
+ * Function that detect one abstract button click.
+ * @param port button port
+ * @param pin button pin
+ */
+uint8_t drvIsButtonClicked(drvButtonPort port,drvButtonPins pin);
+
 #endif /* DRV_DRV_BUTTON_H_ */
