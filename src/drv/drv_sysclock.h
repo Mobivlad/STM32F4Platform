@@ -30,6 +30,4 @@ uint8_t drvIsTimePased(uint32_t startTime, uint32_t delay);
  */
 uint32_t drvSysClockGetTick(void);
 
-
-
 #endif /* DRV_DRV_SYSCLOCK_H_ */

@@ -6,24 +6,24 @@
  */
 #include "drv_led.h"
 
-void drvLedInit(drvLedPort port,drvLedPins pins){
+void drvLedInit(drvLedPort port, drvLedPins pins) {
     halInitGPIOStruct initStruct;
     initStruct.halPins = pins;
     initStruct.halGpioSpeed = halSpeed2Mhz;
     initStruct.halPuPd = halPuPdNo;
     initStruct.halGpioMode = halModeOut;
     initStruct.halOutType = halOTPP;
-    halGPIOInit(port,&initStruct);
+    halGPIOInit(port, &initStruct);
 }
 
-void drvLedOn(drvLedPort port,drvLedPins pins){
-    halGPIOSetPins(port,pins);
+void drvLedOn(drvLedPort port, drvLedPins pins) {
+    halGPIOSetPins(port, pins);
 }
 
-void drvLedOff(drvLedPort port,drvLedPins pins){
-    halGPIOResetPins(port,pins);
+void drvLedOff(drvLedPort port, drvLedPins pins) {
+    halGPIOResetPins(port, pins);
 }
 
-void drvLedToggle(drvLedPort port,drvLedPins pins){
-    halGPIOTogglePins(port,pins);
+void drvLedToggle(drvLedPort port, drvLedPins pins) {
+    halGPIOTogglePins(port, pins);
 }

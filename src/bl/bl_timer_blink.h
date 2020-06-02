@@ -25,10 +25,10 @@ typedef enum{
 
 ///structure for led data
 typedef struct {
-    blLedPins pin;      /**< led pin */
-    blLedPorts port;    /**< led port */
+    drvLedPins pin;      /**< led pin */
+    drvLedPort port;    /**< led port */
     uint32_t timer;     /**< timer for delay */
-} ledData;
+} blBlinkData;
 
 ///enumeration of leds
 enum
@@ -40,15 +40,13 @@ enum
 
 /**
  * Initial function for blink.
- * @param value of blink led
+ * @param time time between led blink
  */
-void blInitBlink(ledData* led);
+void blBlinkInit(uint32_t time);
 
 /**
  * Function for one step of blink.
- * @param value of blink led
- * @param time count of time between operations in default tick time
  */
-void blBlink(ledData* led,uint32_t time);
+void blBlinkRun();
 
 #endif /* BL_BL_TIMER_BLINK_H_ */

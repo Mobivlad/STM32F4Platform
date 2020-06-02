@@ -39,32 +39,38 @@ typedef enum {
     drvLedPortE = halPortE,   /**< Port E */
 } drvLedPort;
 
+/// Led data structure
+typedef struct {
+    drvLedPins pin;      /**< led pin */
+    drvLedPort port;    /**< led port */
+} drvLedData;
+
 /**
  * Function to configurate led.
  * @param port value of drvLedPort enumeration
  * @param pins value of drvLedPins enumeration
  */
-void drvLedInit(drvLedPort port,drvLedPins pins);
+void drvLedInit(drvLedPort port, drvLedPins pins);
 
 /**
  * Function to on led.
  * @param port value of drvLedPort enumeration
  * @param pins value of drvLedPins enumeration
  */
-void drvLedOn(drvLedPort port,drvLedPins pins);
+void drvLedOn(drvLedPort port, drvLedPins pins);
 
 /**
  * Function to off led.
  * @param port value of drvLedPort enumeration
  * @param pins value of drvLedPins enumeration
  */
-void drvLedOff(drvLedPort port,drvLedPins pins);
+void drvLedOff(drvLedPort port, drvLedPins pins);
 
 /**
  * Function to change current led state.
  * @param port value of drvLedPort enumeration
  * @param pins value of drvLedPins enumeration
  */
-void drvLedToggle(drvLedPort port,drvLedPins pins);
+void drvLedToggle(drvLedPort port, drvLedPins pins);
 
 #endif /* DRV_DRV_LED_H_ */

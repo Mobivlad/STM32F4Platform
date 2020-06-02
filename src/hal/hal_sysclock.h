@@ -22,5 +22,4 @@ void halSysClockInit(uint32_t ms);
  */
 uint32_t halSysClockGetTick(void);
 
-
 #endif /* HAL_HAL_SYSCLOCK_H_ */

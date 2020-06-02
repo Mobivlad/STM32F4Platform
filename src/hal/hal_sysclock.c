@@ -8,17 +8,17 @@
 
 volatile uint32_t hal_ms_counter;
 
-void halSysClockInit(uint32_t ms){
+void halSysClockInit(uint32_t ms) {
     SystemCoreClockUpdate();
-    SysTick_Config(SystemCoreClock/1000*ms);
+    SysTick_Config(SystemCoreClock / 1000 * ms);
     hal_ms_counter = 0;
 }
 
-uint32_t halSysClockGetTick(){
+uint32_t halSysClockGetTick() {
     return hal_ms_counter;
 }
 
-void SysTick_Handler(void){
+void SysTick_Handler(void) {
     hal_ms_counter++;
 }
 

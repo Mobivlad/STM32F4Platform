@@ -7,14 +7,14 @@
 
 #include "drv_sysclock.h"
 
-void drvSysClockInit(uint32_t ms){
+void drvSysClockInit(uint32_t ms) {
     halSysClockInit(ms);
 }
 
-uint8_t drvIsTimePased(uint32_t startTime, uint32_t delay){
-    return (startTime+delay)<drvSysClockGetTick()?1:0;
+uint8_t drvIsTimePased(uint32_t startTime, uint32_t delay) {
+    return (startTime + delay) < drvSysClockGetTick() ? 1 : 0;
 }
 
-uint32_t drvSysClockGetTick(){
+uint32_t drvSysClockGetTick() {
     return halSysClockGetTick();
 }

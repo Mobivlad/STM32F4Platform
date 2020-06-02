@@ -52,6 +52,13 @@ typedef enum {
     drvButtonPuPdNo = halPuPdNo,
 } drvButtonPuPd;
 
+/// Button press type enumeration
+typedef enum {
+    drvButtonNoPress = 0,     /**< No pressing. */
+    drvButtonSimplePress,     /**< Simple pressing. */
+    drvButtonLongPress,       /**< Long pressing. */
+} drvButtonPressType;
+
 /// Button initial structure
 typedef struct {
     drvButtonPins drvButtonPins;
@@ -60,6 +67,12 @@ typedef struct {
     drvButtonPuPd drvButtonPuPd;
 } drvInitStructButton;
 
+/// Button data structure
+typedef struct {
+    drvButtonPins pin;       /**< Button pin*/
+    drvButtonPort port;      /**< Button port */
+} drvButtonData;
+
 /**
  * Function that configurate button.
  * @param initStruct pointer to structure that consist of main port configuration of button
@@ -67,10 +80,11 @@ typedef struct {
 void dvrButtonInit(drvInitStructButton* initStruct);
 
 /**
- * Function that detect one abstract button click.
- * @param port button port
- * @param pin button pin
+ * Button click detection function.
+ * @param port value of drvButtonPort enumeration
+ * @param pin value of drvButtonPins enumeration
+ * @return value of drvButtonPressType enumeration
  */
-uint8_t drvButtonIsClicked(drvButtonPort port,drvButtonPins pin);
+drvButtonPressType drvButtonIsClick(drvButtonPort port, drvButtonPins pin);
 
 #endif /* DRV_DRV_BUTTON_H_ */
