@@ -57,7 +57,7 @@ halPinState halGPIOReadPin(halPort port, halPins pin) {
 }
 
 void halGPIOResetPins(halPort port, halPins pins) {
-    GPIO_SetBits(halGPIOGetPortByEnum(port), pins);
+    GPIO_ResetBits(halGPIOGetPortByEnum(port), pins);
 }
 
 void halGPIOTogglePins(halPort port, halPins pins) {

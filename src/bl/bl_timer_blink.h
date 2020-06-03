@@ -25,8 +25,7 @@ typedef enum{
 
 ///structure for led data
 typedef struct {
-    drvLedPins pin;      /**< led pin */
-    drvLedPort port;    /**< led port */
+    drvLedData* led;
     uint32_t timer;     /**< timer for delay */
 } blBlinkData;
 

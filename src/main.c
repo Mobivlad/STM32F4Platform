@@ -13,11 +13,9 @@
 
 int main(){
     //initial functions
-    blButtonBlinkInit();
-    blBlinkInit(500);
+    blDisplayNumberInit();
 
     while(1){
-        blBlinkRun();
-        blButtonBlinkRun();
+        blDisplayNumberRun();
     }
 }

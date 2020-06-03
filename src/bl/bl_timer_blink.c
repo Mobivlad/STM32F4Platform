@@ -7,18 +7,19 @@
 
 #include "bl_timer_blink.h"
 
-static blBlinkData blink = { drvLedPin14, drvLedPortD, 0 };
+static drvLedData led = {drvLedPin14, drvLedPortD};
+static blBlinkData blink = { &led, 0 };
 
 static uint32_t drvBlinkDelay;
 void blBlinkInit(uint32_t time) {
     drvBlinkDelay = time;
-    drvLedInit(blink.port, blink.pin);
+    drvLedInit(blink.led->port, blink.led->pin);
     drvSysClockInit(1);
 }
 
 void blBlinkRun() {
     if (drvIsTimePased(blink.timer, drvBlinkDelay)) {
-        drvLedToggle(blink.port, blink.pin);
+        drvLedToggle(blink.led->port, blink.led->pin);
         blink.timer = drvSysClockGetTick();
     }
 }

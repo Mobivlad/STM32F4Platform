@@ -46,7 +46,7 @@ typedef struct {
 } drvLedData;
 
 /**
- * Function to configurate led.
+ * Function to configure led.
  * @param port value of drvLedPort enumeration
  * @param pins value of drvLedPins enumeration
  */
