@@ -21,7 +21,8 @@ void blButtonBlinkInit() {
 }
 
 void blButtonBlinkRun() {
-    if (drvButtonIsClick(button.port,button.pin)==drvButtonSimplePress) {
+    drvButtonPressType res = drvButtonIsClick(button.port,button.pin);
+    if (res==drvButtonSimplePress || res==drvButtonLongPress) {
         drvLedToggle(led.port, led.pin);
     }
 }

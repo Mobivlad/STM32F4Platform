@@ -59,6 +59,13 @@ typedef enum {
     drvButtonLongPress,       /**< Long pressing. */
 } drvButtonPressType;
 
+/// Duration of button presses
+typedef enum {
+    drvButtonNoPressDuration = 0,               /**< No pressing. */
+    drvButtonSimplePressDuration = 10000,       /**< Simple pressing. */
+    drvButtonLongPressDuration = 150000,        /**< Long pressing. */
+} drvButtonPressTypeDuration;
+
 /// Button initial structure
 typedef struct {
     drvButtonPins drvButtonPins;
