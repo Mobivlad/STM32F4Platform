@@ -57,10 +57,10 @@ static void drvSevenSegmentsResetAnode(uint8_t number) {
     halGPIOResetPins(displayAnodes[number].port,displayAnodes[number].pin);
 }
 
-static void drvSevenSegmentSetCathodes(drvSevenSegmentNumbers number,
+static void drvSevenSegmentSetCathodes(drvSevenSegmentSymbols symbol,
         uint8_t printPoint) {
     for (uint8_t i = 0; i < drvSegmentsCount - 1; i++) {
-        if ((number >> i) & 1 == 1)
+        if ((symbol >> i) & 1 == 1)
             halGPIOResetPins(displayCathodes[i].port, displayCathodes[i].pin);
         else
             halGPIOSetPins(displayCathodes[i].port, displayCathodes[i].pin);
@@ -73,16 +73,16 @@ static void drvSevenSegmentSetCathodes(drvSevenSegmentNumbers number,
                 displayCathodes[drvSegmentsCount - 1].pin);
 }
 
-void drvSevenSegmentPrintNumber(drvSevenSegmentNumbers number,
-        uint8_t numberNum) {
+void drvSevenSegmentPrintSymbol(drvSevenSegmentSymbols symbol,
+        uint8_t symbolNum) {
     for(uint8_t i=0;i<displayAnodesCount;i++)
         drvSevenSegmentsResetAnode(i);
-    drvSevenSegmentsSetAnode(numberNum);
-    drvSevenSegmentSetCathodes(number, 0);
+    drvSevenSegmentSetCathodes(symbol, 0);
+    drvSevenSegmentsSetAnode(symbolNum);
 }
 
-void drvSevenSegmentClearNumber(uint8_t numberNum) {
-    drvSevenSegmentsResetAnode(numberNum);
+void drvSevenSegmentClearSymbol(uint8_t symbolPos) {
+    drvSevenSegmentsResetAnode(symbolPos);
 }
 
 

@@ -41,6 +41,7 @@ typedef enum {
 
 /// Display symbols enumeration
 typedef enum {
+    clear = 0x00,
     zero = 0x3F,
     one = 0x06,
     two = 0x5B,
@@ -51,7 +52,7 @@ typedef enum {
     seven = 0x03,
     eight = 0x7F,
     nine = 0x6F
-} drvSevenSegmentNumbers;
+} drvSevenSegmentSymbols;
 
 /// Segment data structure
 typedef struct {
@@ -69,7 +70,7 @@ typedef enum {
     drvSegmentF,                      /**< F segment */
     drvSegmentG,                      /**< G segment */
     drvSegmentDP,                     /**< Point segment */
-    drvSegmentsCount        /**< Segments count */
+    drvSegmentsCount                  /**< Segments count */
 } drvNumberCathodesData;
 
 /// Display data structure
@@ -86,16 +87,22 @@ typedef struct {
 void drvSevenSegmentInit(drvDisplayData* data);
 
 /**
- * Switch off number displaying
- * @param numberPos order position of display symbol
+ * Switch off symbol displaying
+ * @param symbolPos order position of display symbol
  */
-void drvSevenSegmentClearNumber(uint8_t numberPos);
+void drvSevenSegmentClearSymbol(uint8_t symbolPos);
 
 /**
  * Display number symbol function
- * @param number display symbol
- * @param numberPos order position of display symbol
+ * @param symbol display symbol
+ * @param symbolNum order position of display symbol
  */
-void drvSevenSegmentPrintNumber(drvSevenSegmentNumbers number, uint8_t numberPos);
+void drvSevenSegmentPrintSymbol(drvSevenSegmentSymbols symbol, uint8_t symbolNum);
+
+/**
+ * Function change symbols array
+ * @param number display number
+ */
+void blDisplaySetNumber(uint8_t number);
 
 #endif /* DRV_DRV_SEVEN_SEGMENT_H_ */

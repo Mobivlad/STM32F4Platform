@@ -14,7 +14,7 @@
 int main(){
     //initial functions
     blDisplayNumberInit();
-
+    blDisplaySetNumber(123);
     while(1){
         blDisplayNumberRun();
     }
