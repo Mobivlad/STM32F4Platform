@@ -62,8 +62,8 @@ typedef enum {
 /// Duration of button presses
 typedef enum {
     drvButtonNoPressDuration = 0,               /**< No pressing. */
-    drvButtonSimplePressDuration = 10000,       /**< Simple pressing. */
-    drvButtonLongPressDuration = 150000,        /**< Long pressing. */
+    drvButtonSimplePressDuration = 5000,       /**< Simple pressing. */
+    drvButtonLongPressDuration = 50000,        /**< Long pressing. */
 } drvButtonPressTypeDuration;
 
 /// Button initial structure

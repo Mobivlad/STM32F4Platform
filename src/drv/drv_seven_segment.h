@@ -49,7 +49,7 @@ typedef enum {
     four = 0x66,
     five = 0x6D,
     six = 0x7D,
-    seven = 0x03,
+    seven = 0x07,
     eight = 0x7F,
     nine = 0x6F
 } drvSevenSegmentSymbols;
