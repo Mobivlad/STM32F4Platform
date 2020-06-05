@@ -23,6 +23,8 @@ static drvSegmentData anode3 = { drvSegmentPin12, drvSegmentPortC };
 static uint8_t numPosition;
 static uint32_t startTime;
 
+static uint8_t counter;
+
 static blLedCounterInitLeds(){
     drvSegmentData* cathodes = {
         &cathodeA,
@@ -45,11 +47,17 @@ static blLedCounterInitLeds(){
     startTime = 0;
 }
 
+static void counterFunction(){
+    counter++;
+    drvTimerStart(drvTimer0);
+}
+
 /**
  * Part of blLedCounterInit() responsible for timer initialization
  */
 static void blLedCounterInitTimer(){
-    drvTimerInit(drvTimer0,1000);
+    counter = 0;
+    drvTimerInit(drvTimer0,1000,counterFunction);
 }
 
 static drvInitStructButton buttonInitStruct = {
@@ -80,14 +88,15 @@ static void buttonRun(){
             if(!started){
                 drvTimerStart(drvTimer0);
             } else {
-                drvTimerPause(drvTimer0);
+                drvTimerStop(drvTimer0);
             }
             started=!started;
         }
         if (res==drvButtonLongPress) {
             if(!started){
-                drvTimerStop(drvTimer0);
+                counter=0;
             }
+            drvTimerStop(drvTimer0);
         }
 }
 
@@ -150,7 +159,7 @@ static void ledRun(){
 
 
 void blLedCounterRun(){
-    setNumber(drvTimerGetTime(drvTimer0));
+    setNumber(counter);
     buttonRun();
     ledRun();
 }

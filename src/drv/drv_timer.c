@@ -7,12 +7,12 @@
 
 #include "drv_timer.h"
 
-void drvTimerInit(drvTimers timer, uint16_t durationInMs){
+void drvTimerInit(drvTimers timer, uint16_t durationInMs, drvTimerCallbackType callback){
     halInitBaseTimerStruct initStruct;
     initStruct.halBaseTimerPeriod = durationInMs;
     initStruct.halBaseTimerPrescaler = 20999;
     initStruct.halBaseTimersClockDivision = halBaseTimerClockDivision1;
-    halBaseTimerInit(timer,&initStruct);
+    halBaseTimerInit(timer,&initStruct,callback);
 }
 
 void drvTimerStart(drvTimers timer){
@@ -21,12 +21,4 @@ void drvTimerStart(drvTimers timer){
 
 void drvTimerStop(drvTimers timer){
     halBaseTimerStop(timer);
-}
-
-void drvTimerPause(drvTimers timer){
-    halBaseTimerPause(timer);
-}
-
-uint32_t drvTimerGetTime(drvTimers timer){
-    return halBaseTimerGetTime(timer);
 }

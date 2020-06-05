@@ -10,6 +10,9 @@
 
 #include "stm32f4xx.h"
 
+/// Callback function for timers
+typedef void(*halTimerCallbackType)(void);
+
 /// Base timers enumeration
 typedef enum {
     halBaseTimer6 = 0,         /**< Base timer 0 */
@@ -36,14 +39,11 @@ typedef struct {
  * Base timer initial function.
  * @param timer value of halBaseTimers enumeration
  * @param initStruct pointer on base timer initial structure
+ * @param callback calback function
  */
-void halBaseTimerInit(halBaseTimers timer, halInitBaseTimerStruct* initStruct);
-
-/**
- * Pause timer function. The function do not reset counter value to 0.
- * @param timer value of halBaseTimers enumeration
- */
-void halBaseTimerPause(halBaseTimers timer);
+void halBaseTimerInit(halBaseTimers timer,
+        halInitBaseTimerStruct* halInitStruct,
+        halTimerCallbackType callback);
 
 /**
  * Stop timer function. The function reset counter value to 0.
@@ -57,9 +57,4 @@ void halBaseTimerStop(halBaseTimers timer);
  */
 void halBaseTimerStart(halBaseTimers timer);
 
-/**
- * Timer time getter function.
- * @param timer value of halBaseTimers enumeration
- */
-uint32_t halBaseTimerGetTime(halBaseTimers timer);
 #endif /* HAL_HAL_BASE_TIMER_H_ */

@@ -10,6 +10,9 @@
 
 #include "hal_base_timer.h"
 
+/// Callback function for timers
+typedef void(*drvTimerCallbackType)(void);
+
 /// Timers enumeration
 typedef enum {
     drvTimer0 = halBaseTimer6,         /**< Timer 0 */
@@ -21,8 +24,9 @@ typedef enum {
  * Initial function for timer.
  * @param timer value of drvTimers enumeration
  * @param durationInMs time between 2 timer actions
+ * callback timer callback
  */
-void drvTimerInit(drvTimers timer, uint16_t durationInMs);
+void drvTimerInit(drvTimers timer, uint16_t durationInMs, drvTimerCallbackType callback);
 
 /**
  * Start timer function.
@@ -35,13 +39,5 @@ void drvTimerStart(drvTimers timer);
  * @param timer value of drvTimers enumeration
  */
 void drvTimerStop(drvTimers timer);
-
-/**
- * Pause timer function.
- * @param timer value of drvTimers enumeration
- */
-void drvTimerPause(drvTimers timer);
-
-uint32_t drvTimerGetTime(drvTimers timer);
 
 #endif /* DRV_DRV_TIMER_H_ */

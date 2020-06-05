@@ -8,7 +8,7 @@
 #include "hal_base_timer.h"
 
 
-static uint32_t counter[halBaseTimersCount] = { 0xFFFF, 0xFFFF };
+static halTimerCallbackType halTimersCallBacks[] = { 0 };
 
 /**
  * Get Timer by halBaseTimers enumeration
@@ -22,6 +22,36 @@ static TIM_TypeDef* halBaseTimerGetTimerByEnum(halBaseTimers timer){
             return TIM7;
     }
     return 0;
+}
+
+/**
+ * Get Timer callback by halBaseTimers enumeration
+ * @param timer value of halBaseTimers enumeration
+ */
+static halTimerCallbackType halBaseTimerGetTimerCallbackByEnum(halBaseTimers timer){
+    switch (timer) {
+        case halBaseTimer6:
+            return halTimersCallBacks[0];
+        case halBaseTimer7:
+            return halTimersCallBacks[1];
+    }
+    return 0;
+}
+
+/**
+ * Set Timer callback for timer
+ * @param timer value of halBaseTimers enumeration
+ */
+static void halBaseTimerSetTimerCallbackByEnum(halBaseTimers timer, halTimerCallbackType callback){
+    switch (timer) {
+        case halBaseTimer6:
+            halTimersCallBacks[0] = callback;
+            return;
+        case halBaseTimer7:
+            halTimersCallBacks[1] = callback;
+            return;
+    }
+    return;
 }
 
 /**
@@ -75,7 +105,9 @@ static void halBaseTimerDisableIRnQByEnum(halBaseTimers timer){
 }
 
 
-void halBaseTimerInit(halBaseTimers timer, halInitBaseTimerStruct* halInitStruct) {
+void halBaseTimerInit(halBaseTimers timer,
+        halInitBaseTimerStruct* halInitStruct,
+        halTimerCallbackType callback) {
     halBaseTimerEnableRCCByEnum(timer);
     TIM_TimeBaseInitTypeDef initStruct;
     initStruct.TIM_Period = halInitStruct->halBaseTimerPeriod;
@@ -83,8 +115,12 @@ void halBaseTimerInit(halBaseTimers timer, halInitBaseTimerStruct* halInitStruct
     initStruct.TIM_ClockDivision = halInitStruct->halBaseTimersClockDivision;
     initStruct.TIM_Prescaler = halInitStruct->halBaseTimerPrescaler;
     initStruct.TIM_RepetitionCounter = 0x00;
-    TIM_TimeBaseInit(halBaseTimerGetTimerByEnum(timer), &initStruct);
+    TIM_TypeDef* initialTimer = halBaseTimerGetTimerByEnum(timer);
+    TIM_TimeBaseInit(initialTimer, &initStruct);
+    TIM_ClearITPendingBit(initialTimer, TIM_IT_Update);
+    halBaseTimerSetTimerCallbackByEnum(timer,callback);
     halBaseTimerEnableIRnQByEnum(timer);
+
 }
 
 void halBaseTimerStart(halBaseTimers timer){
@@ -92,11 +128,6 @@ void halBaseTimerStart(halBaseTimers timer){
 }
 
 void halBaseTimerStop(halBaseTimers timer){
-    TIM_Cmd(halBaseTimerGetTimerByEnum(timer),DISABLE);
-    counter[timer]=0;
-}
-
-void halBaseTimerPause(halBaseTimers timer){
     TIM_Cmd(halBaseTimerGetTimerByEnum(timer),DISABLE);
 }
 
@@ -107,13 +138,13 @@ void halBaseTimerPause(halBaseTimers timer){
 static void halBaseTimerIncrementCounter(halBaseTimers timer) {
     TIM_TypeDef* haltimer = halBaseTimerGetTimerByEnum(timer);
     if (TIM_GetITStatus(haltimer, TIM_IT_Update) != RESET) {
-        counter[timer]++;
+        halBaseTimerStop(timer);
+        halTimerCallbackType callbackFunction =
+                halBaseTimerGetTimerCallbackByEnum(timer);
+        if (callbackFunction != 0)
+            callbackFunction();
         TIM_ClearITPendingBit(haltimer, TIM_IT_Update);
     }
-}
-
-uint32_t halBaseTimerGetTime(halBaseTimers timer){
-    return counter[timer];
 }
 
 /**
