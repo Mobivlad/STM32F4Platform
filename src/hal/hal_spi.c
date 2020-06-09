@@ -6,10 +6,10 @@
  */
 #include "hal_spi.h"
 
-static void halSPIEnableRCCByEnam(halSPI spi){
+static void halSPIEnableRCCByEnum(halSPI spi){
     switch(spi){
         case halSPI1:
-            RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1,ENABLE);
+            RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
             return;
         case halSPI2:
             RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
@@ -20,7 +20,7 @@ static void halSPIEnableRCCByEnam(halSPI spi){
     }
 }
 
-static SPI_TypeDef* halSPIGetByEnam(halSPI spi){
+static SPI_TypeDef* halSPIGetByEnum(halSPI spi){
     switch(spi){
         case halSPI1:
             return SPI1;
@@ -93,7 +93,7 @@ static void halSPIGPIOInit(halSPI spi,halSPINSSType halSPITypeNSS){
 }
 
 void halSPIInit(halSPI spi, halSPIInitStruct* spiInitStruct){
-    halSPIEnableRCCByEnam(spi);
+    halSPIEnableRCCByEnum(spi);
     halSPIGPIOInit(spi,spiInitStruct->halSPITypeNSS);
     SPI_InitTypeDef initStruct;
     initStruct.SPI_BaudRatePrescaler = spiInitStruct->halSPIFrequencyPrescaller;
@@ -121,8 +121,8 @@ void halSPIInit(halSPI spi, halSPIInitStruct* spiInitStruct){
             initStruct.SPI_CPHA = SPI_CPHA_2Edge;
             break;
     }
-    SPI_Init(halSPIGetByEnam(spi),&initStruct);
-    SPI_Cmd(halSPIGetByEnam(spi), ENABLE);
+    SPI_Init(halSPIGetByEnum(spi),&initStruct);
+    SPI_Cmd(halSPIGetByEnum(spi), ENABLE);
 }
 
 void halSPISetCS(halSPI spi){
@@ -169,7 +169,7 @@ static halSPIErrorCode halSPISendReceiveByte(SPI_TypeDef* spi, uint16_t tData,
 halSPIErrorCode halSPISendDataArray(halSPI halSPI, uint16_t* data,
         uint16_t dataLen, uint16_t timeout) {
     uint16_t* senddata = data;
-    SPI_TypeDef* spi = halSPIGetByEnam(halSPI);
+    SPI_TypeDef* spi = halSPIGetByEnum(halSPI);
     uint16_t resData;
     for (uint16_t i = 0; i < dataLen; i++) {
         if (halSPISendReceiveByte(spi, *senddata, &resData, timeout)
@@ -183,7 +183,7 @@ halSPIErrorCode halSPISendDataArray(halSPI halSPI, uint16_t* data,
 halSPIErrorCode halSPIReceiveDataArray(halSPI halSPI, uint16_t* data,
         uint16_t dataLen, uint16_t timeout) {
     uint16_t* resdata = data;
-    SPI_TypeDef* spi = halSPIGetByEnam(halSPI);
+    SPI_TypeDef* spi = halSPIGetByEnum(halSPI);
     uint16_t sendData = 0x0000;
     for (uint16_t i = 0; i < dataLen; i++) {
         if (halSPISendReceiveByte(spi, sendData, resdata, timeout)
