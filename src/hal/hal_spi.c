@@ -167,11 +167,11 @@ static halSPIErrorCode halSPISendReceiveByte(SPI_TypeDef* spi, uint16_t tData,
 }
 
 halSPIErrorCode halSPISendDataArray(halSPI halSPI, uint16_t* data,
-        uint8_t dataLen, uint16_t timeout) {
+        uint16_t dataLen, uint16_t timeout) {
     uint16_t* senddata = data;
     SPI_TypeDef* spi = halSPIGetByEnam(halSPI);
     uint16_t resData;
-    for (uint8_t i = 0; i < dataLen; i++) {
+    for (uint16_t i = 0; i < dataLen; i++) {
         if (halSPISendReceiveByte(spi, *senddata, &resData, timeout)
                 == halSPI_TIMEOUT)
             return halSPI_TIMEOUT;
@@ -181,11 +181,11 @@ halSPIErrorCode halSPISendDataArray(halSPI halSPI, uint16_t* data,
 }
 
 halSPIErrorCode halSPIReceiveDataArray(halSPI halSPI, uint16_t* data,
-        uint8_t dataLen, uint16_t timeout) {
+        uint16_t dataLen, uint16_t timeout) {
     uint16_t* resdata = data;
     SPI_TypeDef* spi = halSPIGetByEnam(halSPI);
     uint16_t sendData = 0x0000;
-    for (uint8_t i = 0; i < dataLen; i++) {
+    for (uint16_t i = 0; i < dataLen; i++) {
         if (halSPISendReceiveByte(spi, sendData, resdata, timeout)
                 == halSPI_TIMEOUT)
             return halSPI_TIMEOUT;

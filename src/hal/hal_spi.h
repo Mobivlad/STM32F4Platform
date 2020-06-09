@@ -101,7 +101,7 @@ void halSPIInit(halSPI spi, halSPIInitStruct* initStruct);
  * @return SPI error code
  */
 halSPIErrorCode halSPISendDataArray(halSPI halSPI, uint16_t* data,
-        uint8_t dataLen, uint16_t timeout);
+        uint16_t dataLen, uint16_t timeout);
 
 /**
  * Receive data array function
@@ -112,5 +112,18 @@ halSPIErrorCode halSPISendDataArray(halSPI halSPI, uint16_t* data,
  * @return SPI error code
  */
 halSPIErrorCode halSPIReceiveDataArray(halSPI halSPI, uint16_t* data,
-        uint8_t dataLen, uint16_t timeout);
+        uint16_t dataLen, uint16_t timeout);
+
+/**
+ * Select SPI device
+ * @param spi value of spi enumeration
+ */
+void halSPIResetCS(halSPI spi);
+
+/**
+ * Unselect SPI device
+ * @param spi value of spi enumeration
+ */
+void halSPISetCS(halSPI spi);
+
 #endif /* HAL_HAL_SPI_H_ */
