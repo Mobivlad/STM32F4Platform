@@ -6,6 +6,9 @@
  */
 #include "hal_spi.h"
 
+static halSPIStatus spiStatus[halSPICount] = { halSPINotConfigured,
+        halSPINotConfigured, halSPINotConfigured };
+
 static void halSPIEnableRCCByEnum(halSPI spi){
     switch(spi){
         case halSPI1:
@@ -67,6 +70,7 @@ static void halSPIGPIOInit(halSPI spi,halSPINSSType halSPITypeNSS){
             break;
         }
     }
+
     if(halSPITypeNSS==halSPINSSTypeHard)return;
     initGPIO.GPIO_Mode = GPIO_Mode_OUT;
     switch (spi) {
@@ -95,6 +99,7 @@ static void halSPIGPIOInit(halSPI spi,halSPINSSType halSPITypeNSS){
 void halSPIInit(halSPI spi, halSPIInitStruct* spiInitStruct){
     halSPIEnableRCCByEnum(spi);
     halSPIGPIOInit(spi,spiInitStruct->halSPITypeNSS);
+
     SPI_InitTypeDef initStruct;
     initStruct.SPI_BaudRatePrescaler = spiInitStruct->halSPIFrequencyPrescaller;
     initStruct.SPI_DataSize = spiInitStruct->halSPIDataSize;
@@ -103,6 +108,7 @@ void halSPIInit(halSPI spi, halSPIInitStruct* spiInitStruct){
     initStruct.SPI_Mode = SPI_Mode_Master;
     initStruct.SPI_NSS = spiInitStruct->halSPITypeNSS;
     initStruct.SPI_CRCPolynomial = 7;
+
     switch(spiInitStruct->halSPIMode){
         case halSPIMode0:
             initStruct.SPI_CPOL = SPI_CPOL_Low;
@@ -121,76 +127,113 @@ void halSPIInit(halSPI spi, halSPIInitStruct* spiInitStruct){
             initStruct.SPI_CPHA = SPI_CPHA_2Edge;
             break;
     }
+
     SPI_Init(halSPIGetByEnum(spi),&initStruct);
     SPI_Cmd(halSPIGetByEnum(spi), ENABLE);
+
+    //  Configuration interruptions
+    SPI_I2S_ITConfig(halSPIGetByEnum(spi), SPI_I2S_IT_TXE, ENABLE);
+    SPI_I2S_ITConfig(halSPIGetByEnum(spi), SPI_I2S_IT_RXNE, ENABLE);
+
+    // Clear interruptions' flags
+    SPI_I2S_ClearITPendingBit(SPI1, SPI_I2S_IT_TXE);
+    SPI_I2S_ClearITPendingBit(SPI1, SPI_I2S_IT_RXNE);
+
+    spiStatus[spi]=halSPIReadyToTransmit;
 }
 
-void halSPISetCS(halSPI spi){
+halSPIErrorCode halSPISetCS(halSPI spi) {
+    if (spiStatus[spi] == halSPINotConfigured)
+        return halSPI_NOT_CONFIG;
+
     switch (spi) {
         case halSPI1:
             GPIO_ResetBits(GPIOA, GPIO_Pin_4);
-            return;
+            return halSPI_OK;
         case halSPI2:
             GPIO_ResetBits(GPIOB, GPIO_Pin_12);
-            return;
+            return halSPI_OK;
         case halSPI3:
             GPIO_ResetBits(GPIOA, GPIO_Pin_15);
-            return;
+            return halSPI_OK;
     }
+    return halSPI_NOT_CONFIG;
 }
 
-void halSPIResetCS(halSPI spi){
-    switch(spi){
+halSPIErrorCode halSPIResetCS(halSPI spi) {
+    if (spiStatus[spi] == halSPINotConfigured)
+        return halSPI_NOT_CONFIG;
+
+    switch (spi) {
         case halSPI1:
             GPIO_SetBits(GPIOA, GPIO_Pin_4);
-            return;
+            return halSPI_OK;
         case halSPI2:
             GPIO_SetBits(GPIOB, GPIO_Pin_12);
-            return;
+            return halSPI_OK;
         case halSPI3:
             GPIO_SetBits(GPIOA, GPIO_Pin_15);
-            return;
+            return halSPI_OK;
+    }
+    return halSPI_NOT_CONFIG;
+}
+
+halSPIErrorCode halSPISendByte(halSPI spi, uint16_t* src) {
+    if (spiStatus[spi] == halSPI_NOT_CONFIG)
+        return halSPI_NOT_CONFIG;
+
+    if (src == 0)
+        return halSPI_DATA_NULL_POINTER;
+
+    if (spiStatus[spi] == halSPIReadyToTransmit)
+        SPI_I2S_SendData(halSPIGetByEnum(spi), *src);
+
+    if (spiStatus[spi] == halSPIReadyToReceive) {
+        SPI_I2S_ReceiveData(halSPIGetByEnum(spi));
+        return halSPI_OK;
+    }
+    return halSPI_IN_PROGRESS;
+}
+
+halSPIErrorCode halSPIReceiveByte(halSPI spi, uint16_t* dest) {
+    if (spiStatus[spi] == halSPI_NOT_CONFIG)
+        return halSPI_NOT_CONFIG;
+
+    if (dest == 0)
+        return halSPI_DATA_NULL_POINTER;
+
+    if (spiStatus[spi] == halSPIReadyToTransmit)
+        SPI_I2S_SendData(halSPIGetByEnum(spi), DUMMY_DATA);
+
+    if (spiStatus[spi] == halSPIReadyToReceive) {
+        *dest = SPI_I2S_ReceiveData(halSPIGetByEnum(spi));
+        return halSPI_OK;
+    }
+    return halSPI_IN_PROGRESS;
+}
+
+static void changeStatus(halSPI spi) {
+    if (SPI_I2S_GetITStatus(SPI1, SPI_I2S_IT_RXNE) == SET) {
+        spiStatus[spi] = halSPIReadyToReceive;
+        SPI_I2S_ClearITPendingBit(halSPI1, SPI_I2S_IT_RXNE);
+        return;
+    }
+    if (SPI_I2S_GetITStatus(SPI1, SPI_I2S_IT_TXE) == SET) {
+        spiStatus[spi] = halSPIReadyToTransmit;
+        SPI_I2S_ClearITPendingBit(halSPI1, SPI_I2S_IT_TXE);
+        return;
     }
 }
 
-static halSPIErrorCode halSPISendReceiveByte(SPI_TypeDef* spi, uint16_t tData,
-        uint16_t* rData, uint16_t timeout) {
-    while (SPI_I2S_GetFlagStatus(spi, SPI_I2S_FLAG_BSY))
-        if (--timeout)
-            return halSPI_TIMEOUT;
-    SPI_I2S_SendData(spi, tData);
-    while (SPI_I2S_GetFlagStatus(spi, SPI_I2S_FLAG_BSY))
-        if (--timeout)
-            return halSPI_TIMEOUT;
-    *rData = SPI_I2S_ReceiveData(spi);
-    return halSPI_OK;
+void SPI1_IRQHandler() {
+    changeStatus(halSPI1);
 }
 
-halSPIErrorCode halSPISendDataArray(halSPI halSPI, uint16_t* data,
-        uint16_t dataLen, uint16_t timeout) {
-    uint16_t* senddata = data;
-    SPI_TypeDef* spi = halSPIGetByEnum(halSPI);
-    uint16_t resData;
-    for (uint16_t i = 0; i < dataLen; i++) {
-        if (halSPISendReceiveByte(spi, *senddata, &resData, timeout)
-                == halSPI_TIMEOUT)
-            return halSPI_TIMEOUT;
-        senddata++;
-    }
-    return halSPI_OK;
+void SPI2_IRQHandler() {
+    changeStatus(halSPI2);
 }
 
-halSPIErrorCode halSPIReceiveDataArray(halSPI halSPI, uint16_t* data,
-        uint16_t dataLen, uint16_t timeout) {
-    uint16_t* resdata = data;
-    SPI_TypeDef* spi = halSPIGetByEnum(halSPI);
-    uint16_t sendData = 0x0000;
-    for (uint16_t i = 0; i < dataLen; i++) {
-        if (halSPISendReceiveByte(spi, sendData, resdata, timeout)
-                == halSPI_TIMEOUT)
-            return halSPI_TIMEOUT;
-        resdata++;
-    }
-    return halSPI_OK;
+void SPI3_IRQHandler() {
+    changeStatus(halSPI3);
 }
 

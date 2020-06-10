@@ -1,7 +1,7 @@
 /*
  * drv_fm25l16b.h
  *
- *  Created on: 5 черв. 2020 р.
+ *  Created on: 10 черв. 2020 р.
  *      Author: vladyslav.daliavskyi
  */
 
@@ -10,19 +10,19 @@
 
 #include "hal_spi.h"
 
-#define DRV_FM25L16B_TIMEOUT 0xFFFF
-#define DRV_FM25L16B_LAST_ADDRESS 0x7FF
-
 /// SPI enumeration
 typedef enum {
     drvFRAM_SPI1 = 0,
     drvFRAM_SPI2,
-    drvFRAM_SPI3
+    drvFRAM_SPI3,
+    drvFRAMCount
 } drvFRAM_SPI;
 
 typedef enum {
     drvFRAM_OK = halSPI_OK,
-    drvFRAM_TIMEOUT = halSPI_TIMEOUT,
+    drvFRAM_NOT_CONFIG = halSPI_NOT_CONFIG,
+    drvFRAM_IN_PROGRESS = halSPI_IN_PROGRESS,
+    drvFRAM_DATA_NULL_POINTER = halSPI_DATA_NULL_POINTER,
     drvFRAM_OUT_OF_MEMORY
 } drvSPIErrorCode;
 
@@ -34,6 +34,14 @@ typedef enum {
     READ = 0x03,
     WRITE = 0x02
 } drvFRAMOpCodes;
+
+/// Structure for write-read operation
+typedef struct {
+    uint16_t* source;           /** Sending data array */
+    uint16_t sourceLen;         /** Sending data array size */
+    uint16_t* dest;             /** Data array for receive data */
+    uint16_t destLen;           /** Receive data length*/
+} drvFRAMOperationInstruction;
 
 /**
  * Initial function for FRAM
@@ -78,4 +86,5 @@ drvSPIErrorCode drvFRAMWriteStatusRegister(drvFRAM_SPI spi, uint8_t data);
  * @return operation error code from drvSPIErrorCode enumeration
  */
 drvSPIErrorCode drvFRAMReadStatusRegister(drvFRAM_SPI spi, uint8_t* dest);
+
 #endif /* DRV_DRV_FM25L16B_H_ */

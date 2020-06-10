@@ -10,6 +10,8 @@
 
 #include "stm32f4xx.h"
 
+#define DUMMY_DATA 0x0000
+
 //+------+--------+--------+--------+--------+
 //|      |  MOSI  |  MISO  |  CLS   |   CS   |
 //+------+--------+--------+--------+--------+
@@ -24,8 +26,15 @@
 typedef enum {
     halSPI1 = 0,
     halSPI2,
-    halSPI3
+    halSPI3,
+    halSPICount
 } halSPI;
+
+typedef enum {
+    halSPINotConfigured  = 0,
+    halSPIReadyToReceive,
+    halSPIReadyToTransmit
+} halSPIStatus;
 
 /// CPOL,CPHA modes enumeration
 typedef enum {
@@ -82,7 +91,10 @@ typedef struct{
 
 typedef enum {
     halSPI_OK = 0,
-    halSPI_TIMEOUT
+    halSPI_TIMEOUT,
+    halSPI_NOT_CONFIG,
+    halSPI_IN_PROGRESS,
+    halSPI_DATA_NULL_POINTER
 } halSPIErrorCode;
 
 /**
@@ -94,36 +106,30 @@ void halSPIInit(halSPI spi, halSPIInitStruct* initStruct);
 
 /**
  * Send data array function
- * @param halSPI value of spi enumeration
- * @param data pointer on send data source array
- * @param dataLen lenght of send data array
- * @param timeout counter for error detection
+ * @param spi value of spi enumeration
+ * @param src pointer on send data
  * @return SPI error code
  */
-halSPIErrorCode halSPISendDataArray(halSPI halSPI, uint16_t* data,
-        uint16_t dataLen, uint16_t timeout);
+halSPIErrorCode halSPISendByte(halSPI spi, uint16_t* src);
 
 /**
  * Receive data array function
- * @param halSPI value of spi enumeration
- * @param data pointer on receive data array destination
- * @param dataLen count of receive elements
- * @param timeout counter for error detection
+ * @param spi value of spi enumeration
+ * @param dest pointer for receive data
  * @return SPI error code
  */
-halSPIErrorCode halSPIReceiveDataArray(halSPI halSPI, uint16_t* data,
-        uint16_t dataLen, uint16_t timeout);
+halSPIErrorCode halSPIReceiveByte(halSPI spi, uint16_t* dest);
 
 /**
  * Select SPI device
  * @param spi value of spi enumeration
  */
-void halSPIResetCS(halSPI spi);
+halSPIErrorCode halSPIResetCS(halSPI spi);
 
 /**
  * Unselect SPI device
  * @param spi value of spi enumeration
  */
-void halSPISetCS(halSPI spi);
+halSPIErrorCode halSPISetCS(halSPI spi);
 
 #endif /* HAL_HAL_SPI_H_ */

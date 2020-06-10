@@ -1,0 +1,5 @@
+@startuml BaseProject
+
+main -> bl_led_counter : 
+
+@enduml
