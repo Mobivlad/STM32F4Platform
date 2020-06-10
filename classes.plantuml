@@ -1,8 +1,0 @@
-@startuml BaseProject
-interface hal_sysclock{
-    uint32_t halSysClockGetTick(void);
-    void halSysClockInit(uint32_t ms);
-}
-
-
-@enduml

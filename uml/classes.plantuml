@@ -1,0 +1,142 @@
+@startuml BaseProject
+
+
+
+package HAL {
+    class hal_sysclock
+    class hal_spi
+    class hal_gpio
+    class hal_base_timer
+}
+
+package BL {
+    class bl_button_blink
+    class bl_led_counter
+    class bl_number_display
+    class bl_timer_blink
+}
+
+package DRV {
+    class drv_button
+    class drv_led
+    class drv_seven_segment
+    class drv_timer
+    class drv_sysclock
+    class drv_fm25l16b
+}
+
+drv_sysclock o-- hal_sysclock
+drv_led o-- hal_gpio
+drv_button o-- hal_gpio
+drv_timer o-- hal_base_timer
+drv_seven_segment o-- hal_gpio
+drv_fm25l16b o-- hal_spi
+
+bl_button_blink o-- drv_button
+bl_button_blink o-- drv_led
+bl_led_counter o-- drv_button
+bl_led_counter o-- drv_timer
+bl_led_counter o-- drv_seven_segment
+bl_number_display o-- drv_seven_segment
+bl_timer_blink o-- drv_led
+bl_timer_blink o-- drv_sysclock
+
+class hal_sysclock {
+    uint32_t halSysClockGetTick(void);
+
+    void halSysClockInit(uint32_t ms);
+
+    void SysTick_Handler(void);
+}
+
+class hal_spi {
+    void halSPIInit(halSPI spi, halSPIInitStruct* initStruct);
+
+    halSPIErrorCode halSPISendDataArray(halSPI halSPI, uint16_t* data, uint16_t dataLen, uint16_t timeout);
+    halSPIErrorCode halSPIReceiveDataArray(halSPI halSPI, uint16_t* data, uint16_t dataLen, uint16_t timeout);
+
+    void halSPISetCS(halSPI spi);
+    void halSPIResetCS(halSPI spi);
+}
+
+class hal_gpio {
+    halPinState halGPIOReadPin(halPort port, halPins pin);
+
+    void halGPIOTogglePins(halPort port, halPins pins);
+    void halGPIOResetPins(halPort port, halPins pins);
+    void halGPIOSetPins(halPort port, halPins pins);
+}
+
+class hal_base_timer {
+    void halBaseTimerInit (halBaseTimers timer, halInitBaseTimerStruct* halInitStruct, halTimerCallbackType callback);
+
+    void halBaseTimerStart(halBaseTimers timer);
+    void halBaseTimerStop(halBaseTimers timer);
+}
+
+class drv_button {
+    void dvrButtonInit(drvInitStructButton* initStruct);
+    drvButtonPressType drvButtonIsClick(drvButtonPort port, drvButtonPins pin);
+}
+
+class drv_led {
+    void drvLedInit(drvLedPort port, drvLedPins pins);
+
+    void drvLedOn(drvLedPort port, drvLedPins pins);
+    void drvLedOff(drvLedPort port, drvLedPins pins);
+    void drvLedToggle(drvLedPort port, drvLedPins pins);
+}
+
+class drv_seven_segment {
+    void drvSevenSegmentInit(drvDisplayData* data);
+
+    void drvSevenSegmentClearSymbol(uint8_t symbolPos);
+    void drvSevenSegmentPrintSymbol(drvSevenSegmentSymbols symbol, uint8_t symbolNum);
+}
+
+class drv_sysclock {
+    void drvSysClockInit(uint32_t ms);
+    
+    uint32_t drvSysClockGetTick(void);
+
+    uint8_t drvIsTimePased(uint32_t startTime, uint32_t delay);
+}
+
+class drv_timer {
+    void drvTimerInit(drvTimers timer, uint16_t durationInMs, drvTimerCallbackType callback);
+
+    void drvTimerStart(drvTimers timer);
+    void drvTimerStop(drvTimers timer);
+}
+
+class drv_fm25l16b {
+    void drvFRAMInit(drvFRAM_SPI spi);
+
+    drvSPIErrorCode drvFRAMSendData(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen);
+    drvSPIErrorCode drvFRAMReceiveData(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen);
+
+    drvSPIErrorCode drvFRAMWriteStatusRegister(drvFRAM_SPI spi, uint8_t data);
+    drvSPIErrorCode drvFRAMReadStatusRegister(drvFRAM_SPI spi, uint8_t* dest);
+}
+
+class bl_button_blink {
+    void blButtonBlinkInit(void);
+    void blButtonBlinkRun(void);
+}
+
+class bl_led_counter {
+    void blLedCounterInit();
+    void blLedCounterRun();
+}
+
+class bl_number_display {
+    void blDisplayNumberRun();
+    blDisplayNumberInit();
+}
+
+class bl_timer_blink {
+    void blBlinkInit(uint32_t time);
+    void blBlinkRun();
+}
+
+@enduml

@@ -9,7 +9,6 @@
 #define BL_BL_LED_COUNTER_H_
 
 #include "drv_seven_segment.h"
-#include "drv_sysclock.h"
 #include "drv_button.h"
 #include "drv_timer.h"
 

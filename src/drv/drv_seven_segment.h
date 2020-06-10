@@ -99,10 +99,4 @@ void drvSevenSegmentClearSymbol(uint8_t symbolPos);
  */
 void drvSevenSegmentPrintSymbol(drvSevenSegmentSymbols symbol, uint8_t symbolNum);
 
-/**
- * Function change symbols array
- * @param number display number
- */
-void blDisplaySetNumber(uint8_t number);
-
 #endif /* DRV_DRV_SEVEN_SEGMENT_H_ */
