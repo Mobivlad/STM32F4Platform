@@ -11,10 +11,10 @@ static drvFRAMStatus FRAM_status[drvFRAMCount];
 static uint16_t dataCount[drvFRAMCount];
 static uint16_t currentOperation[drvFRAMCount];
 static uint8_t WRENStatus[drvFRAMCount];    // 1 if WREN is set, 0 - not
+static drvFRAMOperationInstruction currentInstruction[drvFRAMCount] = { 0 };
 
 static drvFRAMOperationInstruction WREN_instruction = { WREN, 0, 0, 0, 0 };
 static drvFRAMOperationInstruction WRDI_instruction = { WRDI, 0, 0, 0, 0 };
-
 
 void drvFRAMInit(drvFRAM_SPI spi) {
     halSPIInitStruct initStruct;
@@ -35,6 +35,7 @@ void drvFRAMInit(drvFRAM_SPI spi) {
     dataCount[spi] = 0;
     WRENStatus[spi] = 0;
     currentOperation[spi] = 0;
+    drvFRAMInitStruct(&currentInstruction[spi]);
 }
 
 static drvSPIErrorCode drvFRAMExecuteSingleOperation(drvFRAM_SPI spi, drvFRAMOperationInstruction* instuction) {
@@ -120,7 +121,7 @@ static drvSPIErrorCode drvFRAMExecuteSingleOperation(drvFRAM_SPI spi, drvFRAMOpe
     return drvFRAM_OK;
 }
 
-drvSPIErrorCode drvFRAMExecuteOperation(drvFRAM_SPI spi, drvFRAMOperationInstruction* instuction){
+static drvSPIErrorCode drvFRAMExecuteOperation(drvFRAM_SPI spi, drvFRAMOperationInstruction* instuction){
     if (instuction == 0)
             return drvFRAM_NO_OPERATION;
     drvSPIErrorCode resultCode;
@@ -146,13 +147,14 @@ drvSPIErrorCode drvFRAMExecuteOperation(drvFRAM_SPI spi, drvFRAMOperationInstruc
 }
 
 static void drvFRAMInitStruct(drvFRAMOperationInstruction* str){
+    str->opcode = 0;
     str->address = 0;
     str->addressCode = 0;
     str->data = 0;
     str->dataLen = 0;
 }
 
-drvSPIErrorCode drvFRAMInitSendInstruction(uint16_t address,
+static drvSPIErrorCode drvFRAMInitSendInstruction(uint16_t address,
         uint8_t* data, uint16_t dataLen, drvFRAMOperationInstruction* operationDest) {
     // address if out of FRAM memory
     if (address > drvFM2516B_LAST_ADDRESS)
@@ -175,7 +177,7 @@ drvSPIErrorCode drvFRAMInitSendInstruction(uint16_t address,
 	return drvFRAM_OK;
 }
 
-drvSPIErrorCode drvFRAMInitRSTInstruction(uint8_t* stDest, drvFRAMOperationInstruction* operationDest) {
+static drvSPIErrorCode drvFRAMInitRSTInstruction(uint8_t* stDest, drvFRAMOperationInstruction* operationDest) {
 
     drvFRAMInitStruct(operationDest);
     operationDest->opcode = RDSR;
@@ -185,17 +187,17 @@ drvSPIErrorCode drvFRAMInitRSTInstruction(uint8_t* stDest, drvFRAMOperationInstr
     return drvFRAM_OK;
 }
 
-drvSPIErrorCode drvFRAMInitWRSTInstruction(uint8_t* stSrc, drvFRAMOperationInstruction* operationDest) {
+static drvSPIErrorCode drvFRAMInitWRSTInstruction(uint8_t stSrc, drvFRAMOperationInstruction* operationDest) {
 
     drvFRAMInitStruct(operationDest);
     operationDest->opcode = WRSR;
-    operationDest->data = stSrc;
+    operationDest->data = &stSrc;
     operationDest->dataLen = 1;
 
     return drvFRAM_OK;
 }
 
-drvSPIErrorCode drvFRAMInitReceiveInstruction(uint16_t address,
+static drvSPIErrorCode drvFRAMInitReceiveInstruction(uint16_t address,
         uint8_t* data, uint16_t dataLen, drvFRAMOperationInstruction* operationDest) {
     // address if out of FRAM memory
     if (address > drvFM2516B_LAST_ADDRESS)
@@ -213,4 +215,12 @@ drvSPIErrorCode drvFRAMInitReceiveInstruction(uint16_t address,
     operationDest->dataLen = dataLen;
 
     return drvFRAM_OK;
+}
+
+
+
+drvSPIErrorCode drvFRAMSetBlockProtection(drvFRAM_SPI spi, drvProtectionLevels level){
+    if(currentInstruction[spi].opcode == 0){
+        drvFRAMInitWRSTInstruction((level << WP_BITS_OFFSET), &currentInstruction[spi]);
+    }
 }

@@ -23,13 +23,19 @@ typedef enum {
     drvFRAMCount
 } drvFRAM_SPI;
 
+#define WP_BITS_OFFSET 2
+#define GET_BP_FROM_SR(x) (((x) >> (WP_BITS_OFFSET)) & 0x03)
+
 /// SPI enumeration
 typedef enum {
-    drvBP0 = 0x800,
-    drvBP1 = 0x600,
-    drvBP2 = 0x400,
-    drvBP3 = 0x000
-} drvProtectionLowerLevels;
+    drvBP0 = 0x00,
+    drvBP1,
+    drvBP2,
+    drvBP3,
+    drvBL_Count
+} drvProtectionLevels;
+
+static drvFRAMFirstLockedAddress[drvBL_Count] = { 0x800, 0x600, 0x400, 0x000 };
 
 typedef enum {
     drvFRAM_READY = 0,
@@ -74,43 +80,5 @@ typedef struct {
  * @param spi instance of SPI on the board
  */
 void drvFRAMInit(drvFRAM_SPI spi);
-
-/**
- * Write to FRAM function
- * @param spi instance of SPI on the board
- * @param address flash memory start address
- * @param data write data source
- * @param dataLen length of source data
- * @return operation error code from drvSPIErrorCode enumeration
- */
-drvSPIErrorCode drvFRAMSendData(drvFRAM_SPI spi, uint16_t address,
-        uint8_t* data, uint16_t dataLen);
-
-/**
- * Read from FRAM function
- * @param spi instance of SPI on the board
- * @param address flash memory start address
- * @param data pointer on read data destination
- * @param dataLen length of destination data
- * @return operation error code from drvSPIErrorCode enumeration
- */
-drvSPIErrorCode drvFRAMReceiveData(drvFRAM_SPI spi, uint16_t address,
-        uint8_t* data, uint16_t dataLen);
-
-/**
- * Change value of status register
- * @param spi instance of SPI on the board
- * @param data new status register value
- * @return operation error code from drvSPIErrorCode enumeration
- */
-drvSPIErrorCode drvFRAMWriteStatusRegister(drvFRAM_SPI spi, uint8_t data);
-
-/**
- * Get value of status register
- * @param spi instance of SPI on the board
- * @param data pointer on status register destination
- * @return operation error code from drvSPIErrorCode enumeration
- */
-drvSPIErrorCode drvFRAMReadStatusRegister(drvFRAM_SPI spi, uint8_t* dest);
 
 #endif /* DRV_DRV_FM25L16B_H_ */
