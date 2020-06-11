@@ -10,19 +10,38 @@
 
 #include "hal_spi.h"
 
+#define drvFM2516B_LAST_ADDRESS 0x7FF
+
+#define drvFM2516B_UPPER_ADDRESS_BYTE(X) (( (X) & 0x07 ) >> 8)
+#define drvFM2516B_LOWER_ADDRESS_BYTE(X) (( (X) & 0xFF ))
+
 /// SPI enumeration
 typedef enum {
-    drvFRAM_SPI1 = 0,
+    drvFRAM_SPI1 = 0u,
     drvFRAM_SPI2,
     drvFRAM_SPI3,
     drvFRAMCount
 } drvFRAM_SPI;
+
+/// SPI enumeration
+typedef enum {
+    drvBP0 = 0x800,
+    drvBP1 = 0x600,
+    drvBP2 = 0x400,
+    drvBP3 = 0x000
+} drvProtectionLowerLevels;
+
+typedef enum {
+    drvFRAM_READY = 0,
+    drvFRAM_BUSY
+} drvFRAMStatus;
 
 typedef enum {
     drvFRAM_OK = halSPI_OK,
     drvFRAM_NOT_CONFIG = halSPI_NOT_CONFIG,
     drvFRAM_IN_PROGRESS = halSPI_IN_PROGRESS,
     drvFRAM_DATA_NULL_POINTER = halSPI_DATA_NULL_POINTER,
+    drvFRAM_NO_OPERATION,
     drvFRAM_OUT_OF_MEMORY
 } drvSPIErrorCode;
 
@@ -35,12 +54,19 @@ typedef enum {
     WRITE = 0x02
 } drvFRAMOpCodes;
 
+typedef enum {
+    drvSended = 0,
+    drvInSending,
+    drvNotSended
+} drvFRAMAddressStatusCodes;
+
 /// Structure for write-read operation
 typedef struct {
-    uint16_t* source;           /** Sending data array */
-    uint16_t sourceLen;         /** Sending data array size */
-    uint16_t* dest;             /** Data array for receive data */
-    uint16_t destLen;           /** Receive data length*/
+    uint8_t opcode;			                      /** Operation code */
+	uint16_t address;                             /** Memory address for read/write operations */
+	drvFRAMAddressStatusCodes addressCode;        /** Address code that shows the process of address sending */
+    uint8_t* data;                                /** Sending/Receiving data array */
+    uint16_t dataLen;                             /** Receiving data array size */
 } drvFRAMOperationInstruction;
 
 /**

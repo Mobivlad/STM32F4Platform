@@ -6,6 +6,7 @@
  */
 #include "hal_spi.h"
 
+/// Array for SPI data transfer flags
 static halSPIStatus spiStatus[halSPICount] = { halSPINotConfigured,
         halSPINotConfigured, halSPINotConfigured };
 
@@ -20,9 +21,14 @@ static void halSPIEnableRCCByEnum(halSPI spi){
         case halSPI3:
             RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);
             return;
+        default:
+            return;
     }
 }
 
+/**
+ * Convert function with halSPI enumeration to SPI define type
+ */
 static SPI_TypeDef* halSPIGetByEnum(halSPI spi){
     switch(spi){
         case halSPI1:
@@ -31,11 +37,15 @@ static SPI_TypeDef* halSPIGetByEnum(halSPI spi){
             return SPI2;
         case halSPI3:
             return SPI3;
+        default:
+            return 0;
     }
-    return 0;
 }
 
-static void halSPIGPIOInit(halSPI spi,halSPINSSType halSPITypeNSS){
+/**
+ * GPIO pins init function for SPI
+ */
+static void halSPIGPIOInit(halSPI spi, halSPINSSType halSPITypeNSS){
     GPIO_InitTypeDef initGPIO;
     initGPIO.GPIO_PuPd = GPIO_PuPd_NOPULL;
     initGPIO.GPIO_OType = GPIO_OType_PP;
@@ -69,9 +79,11 @@ static void halSPIGPIOInit(halSPI spi,halSPINSSType halSPITypeNSS){
             GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_SPI3);
             break;
         }
+        default:
+            break;
     }
 
-    if(halSPITypeNSS==halSPINSSTypeHard)return;
+    if(halSPITypeNSS == halSPINSSTypeHard) return;
     initGPIO.GPIO_Mode = GPIO_Mode_OUT;
     switch (spi) {
         case halSPI1: {
@@ -93,6 +105,8 @@ static void halSPIGPIOInit(halSPI spi,halSPINSSType halSPITypeNSS){
             GPIO_SetBits(GPIOA, GPIO_Pin_15);
             break;
         }
+        default:
+            break;
     }
 }
 
@@ -128,7 +142,7 @@ void halSPIInit(halSPI spi, halSPIInitStruct* spiInitStruct){
             break;
     }
 
-    SPI_Init(halSPIGetByEnum(spi),&initStruct);
+    SPI_Init(halSPIGetByEnum(spi), &initStruct);
     SPI_Cmd(halSPIGetByEnum(spi), ENABLE);
 
     //  Configuration interruptions
@@ -156,8 +170,9 @@ halSPIErrorCode halSPISetCS(halSPI spi) {
         case halSPI3:
             GPIO_ResetBits(GPIOA, GPIO_Pin_15);
             return halSPI_OK;
+        default:
+            return halSPI_NOT_CONFIG;
     }
-    return halSPI_NOT_CONFIG;
 }
 
 halSPIErrorCode halSPIResetCS(halSPI spi) {
@@ -174,12 +189,14 @@ halSPIErrorCode halSPIResetCS(halSPI spi) {
         case halSPI3:
             GPIO_SetBits(GPIOA, GPIO_Pin_15);
             return halSPI_OK;
+        default:
+            return halSPI_NOT_CONFIG;
     }
-    return halSPI_NOT_CONFIG;
+
 }
 
-halSPIErrorCode halSPISendByte(halSPI spi, uint16_t* src) {
-    if (spiStatus[spi] == halSPI_NOT_CONFIG)
+halSPIErrorCode halSPISendByte(halSPI spi, uint8_t* src) {
+    if (spiStatus[spi] == halSPINotConfigured)
         return halSPI_NOT_CONFIG;
 
     if (src == 0)
@@ -195,8 +212,8 @@ halSPIErrorCode halSPISendByte(halSPI spi, uint16_t* src) {
     return halSPI_IN_PROGRESS;
 }
 
-halSPIErrorCode halSPIReceiveByte(halSPI spi, uint16_t* dest) {
-    if (spiStatus[spi] == halSPI_NOT_CONFIG)
+halSPIErrorCode halSPIReceiveByte(halSPI spi, uint8_t* dest) {
+    if (spiStatus[spi] == halSPINotConfigured)
         return halSPI_NOT_CONFIG;
 
     if (dest == 0)
@@ -212,6 +229,9 @@ halSPIErrorCode halSPIReceiveByte(halSPI spi, uint16_t* dest) {
     return halSPI_IN_PROGRESS;
 }
 
+/**
+ * Interrupt function for all SPI
+ */
 static void changeStatus(halSPI spi) {
     if (SPI_I2S_GetITStatus(SPI1, SPI_I2S_IT_RXNE) == SET) {
         spiStatus[spi] = halSPIReadyToReceive;
@@ -225,14 +245,23 @@ static void changeStatus(halSPI spi) {
     }
 }
 
+/**
+ * Interrupt function for SPI1
+ */
 void SPI1_IRQHandler() {
     changeStatus(halSPI1);
 }
 
+/**
+ * Interrupt function for SPI2
+ */
 void SPI2_IRQHandler() {
     changeStatus(halSPI2);
 }
 
+/**
+ * Interrupt function for SPI3
+ */
 void SPI3_IRQHandler() {
     changeStatus(halSPI3);
 }

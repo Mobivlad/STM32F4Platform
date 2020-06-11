@@ -31,6 +31,15 @@ typedef enum {
 } halSPI;
 
 typedef enum {
+    halSPI_OK = 0,
+    halSPI_TIMEOUT,
+    halSPI_NOT_CONFIG,
+    halSPI_IN_PROGRESS,
+    halSPI_DATA_NULL_POINTER
+} halSPIErrorCode;
+
+/// SPI data transferring enumeration
+typedef enum {
     halSPINotConfigured  = 0,
     halSPIReadyToReceive,
     halSPIReadyToTransmit
@@ -47,7 +56,7 @@ typedef enum {
 /// SPI data sizes enumeration
 typedef enum {
     halSPIDataSize8b = SPI_DataSize_8b,
-    halSPIDataSize16b = SPI_DataSize_16b
+    // halSPIDataSize16b = SPI_DataSize_16b   /** Not used. */
 } halSPIDataSize;
 
 /// SPI data direction enumeration
@@ -89,14 +98,6 @@ typedef struct{
     halSPINSSType halSPITypeNSS;
 } halSPIInitStruct;
 
-typedef enum {
-    halSPI_OK = 0,
-    halSPI_TIMEOUT,
-    halSPI_NOT_CONFIG,
-    halSPI_IN_PROGRESS,
-    halSPI_DATA_NULL_POINTER
-} halSPIErrorCode;
-
 /**
  * Initial function for SPI
  * @param spi value of spi enumeration for configuration
@@ -110,7 +111,7 @@ void halSPIInit(halSPI spi, halSPIInitStruct* initStruct);
  * @param src pointer on send data
  * @return SPI error code
  */
-halSPIErrorCode halSPISendByte(halSPI spi, uint16_t* src);
+halSPIErrorCode halSPISendByte(halSPI spi, uint8_t* src);
 
 /**
  * Receive data array function
@@ -118,7 +119,7 @@ halSPIErrorCode halSPISendByte(halSPI spi, uint16_t* src);
  * @param dest pointer for receive data
  * @return SPI error code
  */
-halSPIErrorCode halSPIReceiveByte(halSPI spi, uint16_t* dest);
+halSPIErrorCode halSPIReceiveByte(halSPI spi, uint8_t* dest);
 
 /**
  * Select SPI device
