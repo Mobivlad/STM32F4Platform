@@ -12,9 +12,6 @@
 
 #define drvFM2516B_LAST_ADDRESS 0x7FF
 
-#define drvFM2516B_UPPER_ADDRESS_BYTE(X) (( (X) & 0x07 ) >> 8)
-#define drvFM2516B_LOWER_ADDRESS_BYTE(X) (( (X) & 0xFF ))
-
 /// SPI enumeration
 typedef enum {
     drvFRAM_SPI1 = 0u,
@@ -35,7 +32,7 @@ typedef enum {
     drvBL_Count
 } drvProtectionLevels;
 
-static drvFRAMFirstLockedAddress[drvBL_Count] = { 0x800, 0x600, 0x400, 0x000 };
+static uint32_t drvFRAMFirstLockedAddress[drvBL_Count] = { 0x800, 0x600, 0x400, 0x000 };
 
 typedef enum {
     drvFRAM_READY = 0,
@@ -48,7 +45,8 @@ typedef enum {
     drvFRAM_IN_PROGRESS = halSPI_IN_PROGRESS,
     drvFRAM_DATA_NULL_POINTER = halSPI_DATA_NULL_POINTER,
     drvFRAM_NO_OPERATION,
-    drvFRAM_OUT_OF_MEMORY
+    drvFRAM_OUT_OF_MEMORY,
+    drvFRAM_READ_ONLY
 } drvSPIErrorCode;
 
 typedef enum {
@@ -80,5 +78,33 @@ typedef struct {
  * @param spi instance of SPI on the board
  */
 void drvFRAMInit(drvFRAM_SPI spi);
+
+/**
+ * Transmit data array to the FRAM
+ * @param spi instance of SPI on the board
+ * @param address memory destination address
+ * @param data pointer on data array
+ * @param dataLen data array size
+ * @return operation result code
+ */
+drvSPIErrorCode drvFRAMSendArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen);
+
+/**
+ * Receive data array to the FRAM
+ * @param spi instance of SPI on the board
+ * @param address memory source address
+ * @param data pointer on data array
+ * @param dataLen data array size
+ * @return operation result code
+ */
+drvSPIErrorCode drvFRAMReceiveArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen);
+
+/**
+ * Receive data array to the FRAM
+ * @param spi instance of SPI on the board
+ * @param bpCode block protection code from drvProtectionLevels enumeration
+ * @return operation result code
+ */
+drvSPIErrorCode drvFRAMSetBPLevel(drvFRAM_SPI spi, drvProtectionLevels bpCode);
 
 #endif /* DRV_DRV_FM25L16B_H_ */

@@ -19,13 +19,5 @@ int main(){
     while(1){
         blLedCounterRun();
     }*/
-    drvFRAMInit(drvFRAM_SPI1);
-    uint8_t status;
-    uint16_t x = 0;
-    while(1){
-        drvSPIErrorCode code = drvFRAMReadStatusRegister(drvFRAM_SPI1, &status);
-        if(code==drvFRAM_OK){
-            x++;
-        }
-    }
+
 }

@@ -7,70 +7,76 @@
 
 #include "drv_fm25l16b.h"
 
+/// Variables for simple command execution
+/// Simple instruction consist of only one command, like WRDI
+/// Complex instruction consist of several commands, like WRITE(WREN + WRITE)
+
 static drvFRAMStatus FRAM_status[drvFRAMCount];
 static uint16_t dataCount[drvFRAMCount];
-static uint16_t currentOperation[drvFRAMCount];
-static uint8_t WRENStatus[drvFRAMCount];    // 1 if WREN is set, 0 - not
-static drvFRAMOperationInstruction currentInstruction[drvFRAMCount] = { 0 };
+static uint8_t currentOperation[drvFRAMCount];
 
+
+/// Write enable instruction
 static drvFRAMOperationInstruction WREN_instruction = { WREN, 0, 0, 0, 0 };
+/// Write disable instruction
 static drvFRAMOperationInstruction WRDI_instruction = { WRDI, 0, 0, 0, 0 };
 
-void drvFRAMInit(drvFRAM_SPI spi) {
-    halSPIInitStruct initStruct;
-    initStruct.halSPIDataSize = halSPIDataSize8b;
-    initStruct.halSPIDirection = halSPIFullDirection2Lines;
-    initStruct.halSPIFirstBit = halSPIFirstBitMSB;
-    initStruct.halSPITypeNSS = halSPINSSTypeSoft;
-    initStruct.halSPIMode = halSPIMode0;
+/// Current executing instruction
+static drvFRAMOperationInstruction instractions[drvFRAMCount] = { 0 };
 
-    if (spi == drvFRAM_SPI1)
-        initStruct.halSPIFrequencyPrescaller = halSPIFrequencyPrescaller8;
-    else
-        initStruct.halSPIFrequencyPrescaller = halSPIFrequencyPrescaller4;
-
-    halSPIInit(spi, &initStruct);
-
-    FRAM_status[spi] = drvFRAM_READY;
-    dataCount[spi] = 0;
-    WRENStatus[spi] = 0;
-    currentOperation[spi] = 0;
-    drvFRAMInitStruct(&currentInstruction[spi]);
+/// Structure cleaning function
+static void drvFRAMInitStruct(drvFRAMOperationInstruction* str) {
+    str->opcode = 0;
+    str->address = 0;
+    str->addressCode = 0;
+    str->data = 0;
+    str->dataLen = 0;
 }
 
-static drvSPIErrorCode drvFRAMExecuteSingleOperation(drvFRAM_SPI spi, drvFRAMOperationInstruction* instuction) {
+/// Return address bytes by index from 2-bytes address
+static uint8_t getAddressByte(uint16_t address, uint8_t byteAddressIndex){
+    switch(byteAddressIndex){
+        case 0:
+            return address & 0xFF;
+        case 1:
+            return ( (address) & 0x07 ) >> 8;
+    }
+}
 
+/// Execution simple instruction
+static drvSPIErrorCode drvFRAMExecuteOperation(drvFRAM_SPI spi, drvFRAMOperationInstruction* instuction) {
     if (FRAM_status[spi] == drvFRAM_READY) {
-        FRAM_status[spi] = drvFRAM_BUSY;
-        dataCount[spi] = instuction -> dataLen;
-        currentOperation[spi] = instuction->opcode;
         halSPIErrorCode res_code = halSPISetCS(spi);
-        if(res_code != halSPI_OK){
+        if (res_code != halSPI_OK){
             return res_code;
+        } else {
+            FRAM_status[spi] = drvFRAM_BUSY;
+            dataCount[spi] = instuction->dataLen;
+            currentOperation[spi] = instuction->opcode;
         }
     }
 
-	if (instuction->opcode != 0) {
-    	halSPIErrorCode byteSendCodeStatus = halSPISendByte(spi, instuction->opcode);
-    	switch(byteSendCodeStatus){
-            case halSPI_OK:
-                instuction->opcode = 0;
-                break;
-            default:
-                return byteSendCodeStatus;
-    	}
+    if (currentOperation[spi] != 0) {
+        halSPIErrorCode byteSendCodeStatus = halSPISendByte(spi, &(currentOperation[spi]));
+        switch (byteSendCodeStatus) {
+        case halSPI_OK:
+            currentOperation[spi] = 0;
+            break;
+        default:
+            return byteSendCodeStatus;
+        }
     }
 
     if (instuction->addressCode != drvSended) {
         halSPIErrorCode byteSendCodeStatus;
-        switch(instuction->addressCode){
+        switch (instuction->addressCode) {
             case drvNotSended:
-                byteSendCodeStatus = halSPISendByte(spi,
-                        drvFM2516B_UPPER_ADDRESS_BYTE(instuction->address));
+                byteSendCodeStatus = halSPISendByte(spi, getAddressByte(instuction->address, 1));
                 break;
             case drvInSending:
-                byteSendCodeStatus = halSPISendByte(spi,
-                        drvFM2516B_LOWER_ADDRESS_BYTE(instuction->address));
+                byteSendCodeStatus = halSPISendByte(spi, getAddressByte(instuction->address, 0));
+                break;
+            default:
                 break;
         }
         switch (byteSendCodeStatus) {
@@ -87,7 +93,7 @@ static drvSPIErrorCode drvFRAMExecuteSingleOperation(drvFRAM_SPI spi, drvFRAMOpe
     // pointer on function send or receive data
     halSPIErrorCode (*function)(halSPI, uint8_t*);
 
-    switch(currentOperation[spi]){
+    switch (currentOperation[spi]) {
         case WRITE:
         case WRSR:
             function = halSPISendByte;
@@ -98,7 +104,7 @@ static drvSPIErrorCode drvFRAMExecuteSingleOperation(drvFRAM_SPI spi, drvFRAMOpe
             break;
     }
 
-    if(function != 0) {
+    if (function != 0) {
         if (dataCount[spi] != 0) {
             halSPIErrorCode byteSendCodeStatus = halSPISendByte(spi,
                     instuction->data[instuction->dataLen - dataCount[spi]]);
@@ -112,7 +118,7 @@ static drvSPIErrorCode drvFRAMExecuteSingleOperation(drvFRAM_SPI spi, drvFRAMOpe
         }
     }
 
-    if(dataCount[spi] != 0) {
+    if (dataCount[spi] != 0) {
         return drvFRAM_IN_PROGRESS;
     }
 
@@ -121,41 +127,9 @@ static drvSPIErrorCode drvFRAMExecuteSingleOperation(drvFRAM_SPI spi, drvFRAMOpe
     return drvFRAM_OK;
 }
 
-static drvSPIErrorCode drvFRAMExecuteOperation(drvFRAM_SPI spi, drvFRAMOperationInstruction* instuction){
-    if (instuction == 0)
-            return drvFRAM_NO_OPERATION;
-    drvSPIErrorCode resultCode;
-    switch (instuction->opcode) {
-        case WRITE:
-        case WRSR:
-            if (!WRENStatus[spi]) {
-                resultCode = drvFRAMExecuteSingleOperation(spi,&WREN_instruction);
-                if(resultCode == drvFRAM_OK){
-                    WRENStatus[spi] = 1;
-                }
-                return drvFRAM_IN_PROGRESS;
-            } else {
-                resultCode = drvFRAMExecuteSingleOperation(spi,instuction);
-                if(resultCode == drvFRAM_OK){
-                    WRENStatus[spi] = 0;
-                }
-                return resultCode;
-            }
-        default:
-            return drvFRAMExecuteSingleOperation(spi,instuction);
-    }
-}
-
-static void drvFRAMInitStruct(drvFRAMOperationInstruction* str){
-    str->opcode = 0;
-    str->address = 0;
-    str->addressCode = 0;
-    str->data = 0;
-    str->dataLen = 0;
-}
-
-static drvSPIErrorCode drvFRAMInitSendInstruction(uint16_t address,
-        uint8_t* data, uint16_t dataLen, drvFRAMOperationInstruction* operationDest) {
+/// Initial function for send instruction
+static drvSPIErrorCode drvFRAMInitSendInstruction(uint16_t address, uint8_t* data, uint16_t dataLen,
+        drvFRAMOperationInstruction* operationDest) {
     // address if out of FRAM memory
     if (address > drvFM2516B_LAST_ADDRESS)
         return drvFRAM_OUT_OF_MEMORY;
@@ -174,10 +148,11 @@ static drvSPIErrorCode drvFRAMInitSendInstruction(uint16_t address,
     operationDest->data = data;
     operationDest->dataLen = dataLen;
 
-	return drvFRAM_OK;
+    return drvFRAM_OK;
 }
 
-static drvSPIErrorCode drvFRAMInitRSTInstruction(uint8_t* stDest, drvFRAMOperationInstruction* operationDest) {
+/// Initial function for read status register instruction
+static drvSPIErrorCode drvFRAMInitRDSRInstruction(uint8_t* stDest, drvFRAMOperationInstruction* operationDest) {
 
     drvFRAMInitStruct(operationDest);
     operationDest->opcode = RDSR;
@@ -187,7 +162,8 @@ static drvSPIErrorCode drvFRAMInitRSTInstruction(uint8_t* stDest, drvFRAMOperati
     return drvFRAM_OK;
 }
 
-static drvSPIErrorCode drvFRAMInitWRSTInstruction(uint8_t stSrc, drvFRAMOperationInstruction* operationDest) {
+/// Initial function for write status register instruction
+static drvSPIErrorCode drvFRAMInitWRSRInstruction(uint8_t stSrc, drvFRAMOperationInstruction* operationDest) {
 
     drvFRAMInitStruct(operationDest);
     operationDest->opcode = WRSR;
@@ -197,8 +173,9 @@ static drvSPIErrorCode drvFRAMInitWRSTInstruction(uint8_t stSrc, drvFRAMOperatio
     return drvFRAM_OK;
 }
 
-static drvSPIErrorCode drvFRAMInitReceiveInstruction(uint16_t address,
-        uint8_t* data, uint16_t dataLen, drvFRAMOperationInstruction* operationDest) {
+/// Initial function for read data instruction
+static drvSPIErrorCode drvFRAMInitReceiveInstruction(uint16_t address, uint8_t* data, uint16_t dataLen,
+        drvFRAMOperationInstruction* operationDest) {
     // address if out of FRAM memory
     if (address > drvFM2516B_LAST_ADDRESS)
         return drvFRAM_OUT_OF_MEMORY;
@@ -217,10 +194,111 @@ static drvSPIErrorCode drvFRAMInitReceiveInstruction(uint16_t address,
     return drvFRAM_OK;
 }
 
+void drvFRAMInit(drvFRAM_SPI spi) {
+    halSPIInitStruct initStruct;
+    initStruct.halSPIDataSize = halSPIDataSize8b;
+    initStruct.halSPIDirection = halSPIFullDirection2Lines;
+    initStruct.halSPIFirstBit = halSPIFirstBitMSB;
+    initStruct.halSPITypeNSS = halSPINSSTypeSoft;
+    initStruct.halSPIMode = halSPIMode0;
 
+    if (spi == drvFRAM_SPI1)
+        initStruct.halSPIFrequencyPrescaller = halSPIFrequencyPrescaller8;
+    else
+        initStruct.halSPIFrequencyPrescaller = halSPIFrequencyPrescaller4;
 
-drvSPIErrorCode drvFRAMSetBlockProtection(drvFRAM_SPI spi, drvProtectionLevels level){
-    if(currentInstruction[spi].opcode == 0){
-        drvFRAMInitWRSTInstruction((level << WP_BITS_OFFSET), &currentInstruction[spi]);
+    halSPIInit(spi, &initStruct);
+
+    FRAM_status[spi] = drvFRAM_READY;
+    dataCount[spi] = 0;
+    currentOperation[spi] = 0;
+    drvFRAMInitStruct(&instractions[spi]);
+}
+
+drvSPIErrorCode drvFRAMSetBPLevel(drvFRAM_SPI spi, drvProtectionLevels bpCode) {
+    uint8_t newValue = bpCode << WP_BITS_OFFSET;
+    drvSPIErrorCode status;
+    if (instractions[spi].opcode == 0x00) {
+        instractions[spi] = WREN_instruction;
     }
+
+    if (instractions[spi].opcode == WREN) {
+        status = drvFRAMExecuteOperation(spi, &instractions[spi]);
+        if (status != drvFRAM_OK)
+            return status;
+        status = drvFRAMInitWRSRInstruction(newValue, &instractions[spi]);
+        if (status != drvFRAM_OK)
+            return status;
+    }
+
+    instractions[spi].opcode = 0;
+    return drvFRAM_OK;
+}
+
+drvSPIErrorCode drvFRAMReceiveArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen) {
+    if (instractions[spi].opcode == 0) {
+        drvSPIErrorCode status = drvFRAMInitReceiveInstruction(address, data, dataLen, &instractions[spi]);
+        if (status != drvFRAM_OK)
+            return status;
+    }
+
+    drvSPIErrorCode resCode = drvFRAMExecuteOperation(spi, &instractions[spi]);
+    if (resCode == drvFRAM_OK) {
+        instractions[spi].opcode = 0;
+        return drvFRAM_OK;
+    } else {
+        return resCode;
+    }
+}
+
+drvSPIErrorCode drvFRAMSendArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen) {
+    uint8_t statusData;
+    drvSPIErrorCode status;
+
+    if (instractions[spi].opcode == 0) {
+        status = drvFRAMInitRDSRInstruction(&statusData, &instractions[spi]);
+        if (status != drvFRAM_OK)
+            return status;
+    }
+
+    // checking on memory write ability
+    uint8_t bp_code = GET_BP_FROM_SR(statusData);
+    switch (bp_code) {
+        case 0x00:
+            break;
+        case 0x01:
+        case 0x10:{
+            uint32_t tmp_address = address + dataLen;
+            if (tmp_address >= drvFRAMFirstLockedAddress[bp_code])
+                return drvFRAM_READ_ONLY;
+            break;
+        }
+        case 0x11:
+            return drvFRAM_READ_ONLY;
+    }
+
+    if (instractions[spi].opcode == RDSR){
+        status = drvFRAMExecuteOperation(spi, &instractions[spi]);
+        if (status != drvFRAM_OK)
+            return status;
+        instractions[spi] = WREN_instruction;
+    }
+
+    if (instractions[spi].opcode == WREN) {
+        status = drvFRAMExecuteOperation(spi, &instractions[spi]);
+        if (status != drvFRAM_OK)
+            return status;
+        status = drvFRAMInitSendInstruction(address, data, dataLen, &instractions[spi]);
+        if (status != drvFRAM_OK)
+            return status;
+    }
+
+    if (instractions[spi].opcode == WRITE) {
+        status = drvFRAMExecuteOperation(spi, &instractions[spi]);
+        if (status != drvFRAM_OK)
+            return status;
+    }
+
+    instractions[spi].opcode = 0;
+    return drvFRAM_OK;
 }
