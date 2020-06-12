@@ -41,8 +41,7 @@ typedef enum {
 /// SPI data transferring enumeration
 typedef enum {
     halSPINotConfigured  = 0,
-    halSPIReadyToReceive,
-    halSPIReadyToTransmit
+    halSPIReady
 } halSPIStatus;
 
 /// CPOL,CPHA modes enumeration

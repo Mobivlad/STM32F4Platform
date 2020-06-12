@@ -21,7 +21,13 @@ typedef enum {
 } drvFRAM_SPI;
 
 #define WP_BITS_OFFSET 2
-#define GET_BP_FROM_SR(x) (((x) >> (WP_BITS_OFFSET)) & 0x03)
+#define ONE_BYTE_OFFSET 8
+
+#define TWO_BITS_MASK 0x03
+#define LOWER_BYTE_MASK 0xFF
+#define UPPER_BYTE_MASK 0x07
+
+#define GET_BP_FROM_SR(x) (((x) >> (WP_BITS_OFFSET)) & TWO_BITS_MASK)
 
 /// SPI enumeration
 typedef enum {
@@ -31,8 +37,6 @@ typedef enum {
     drvBP3,
     drvBL_Count
 } drvProtectionLevels;
-
-static uint32_t drvFRAMFirstLockedAddress[drvBL_Count] = { 0x800, 0x600, 0x400, 0x000 };
 
 typedef enum {
     drvFRAM_READY = 0,
