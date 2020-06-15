@@ -71,7 +71,7 @@ typedef enum {
 /// Structure for write-read operation
 typedef struct {
     uint8_t opcode;			                      /** Operation code */
-	uint16_t address;                             /** Memory address for read/write operations */
+    uint16_t address;                             /** Memory address for read/write operations */
 	drvFRAMAddressStatusCodes addressCode;        /** Address code that shows the process of address sending */
     uint8_t* data;                                /** Sending/Receiving data array */
     uint16_t dataLen;                             /** Receiving data array size */
@@ -91,17 +91,35 @@ void drvFRAMInit(drvFRAM_SPI spi);
  * @param dataLen data array size
  * @return operation result code
  */
-drvSPIErrorCode drvFRAMSendArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen);
+drvSPIErrorCode drvFRAMWriteArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen);
 
 /**
- * Receive data array to the FRAM
+ * Transmit data array to the FRAM
+ * @param spi instance of SPI on the board
+ * @param address memory destination address
+ * @param data pointer on byte destination
+ * @return operation result code
+ */
+drvSPIErrorCode drvFRAMWriteByte(drvFRAM_SPI spi, uint16_t address, uint8_t* data);
+
+/**
+ * Receive data array from the FRAM
  * @param spi instance of SPI on the board
  * @param address memory source address
  * @param data pointer on data array
  * @param dataLen data array size
  * @return operation result code
  */
-drvSPIErrorCode drvFRAMReceiveArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen);
+drvSPIErrorCode drvFRAMReadArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen);
+
+/**
+ * Receive one byte from the FRAM
+ * @param spi instance of SPI on the board
+ * @param address memory source address
+ * @param data pointer on byte destination
+ * @return operation result code
+ */
+drvSPIErrorCode drvFRAMReadByte(drvFRAM_SPI spi, uint16_t address, uint8_t* data);
 
 /**
  * Receive data array to the FRAM

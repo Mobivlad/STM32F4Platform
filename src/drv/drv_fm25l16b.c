@@ -260,7 +260,7 @@ drvSPIErrorCode drvFRAMSetBPLevel(drvFRAM_SPI spi, drvProtectionLevels bpCode) {
     return drvFRAM_OK;
 }
 
-drvSPIErrorCode drvFRAMReceiveArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen) {
+drvSPIErrorCode drvFRAMReadArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen) {
     if (instractions[spi].opcode == 0) {
         drvSPIErrorCode status = drvFRAMInitReceiveInstruction(address, data, dataLen, &instractions[spi]);
         if (status != drvFRAM_OK)
@@ -280,7 +280,11 @@ drvSPIErrorCode drvFRAMReceiveArray(drvFRAM_SPI spi, uint16_t address, uint8_t* 
     }
 }
 
-drvSPIErrorCode drvFRAMSendArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen) {
+drvSPIErrorCode drvFRAMReadByte(drvFRAM_SPI spi, uint16_t address, uint8_t* data){
+    return drvFRAMReadArray(spi, address, data, 1);
+}
+
+drvSPIErrorCode drvFRAMWriteArray(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen) {
     uint8_t statusData = 0;
     drvSPIErrorCode status;
 
@@ -342,4 +346,8 @@ drvSPIErrorCode drvFRAMSendArray(drvFRAM_SPI spi, uint16_t address, uint8_t* dat
 
     instractions[spi].opcode = 0;
     return drvFRAM_OK;
+}
+
+drvSPIErrorCode drvFRAMWriteByte(drvFRAM_SPI spi, uint16_t address, uint8_t* data){
+    return drvFRAMWriteArray(spi, address, &data, 1);
 }
