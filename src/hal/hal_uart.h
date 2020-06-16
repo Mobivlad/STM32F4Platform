@@ -74,7 +74,6 @@ typedef enum {
     halUART_OK = 0,
     halUART_IN_PROGRESS,
     halUART_NOT_CONFIG,
-    halUART_TOO_LITTLE_BUFFER,
     halUART_NULL_POINT
 } halUARTErrorCode;
 
@@ -84,5 +83,21 @@ typedef enum {
  * @param initStruct pointer on structure for UART initialization
  */
 void halInitUART(halUART uart, halUARTInitStruct* initStruct);
+
+/**
+ * Receive byte function
+ * @param uart instance of UART from halUART enumeration
+ * @param data pointer on byte destination
+ * @return halUART error code
+ */
+halUARTErrorCode halUARTReceiveByte(halUART uart, uint8_t* data);
+
+/**
+ * Send byte function
+ * @param uart instance of UART from halUART enumeration
+ * @param data transfer byte
+ * @return halUART error code
+ */
+halUARTErrorCode halUARTSendByte(halUART uart, uint8_t data);
 
 #endif /* HAL_HAL_UART_H_ */

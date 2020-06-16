@@ -8,7 +8,7 @@
 #ifndef HAL_HAL_SYSCLOCK_H_
 #define HAL_HAL_SYSCLOCK_H_
 
-#include "stm32f4xx.h";
+#include "stm32f4xx.h"
 
 /**
  * Initial function for SysTick
