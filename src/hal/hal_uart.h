@@ -100,11 +100,27 @@ typedef enum {
  */
 void halInitUART(halUART uart, halUARTInitStruct* initStruct);
 
-
+/**
+ * UART receive function
+ * @param uart instance of UART from halUART enumeration
+ * @param dataType type of data: String or Byte Array.
+ * @param buffer pointer on data destination
+ * @param bufferSize size of buffer
+ * @param receiveCallBack callback for operation complete action
+ * @return operation result code
+ */
 halUARTErrorCode halUARTReceive(halUART uart, halUARTDataType dataType, uint8_t* buffer,
         uint16_t bufferSize, halUARTCallBack receiveCallBack);
 
-
+/**
+ * UART transfer function
+ * @param uart instance of UART from halUART enumeration
+ * @param dataType type of data: String or Byte Array.
+ * @param buffer pointer on data source
+ * @param bufferSize size of buffer
+ * @param transferCallBack callback for operation complete action
+ * @return operation result code
+ */
 halUARTErrorCode halUARTTransfer(halUART uart, halUARTDataType dataType, uint8_t* buffer,
         uint16_t bufferSize, halUARTCallBack transferCallBack);
 

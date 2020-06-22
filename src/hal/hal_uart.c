@@ -205,33 +205,42 @@ void halInitUART(halUART uart, halUARTInitStruct* initStruct) {
 
 halUARTErrorCode halUARTReceive(halUART uart, halUARTDataType dataType, uint8_t* buffer,
         uint16_t bufferSize, halUARTCallBack receiveCallBack) {
+    // check on configuration
     if (!(uartStatus[uart] & CONFIG)) {
         return halUART_NOT_CONFIG;
     }
 
+    // check on RX busy
     if (!(uartStatus[uart] & RX_READY)) {
         return halUART_BUSY;
     }
 
+    // check on data null point or zero size
     if (buffer == NULL || bufferSize == 0) {
         return halUART_NULL_POINT;
     }
 
+    // set receive callback
     if (receiveCallBack != NULL) {
         rCallBacks[uart] = receiveCallBack;
     } else {
         rCallBacks[uart] = NULL;
     }
 
+    // change RX busy flag
     uartStatus[uart] &= ~RX_READY;
+
+    // set static parameters
     r_buffers[uart] = buffer;
     r_buffer_size[uart] = bufferSize;
     r_index[uart] = 0;
 
+    // enable RXNE interrupts
     USART_ITConfig(halUARTGetByEnum(uart), USART_IT_RXNE, ENABLE);
 
     r_buffers[uart][r_index[uart]++] = USART_ReceiveData(halUARTGetByEnum(uart));
 
+    // set unique parameters according to data type
     switch (dataType) {
         case halUARTDataType_Array:
             uartStatus[uart] &= ~RX_STRING;
@@ -247,28 +256,36 @@ halUARTErrorCode halUARTReceive(halUART uart, halUARTDataType dataType, uint8_t*
 
 halUARTErrorCode halUARTTransfer(halUART uart, halUARTDataType dataType, uint8_t* buffer,
         uint16_t bufferSize, halUARTCallBack transferCallBack) {
+    // check on configuration
     if (!(uartStatus[uart] & CONFIG)) {
         return halUART_NOT_CONFIG;
     }
 
+    // check on TX busy
     if (!(uartStatus[uart] & TX_READY)) {
         return halUART_BUSY;
     }
 
+    // check on buffer null point
     if (buffer == NULL) {
         return halUART_NULL_POINT;
     }
 
+    // set transfer complete callback
     if (transferCallBack != NULL) {
         tCallBacks[uart] = transferCallBack;
     } else {
         tCallBacks[uart] = NULL;
     }
 
+    // change TX flag on BYSY
     uartStatus[uart] &= ~TX_READY;
+
+    // set transfer parameters
     t_buffers[uart] = buffer;
     t_buffer_size[uart] = bufferSize;
     t_index[uart] = 0;
+
 
     switch (dataType) {
         case halUARTDataType_Array:
@@ -287,34 +304,46 @@ static void uart_interupt(halUART uart) {
     if (USART_GetITStatus(halUARTGetByEnum(uart), USART_IT_IDLE) != RESET) {
         USART_ITConfig(halUARTGetByEnum(uart), USART_IT_IDLE, DISABLE);
         USART_ClearITPendingBit(halUARTGetByEnum(uart), USART_IT_IDLE);
+        // check if received more then buffer size
         if (r_index[uart] > r_buffer_size[uart]) {
             if (overloadCallBack[uart] != NULL) {
+                // call overload CallBack
                 overloadCallBack[uart]();
             }
         } else if (rCallBacks[uart] != NULL) {
+            // end receiving callback
             rCallBacks[uart]();
         }
+
+        // change RX flag to ready
         uartStatus[uart] |= RX_READY;
     }
 
     if (USART_GetITStatus(halUARTGetByEnum(uart), USART_IT_TXE) != RESET) {
         if (uartStatus[uart] & TX_STRING) {
+
             USART_SendData(halUARTGetByEnum(uart), t_buffers[uart][t_index[uart]]);
+
             if (t_buffers[uart][t_index[uart]] == '\0') {
                 if (tCallBacks[uart] != NULL) {
                     tCallBacks[uart]();
                 }
+
                 USART_ITConfig(halUARTGetByEnum(uart), USART_IT_TXE, DISABLE);
+
                 uartStatus[uart] |= TX_READY;
             } else {
                 t_index[uart]++;
             }
         } else {
             USART_SendData(halUARTGetByEnum(uart), t_buffers[uart][t_index[uart]++]);
+
             if (t_index[uart] == t_buffer_size[uart]) {
+
                 if (tCallBacks[uart] != NULL) {
                     tCallBacks[uart]();
                 }
+
                 USART_ITConfig(halUARTGetByEnum(uart), USART_IT_TXE, DISABLE);
                 uartStatus[uart] |= TX_READY;
             }
@@ -323,18 +352,22 @@ static void uart_interupt(halUART uart) {
 
     if (USART_GetITStatus(halUARTGetByEnum(uart), USART_IT_RXNE) != RESET) {
         if (uartStatus[uart] & RX_STRING) {
+
             if (r_index[uart] < r_buffer_size[uart]) {
                 r_buffers[uart][r_index[uart]++] = USART_ReceiveData(halUARTGetByEnum(uart));
             } else {
                 USART_ReceiveData(halUARTGetByEnum(uart));
                 r_index[uart]++;
             }
+
         } else {
             r_buffers[uart][r_index[uart]++] = USART_ReceiveData(halUARTGetByEnum(uart));
             if (r_index[uart] == r_buffer_size[uart]) {
+
                 if (rCallBacks[uart] != NULL) {
                     rCallBacks[uart]();
                 }
+
                 USART_ITConfig(halUARTGetByEnum(uart), USART_IT_RXNE, DISABLE);
                 uartStatus[uart] |= RX_READY;
             }
