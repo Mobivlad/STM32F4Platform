@@ -9,8 +9,11 @@
 #define HAL_HAL_UART_H_
 
 #include "stm32f4xx.h"
+#include <stddef.h>
 
 #define BUFFER_SIZE 20
+
+typedef void(*halUARTCallBack)(void);
 
 //+------+--------+--------+--------+--------+--------+--------+
 //|      |  UART1 |  UART2 |  UART3 |  UART4 |  UART5 |  UART6 |
@@ -72,10 +75,23 @@ typedef struct {
 /// UART errors codes
 typedef enum {
     halUART_OK = 0,
-    halUART_IN_PROGRESS,
+    halUART_BUSY,
     halUART_NOT_CONFIG,
     halUART_NULL_POINT
 } halUARTErrorCode;
+
+typedef enum {
+    CONFIG = 0x01,
+    RX_READY = 0x02,
+    RX_STRING = 0x04,
+    TX_READY = 0x08,
+    TX_STRING = 0x10,
+} halUARTReadyStatus;
+
+typedef enum {
+    halUARTDataType_String,
+    halUARTDataType_Array
+} halUARTDataType;
 
 /**
  * Initial function for UART
@@ -84,20 +100,12 @@ typedef enum {
  */
 void halInitUART(halUART uart, halUARTInitStruct* initStruct);
 
-/**
- * Receive byte function
- * @param uart instance of UART from halUART enumeration
- * @param data pointer on byte destination
- * @return halUART error code
- */
-halUARTErrorCode halUARTReceiveByte(halUART uart, uint8_t* data);
 
-/**
- * Send byte function
- * @param uart instance of UART from halUART enumeration
- * @param data transfer byte
- * @return halUART error code
- */
-halUARTErrorCode halUARTSendByte(halUART uart, uint8_t data);
+halUARTErrorCode halUARTReceive(halUART uart, halUARTDataType dataType, uint8_t* buffer,
+        uint16_t bufferSize, halUARTCallBack receiveCallBack);
+
+
+halUARTErrorCode halUARTTransfer(halUART uart, halUARTDataType dataType, uint8_t* buffer,
+        uint16_t bufferSize, halUARTCallBack transferCallBack);
 
 #endif /* HAL_HAL_UART_H_ */
