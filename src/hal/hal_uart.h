@@ -11,8 +11,6 @@
 #include "stm32f4xx.h"
 #include <stddef.h>
 
-#define BUFFER_SIZE 20
-
 typedef void(*halUARTCallBack)(void);
 
 //+------+--------+--------+--------+--------+--------+--------+
@@ -123,5 +121,18 @@ halUARTErrorCode halUARTReceive(halUART uart, halUARTDataType dataType, uint8_t*
  */
 halUARTErrorCode halUARTTransfer(halUART uart, halUARTDataType dataType, uint8_t* buffer,
         uint16_t bufferSize, halUARTCallBack transferCallBack);
+
+/**
+ * Change overload action
+ * @param uart instance of UART from halUART enumeration
+ * @param callback overload action
+ */
+void halUARTSetOverloadCallBack(halUART uart, halUARTCallBack callback);
+
+/**
+ * Clear overload action
+ * @param uart instance of UART from halUART enumeration
+ */
+void halUARTClearOverloadCallBack(halUART uart);
 
 #endif /* HAL_HAL_UART_H_ */

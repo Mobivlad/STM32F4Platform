@@ -238,8 +238,6 @@ halUARTErrorCode halUARTReceive(halUART uart, halUARTDataType dataType, uint8_t*
     // enable RXNE interrupts
     USART_ITConfig(halUARTGetByEnum(uart), USART_IT_RXNE, ENABLE);
 
-    r_buffers[uart][r_index[uart]++] = USART_ReceiveData(halUARTGetByEnum(uart));
-
     // set unique parameters according to data type
     switch (dataType) {
         case halUARTDataType_Array:
@@ -352,7 +350,6 @@ static void uart_interupt(halUART uart) {
 
     if (USART_GetITStatus(halUARTGetByEnum(uart), USART_IT_RXNE) != RESET) {
         if (uartStatus[uart] & RX_STRING) {
-
             if (r_index[uart] < r_buffer_size[uart]) {
                 r_buffers[uart][r_index[uart]++] = USART_ReceiveData(halUARTGetByEnum(uart));
             } else {
@@ -373,6 +370,14 @@ static void uart_interupt(halUART uart) {
             }
         }
     }
+}
+
+void halUARTSetOverloadCallBack(halUART uart, halUARTCallBack callback){
+    overloadCallBack[uart] = callback;
+}
+
+void halUARTClearOverloadCallBack(halUART uart){
+    overloadCallBack[uart] = NULL;
 }
 
 // Interrupt handler for USART1
