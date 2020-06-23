@@ -9,6 +9,7 @@
 #define HAL_HAL_SPI_H_
 
 #include "stm32f4xx.h"
+#include <stddef.h>
 
 #define DUMMY_DATA 0x0000
 
@@ -22,6 +23,8 @@
 //| SPI3 |  PB5   |  PB4   |  PB3   |  PA15  |
 //+------+--------+--------+--------+--------+
 
+typedef void (*halSPICallBack)();
+
 /// SPI enumeration
 typedef enum {
     halSPI1 = 0,
@@ -30,11 +33,21 @@ typedef enum {
     halSPICount
 } halSPI;
 
+enum {
+    halSPI_Config = 0x01,
+    halSPI_Ready = 0x02,
+    halSPI_ReadOperation = 0x04,    // 1 - read operation, 0 - send operation
+};
+
+typedef enum {
+    halSPI_Read = 0,
+    halSPI_Write = !halSPI_Read
+} halSPIOperation;
+
 typedef enum {
     halSPI_OK = 0,
-    halSPI_TIMEOUT,
     halSPI_NOT_CONFIG,
-    halSPI_IN_PROGRESS,
+    halSPI_BUSY,
     halSPI_DATA_NULL_POINTER
 } halSPIErrorCode;
 
@@ -107,18 +120,24 @@ void halSPIInit(halSPI spi, halSPIInitStruct* initStruct);
 /**
  * Send data array function
  * @param spi value of spi enumeration
- * @param src pointer on send data
+ * @param data pointer on send data
+ * @param dataSize size of send data
+ * @param sendAction action on send complete
  * @return SPI error code
  */
-halSPIErrorCode halSPISendByte(halSPI spi, uint8_t* src);
+halSPIErrorCode halSPISend(halSPI spi, uint8_t* data, uint16_t dataSize,
+        halSPICallBack sendAction);
 
 /**
  * Receive data array function
  * @param spi value of spi enumeration
- * @param dest pointer for receive data
+ * @param data pointer on send data
+ * @param dataSize size of send data
+ * @param receiveAction action on send complete
  * @return SPI error code
  */
-halSPIErrorCode halSPIReceiveByte(halSPI spi, uint8_t* dest);
+halSPIErrorCode halSPIReceive(halSPI spi, uint8_t* data, uint16_t dataSize,
+        halSPICallBack receiveAction);
 
 /**
  * Select SPI device
