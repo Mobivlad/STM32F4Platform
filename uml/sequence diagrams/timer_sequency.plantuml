@@ -1,0 +1,32 @@
+@startuml TimerDisplaySequency
+
+main -> bl_timer : blTimerInit( blInitStruct )
+bl_timer -> drv_timer : drvTimerInit( drvInitStruct )
+drv_timer --> bl_timer : initStatusCode
+bl_timer -> drv_seven_segment : drvDisplayInit( drvInitStruct )
+drv_seven_segment --> bl_timer : initStatusCode
+bl_timer --> main : initStatusCode
+
+loop
+    main -> bl_timer : blTimerRun()
+    bl_timer -> drv_timer : drvTimerStart( drvInitStruct )
+    drv_timer --\ bl_timer : time ended (callback)
+    bl_timer --\ drv_seven_segment : drvSevenSegmentSetValue( value )
+    drv_seven_segment --\ bl_timer: status code
+    main -> drv_seven_segment : blSevenSegmentRun()
+    main /-- drv_seven_segment : status code
+end
+
+bl_command -\ bl_timer : blTimerSetCommand(command)
+alt command clear limit
+    bl_timer -\ bl_timer : clear limit
+else command set limit
+    bl_timer -\ bl_timer : set limit
+else command long button click
+    bl_timer -\ bl_timer : reset counter
+else command button click
+    bl_timer -\ drv_timer : start / stop
+    bl_timer /-- drv_timer : status code
+end
+
+@enduml

@@ -1,0 +1,22 @@
+@startuml bl_level
+
+package BL{
+    class bl_timer
+    class bl_control
+}
+
+class bl_timer {
+    void blTimerInit (blTimerInitStruct* init);
+
+    blTimerStatusCode blTimerRun();
+
+    blTimerStatusCode blTimerSetCommand (blTimerCommand command, void* param);
+}
+
+class bl_control {
+    void blControlInit (blControlInitStruct* init);
+
+    blControlStatusCode blControlRun ();
+}
+
+@enduml

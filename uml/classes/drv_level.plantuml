@@ -1,0 +1,70 @@
+@startuml drv_level
+
+package DRV {
+    class drv_button
+    class drv_led
+    class drv_seven_segment
+    class drv_timer
+    class drv_sysclock
+    class drv_fm25l16b
+    class drv_uart
+}
+
+class drv_led {
+    void drvLedInit(drvLedPort port, drvLedPins pins);
+
+    void drvLedOn(drvLedPort port, drvLedPins pins);
+    void drvLedOff(drvLedPort port, drvLedPins pins);
+    void drvLedToggle(drvLedPort port, drvLedPins pins);
+}
+
+class drv_seven_segment {
+    void drvSevenSegmentInit(drvDisplayData* data);
+
+    drvDisplayErrorCode drvSevenSegmentRun();
+    drvDisplayErrorCode drvSevenSegmentSetValue(uint8_t value);
+}
+
+class drv_sysclock {
+    void drvSysClockInit(uint32_t ms);
+    
+    uint32_t drvSysClockGetTick(void);
+
+    uint8_t drvIsTimePased(uint32_t startTime, uint32_t delay);
+}
+
+class drv_timer {
+    void drvTimerInit(drvTimers timer, uint16_t durationInMs, drvTimerCallbackType callback);
+
+    void drvTimerStart(drvTimers timer);
+    void drvTimerStop(drvTimers timer);
+}
+
+class drv_button {
+    void dvrButtonInit(drvInitStructButton* initStruct);
+    
+    drvButtonErrorCode drvButtonRun();
+
+    void drvButtonSetAction(drvButtonActionType actionType, drvButtonAction action);
+}
+
+
+class drv_fm25l16b {
+    void drvFRAMInit(drvFRAM_SPI spi);
+
+    drvFRAMErrorCode drvFRAMSendData(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen, drvFRAMCallBack completeAction);
+    drvFRAMErrorCode drvFRAMReceiveData(drvFRAM_SPI spi, uint16_t address, uint8_t* data, uint16_t dataLen, drvFRAMCallBack completeAction);
+}
+
+
+class drv_uart {
+    void drvUARTInit(drvFRAM_SPI spi);
+
+    drvUARTErrorCode drvUARTSendString(drvFRAM_SPI spi, char* data, drvFRAMCallBack completeAction);
+    drvUARTErrorCode drvUARTSendArray(drvFRAM_SPI spi, uint8_t* data, uint16_t dataLen, drvFRAMCallBack completeAction);
+
+    drvUARTErrorCode drvUARTReceiveString(drvFRAM_SPI spi, char* buffer, uint16_t bufferSize, drvFRAMCallBack completeAction);
+    drvUARTErrorCode drvUARTReceiveArray(drvFRAM_SPI spi, uint8_t* buffer, uint16_t dataLen, drvFRAMCallBack completeAction);
+}
+
+@enduml

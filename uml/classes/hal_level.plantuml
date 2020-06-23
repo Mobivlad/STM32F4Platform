@@ -1,0 +1,52 @@
+@startuml hal_level
+
+package HAL {
+    class hal_sysclock
+    class hal_spi
+    class hal_gpio
+    class hal_base_timer
+    class hal_uart
+}
+
+class hal_sysclock {
+    uint32_t halSysClockGetTick(void);
+
+    void halSysClockInit(uint32_t ms);
+}
+
+class hal_spi {
+    void halSPIInit(halSPI spi, halSPIInitStruct* initStruct);
+
+    halSPIErrorCode halSPISend(halSPI spi, uint8_t* data, uint16_t dataSize, halSPICallBack sendAction);
+    halSPIErrorCode halSPIReceive(halSPI spi, uint8_t* data, uint16_t dataSize, halSPICallBack receiveAction);
+
+    void halSPISetCS(halSPI spi);
+    void halSPIResetCS(halSPI spi);
+}
+
+class hal_gpio {
+    halPinState halGPIOReadPin(halPort port, halPins pin);
+
+    void halGPIOTogglePins(halPort port, halPins pins);
+    void halGPIOResetPins(halPort port, halPins pins);
+    void halGPIOSetPins(halPort port, halPins pins);
+}
+
+class hal_base_timer {
+    void halBaseTimerInit (halBaseTimers timer, halInitBaseTimerStruct* halInitStruct, halTimerCallbackType callback);
+
+    void halBaseTimerStart(halBaseTimers timer);
+    void halBaseTimerStop(halBaseTimers timer);
+}
+
+class hal_uart {
+    void halInitUART(halUART uart, halUARTInitStruct* initStruct);
+
+    halUARTErrorCode halUARTTransfer(halUART uart, halUARTDataType dataType, uint8_t* buffer, uint16_t bufferSize, halUARTCallBack transferCallBack);
+    halUARTErrorCode halUARTReceive(halUART uart, halUARTDataType dataType, uint8_t* buffer, uint16_t bufferSize, halUARTCallBack receiveCallBack);
+
+    void halUARTSetOverloadCallBack(halUART uart, halUARTCallBack callback);
+    void halUARTClearOverloadCallBack(halUART uart);
+}
+
+@enduml
