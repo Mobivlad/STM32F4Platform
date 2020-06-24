@@ -1,0 +1,26 @@
+@startuml BL_TIMER
+
+package BL{
+    class bl_timer
+}
+
+package DRV {
+    class drv_seven_segment
+    class drv_timer
+}
+
+package HAL {
+    class hal_sysclock
+    class hal_gpio
+
+    class hal_base_timer
+}
+
+bl_timer o-- drv_seven_segment
+bl_timer o-- drv_timer
+
+drv_seven_segment o-- hal_gpio
+drv_seven_segment o-- hal_sysclock
+
+drv_timer o-- hal_base_timer
+@enduml

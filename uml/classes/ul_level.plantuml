@@ -1,0 +1,15 @@
+@startuml hal_level
+
+package UL {
+    class ul_heart_beat
+}
+
+class ul_heart_beat {
+    void ulHeartBeatInit(ulHeartBeatStruct* heartBeat);
+
+    void ulHeartBeatRun(ulHeartBeatStruct* heartBeat);
+}
+
+
+
+@enduml

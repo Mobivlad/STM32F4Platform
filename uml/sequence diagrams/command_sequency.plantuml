@@ -1,0 +1,50 @@
+@startuml command_sequency
+
+main -> bl_control : blControlInit( initStruct )
+bl_control -> drv_fm25l16b : drvFRAMInit( initStruct )
+bl_control <-- drv_fm25l16b : status code
+
+bl_control -> drv_uart : drvUARTInit( initStruct )
+bl_control <-- drv_uart : status code
+
+bl_control -> drv_button : drvButtonInit( initStruct )
+bl_control <-- drv_button : status code
+bl_control -> drv_button : drvButtonSetAction( pressType, callback )
+
+bl_control -> drv_fm25l16b : drvFRAMRead() // read limit
+bl_control <-- drv_fm25l16b : limit
+
+alt limit exists
+    bl_control --\ bl_timer : blTimerSetCommand (setLimit, limit)
+else limit does not exist
+    bl_control -\ drv_fm25l16b : blFRAMSendData( limit )
+    bl_control /-- drv_fm25l16b : status code
+end
+
+main <-- bl_control : status code
+loop
+    bl_control -> drv_button : drvButtonRun()
+    bl_control <-- drv_button : statusCode
+end
+group buttonClick
+bl_control /-- drv_button : button presed (simple press callback)
+bl_control -\ bl_timer : blTimerSetCommand (buttonClick)
+end
+group longButtonClick
+bl_control /-- drv_button : button presed (long press callback)
+bl_control -\ bl_timer : blTimerSetCommand (longButtonClick)
+end
+group uartCommand
+alt "clear limit"
+drv_uart --\ bl_control : (string receive callback)
+bl_control -\ bl_timer : blTimerSetCommand (clearLimit)
+else "set limit"
+drv_uart --\ bl_control : (string receive callback)
+bl_control --\ bl_timer : blTimerSetCommand (setLimit, limit)
+bl_control -\ drv_fm25l16b : blFRAMSendData()
+bl_control /-- drv_fm25l16b : status code
+end
+end
+
+
+@enduml

@@ -3,17 +3,22 @@
   * @file    main.c
   * @author  Ac6
   * @version V1.0
-  * @date    01-December-2013
+  * @date    24 June 2020
   * @brief   Default main function.
   ******************************************************************************
 */
 
 
-#include "stm32f4xx.h"
-			
+#include "ul_heart_beat.h"
+
 
 int main(void)
 {
+    ulHeartBeatStruct heartBeat;
+    heartBeat.frequency = 200;
+    ulHeartBeatInit(&heartBeat);
 
-	for(;;);
+	for(;;){
+	    ulHeartBeatRun(&heartBeat);
+	}
 }

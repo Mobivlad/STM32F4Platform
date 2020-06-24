@@ -1,0 +1,32 @@
+@startuml BL_SETTING
+
+package BL{
+    class blControl
+}
+
+package DRV {
+    class drv_fm25l16b
+    class drv_uart
+
+    class drv_button
+}
+
+package HAL {
+    class hal_spi
+    class hal_uart
+
+    class hal_sysclock
+    class hal_gpio
+}
+
+drv_uart o-- hal_uart
+drv_fm25l16b o-- hal_spi
+
+drv_button o-- hal_gpio
+drv_button o-- hal_sysclock
+
+blControl o-- drv_uart
+blControl o-- drv_fm25l16b
+blControl o-- drv_button
+
+@enduml
