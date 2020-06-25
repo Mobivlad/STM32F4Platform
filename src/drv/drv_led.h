@@ -36,6 +36,11 @@ typedef struct {
     drvLed_controlPin controlPin;
 } drvLed_struct;
 
+typedef struct {
+    halGPIO_port port;
+    halGPIO_pin pin;
+} drvLed_data;
+
 /**
  * Led configuration function.
  * @param ledStruct pointer on led data structure

@@ -33,16 +33,18 @@ typedef enum {
     halGPIO_Pin_12 = GPIO_Pin_12,   /**< Pin 12 */
     halGPIO_Pin_13 = GPIO_Pin_13,   /**< Pin 13 */
     halGPIO_Pin_14 = GPIO_Pin_14,   /**< Pin 14 */
-    halGPIO_Pin_15 = GPIO_Pin_15    /**< Pin 15 */
+    halGPIO_Pin_15 = GPIO_Pin_15,   /**< Pin 15 */
+    halGPIO_PinCount
 } halGPIO_pin;
 
 /// STM32F407-Disk1 port enumeration
 typedef enum {
-    halGPIO_PortA, /**< Port A */
-    halGPIO_PortB, /**< Port B */
-    halGPIO_PortC, /**< Port C */
-    halGPIO_PortD, /**< Port D */
-    halGPIO_PortE, /**< Port E */
+    halGPIO_PortA = 0,  /**< Port A */
+    halGPIO_PortB,      /**< Port B */
+    halGPIO_PortC,      /**< Port C */
+    halGPIO_PortD,      /**< Port D */
+    halGPIO_PortE,      /**< Port E */
+    halGPIO_PortCount
 } halGPIO_port;
 
 /// Pins functional type enumeration
@@ -76,7 +78,7 @@ typedef enum {
 
 /// GPIO pin initial structure
 typedef struct {
-    GPIO_InitTypeDef spi_gpio_struct;
+    GPIO_InitTypeDef pin_init_struct;
 
     halGPIO_port port;          /**< enum value halGPIO_port */
     halGPIO_pinState state;     /**< enum value halGPIO_pinState.
@@ -85,18 +87,23 @@ typedef struct {
 
 /// initial parameters structure
 typedef struct {
-    halGPIO_pin pins;           /**< enum value halGPIO_pin */
+    halGPIO_pin pin;            /**< enum value halGPIO_pin */
     halGPIO_mode mode;          /**< enum value halGPIO_mode */
     halGPIO_speed speed;        /**< enum value halGPIO_speed */
     halGPIO_OType outType;      /**< enum value halGPIO_OType */
     halGPIO_PuPd PuPd;          /**< enum value halGPIO_PuPd */
 } halGPIO_init_struct;
 
+typedef struct {
+  GPIO_TypeDef* const reg_port;
+  uint32_t reg_port_clock;
+} halGPIO_RegTable;
+
 /**
  * Configured GPIO function.
  * @param gpioStruct pointer on structure that consist main configuration
  */
-void halGPIOInit(halGPIO_struct* gpioStruct, halGPIO_init_struct* initStruct);
+void halGPIOInit(halGPIO_struct* gpioStruct, const halGPIO_init_struct* initStruct);
 
 /**
  * Set high level on gpio pin.

@@ -6,19 +6,22 @@
  */
 #include "drv_led.h"
 
-static ledPins[drvLed_Count] = { halGPIO_Pin_15 };
-static ledPorts[drvLed_Count] = { halGPIO_PortD };
+static drvLed_data led_data[drvLed_Count] =
+{
+    {halGPIO_PortD, halGPIO_Pin_15},
+};
 
 void drvLedInit(drvLed_struct* ledStruct) {
     halGPIO_struct* hal_GPIO_struct = (halGPIO_struct*)ledStruct;
-    hal_GPIO_struct->port = ledPorts[ledStruct->led];
+    hal_GPIO_struct->port = led_data[ledStruct->led].port;
 
-    halGPIO_init_struct initStruct;
-    initStruct.pins = ledPins[ledStruct->led];
-    initStruct.speed = halGPIO_Speed_2Mhz;
-    initStruct.PuPd = halGPIO_PuPd_No;
-    initStruct.mode = halGPIO_Mode_Out;
-    initStruct.outType = halGPIO_OT_PP;
+    const halGPIO_init_struct initStruct = {
+            led_data[ledStruct->led].pin,
+            halGPIO_Mode_Out,
+            halGPIO_Speed_2Mhz,
+            halGPIO_OT_PP,
+            halGPIO_PuPd_No
+    };
 
     if (ledStruct->controlPin == drvLed_ControlPin_Anode) {
         if (ledStruct->state == drvLed_On)
