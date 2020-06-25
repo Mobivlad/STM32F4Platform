@@ -7,7 +7,11 @@
 
 #include "drv_sysclock.h"
 
-drvSysClockPassStatus drvIsTimePased(uint32_t startTime, uint32_t delay) {
+void drvSysClockInit(){
+    halSysClockInit();
+}
+
+drvSysClockPassStatus drvIsTimePased(const uint32_t startTime, const uint32_t delay) {
     return (startTime + delay) < drvSysClockGetTick() ? PASSED : NO_PASSED;
 }
 

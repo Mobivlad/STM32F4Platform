@@ -7,6 +7,8 @@
 
 #include "hal_gpio.h"
 
+#include <stddef.h>
+
 #ifndef DRV_DRV_BUTTON_H_
 #define DRV_DRV_BUTTON_H_
 
@@ -28,16 +30,16 @@ enum {
 
 /// Duration of button presses
 typedef enum {
-    drvButtonNoPressDuration = 0,               /**< No pressing. */
-    drvButtonSimplePressDuration = 5000,       /**< Simple pressing. */
-    drvButtonLongPressDuration = 50000,        /**< Long pressing. */
-} drvButton_ClickDuration;
+    drvButtonNoPressDuration     = 0,       /**< No pressing. */
+    drvButtonSimplePressDuration = 10000,    /**< Simple pressing. */
+    drvButtonLongPressDuration   = 100000,   /**< Long pressing. */
+} drvButton_clickDuration;
 
 /// Duration of button presses
 typedef enum {
-    drvButton_NoAction = 0,       /**< Simple pressing. */
-    drvButton_Press,       /**< Simple pressing. */
-    drvButton_LongPress,       /**< Long pressing. */
+    drvButton_NoAction = 0,         /**< Simple pressing. */
+    drvButton_Press,                /**< Simple pressing. */
+    drvButton_LongPress,            /**< Long pressing. */
     drvButton_ActionsCount
 } drvButton_action;
 
@@ -47,16 +49,18 @@ typedef void(*drvButtonActionCallBack)();
 typedef struct {
     halGPIO_struct halGPIO;
     drvButton button;
-    drvButtonActionCallBack actionCallbacks[drvButton_ActionsCount];
+
     uint32_t click_counter;
     uint32_t click_duration;
+
+    drvButtonActionCallBack actionCallbacks[drvButton_ActionsCount];
 } drvButton_struct;
 
 /**
  * Function that configurate button.
  * @param buttonStruct pointer on structure with data of button
  */
-void drvButton_init(drvButton_struct* buttonStruct);
+void drvButtonInit(drvButton_struct* const buttonStruct);
 
 /**
  * Set action callback function
@@ -64,13 +68,13 @@ void drvButton_init(drvButton_struct* buttonStruct);
  * @param action action value of drvButton_action enumeration
  * @param callback action callback
  */
-void drvButton_setCallBack(drvButton_struct* buttonStruct,
-        drvButton_action action, drvButtonActionCallBack callback);
+void drvButtonSetCallBack(drvButton_struct* const buttonStruct,
+        const drvButton_action action, const drvButtonActionCallBack callback);
 
 /**
  * Run function for button
  * @param buttonStruct pointer on structure with data of button
  */
-void drvButton_Run(drvButton_struct* buttonStruct);
+void drvButtonRun(drvButton_struct* const buttonStruct);
 
 #endif /* DRV_DRV_BUTTON_H_ */

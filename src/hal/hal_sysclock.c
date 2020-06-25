@@ -10,16 +10,17 @@ volatile uint32_t hal_ms_counter;
 
 static uint8_t inited = 0;
 
-static void halSysClockInit() {
+void halSysClockInit() {
+    if (!inited) {
         SystemCoreClockUpdate();
         SysTick_Config(SystemCoreClock / 1000);
+
         hal_ms_counter = 0;
         inited = 1;
+    }
 }
 
 uint32_t halSysClockGetTick() {
-    if(!inited)
-        halSysClockInit();
     return hal_ms_counter;
 }
 

@@ -45,24 +45,24 @@ typedef struct {
  * Led configuration function.
  * @param ledStruct pointer on led data structure
  */
-void drvLedInit(drvLed_struct* ledStruct);
+void drvLedInit(const drvLed_struct* const ledStruct);
 
 /**
  * Turn on led function.
  * @param ledStruct pointer on led data structure
  */
-void drvLedOn(drvLed_struct* ledStruct);
+void drvLedOn(drvLed_struct* const ledStruct);
 
 /**
  * Turn off led function.
  * @param ledStruct pointer on led data structure
  */
-void drvLedOff(drvLed_struct* ledStruct);
+void drvLedOff(drvLed_struct* const ledStruct);
 
 /**
  * Toggle led function
  * @param ledStruct pointer on led data structure
  */
-void drvLedToggle(drvLed_struct* ledStruct);
+void drvLedToggle(drvLed_struct* const ledStruct);
 
 #endif /* DRV_DRV_LED_H_ */

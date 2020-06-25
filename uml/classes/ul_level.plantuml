@@ -5,9 +5,9 @@ package UL {
 }
 
 class ul_heart_beat {
-    void ulHeartBeatInit(ulHeartBeatStruct* heartBeat);
+    void ulHeartBeatInit(ulHeartBeatStruct* const heartBeat);
 
-    void ulHeartBeatRun(ulHeartBeatStruct* heartBeat);
+    void ulHeartBeatRun(ulHeartBeatStruct* const heartBeat);
 }
 
 

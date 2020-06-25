@@ -6,52 +6,50 @@
  */
 #include "drv_led.h"
 
-static drvLed_data led_data[drvLed_Count] =
+static const drvLed_data led_data[drvLed_Count] =
 {
-    {halGPIO_PortD, halGPIO_Pin_15},
+    { halGPIO_PortD, halGPIO_Pin13 },
 };
 
-void drvLedInit(drvLed_struct* ledStruct) {
-    halGPIO_struct* hal_GPIO_struct = (halGPIO_struct*)ledStruct;
+void drvLedInit(const drvLed_struct* const ledStruct) {
+    halGPIO_struct* hal_GPIO_struct = (halGPIO_struct*) ledStruct;
     hal_GPIO_struct->port = led_data[ledStruct->led].port;
 
-    const halGPIO_init_struct initStruct = {
+    const halGPIO_initStruct initStruct = {
             led_data[ledStruct->led].pin,
-            halGPIO_Mode_Out,
-            halGPIO_Speed_2Mhz,
-            halGPIO_OT_PP,
-            halGPIO_PuPd_No
+            halGPIO_ModeOut,
+            halGPIO_Speed2Mhz,
+            halGPIO_OTPP,
+            halGPIO_PuPdNo
     };
 
-    if (ledStruct->controlPin == drvLed_ControlPin_Anode) {
-        if (ledStruct->state == drvLed_On)
-            hal_GPIO_struct->state = halGPIO_Set;
-        else
-            hal_GPIO_struct->state = halGPIO_Reset;
-    } else {
-        if (ledStruct->state == drvLed_On)
-            hal_GPIO_struct->state = halGPIO_Reset;
-        else
-            hal_GPIO_struct->state = halGPIO_Set;
-    }
+    if (ledStruct->controlPin == drvLed_ControlPin_Anode)
+        hal_GPIO_struct->state =
+                (ledStruct->state == drvLed_On) ? halGPIO_Set : halGPIO_Reset;
+    else
+        hal_GPIO_struct->state =
+                (ledStruct->state == drvLed_On) ? halGPIO_Reset : halGPIO_Set;
+
     halGPIOInit(hal_GPIO_struct, &initStruct);
 }
 
-void drvLedOn(drvLed_struct* ledStruct) {
+void drvLedOn(drvLed_struct* const ledStruct) {
+    // change state in structure
     ledStruct -> state = drvLed_On;
-    halGPIOSetPins((halGPIO_struct*)ledStruct);
+
+    halGPIOSetPins((halGPIO_struct*) ledStruct);
 }
 
-void drvLedOff(drvLed_struct* ledStruct) {
-    ledStruct -> state = drvLed_Off;
-    halGPIOResetPins((halGPIO_struct*)ledStruct);
+void drvLedOff(drvLed_struct* const ledStruct) {
+    // change state in structure
+    ledStruct->state = drvLed_Off;
+
+    halGPIOResetPins((halGPIO_struct*) ledStruct);
 }
 
-void drvLedToggle(drvLed_struct* ledStruct) {
-    if (ledStruct -> state == drvLed_On)
-        ledStruct -> state = drvLed_Off;
-    else
-        ledStruct -> state = drvLed_On;
+void drvLedToggle(drvLed_struct* const ledStruct) {
+    // change state in structure
+    ledStruct->state = (ledStruct->state == drvLed_On) ? drvLed_Off : drvLed_On;
 
-    halGPIOTogglePins((halGPIO_struct*)ledStruct);
+    halGPIOTogglePins((halGPIO_struct*) ledStruct);
 }

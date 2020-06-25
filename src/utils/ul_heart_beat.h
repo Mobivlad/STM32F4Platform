@@ -20,11 +20,11 @@ typedef struct {
 /**
  * Initial function for heart beat
  */
-void ulHeartBeatInit(ulHeartBeatStruct* heartBeat);
+void ulHeartBeatInit(ulHeartBeatStruct* const heartBeat);
 
 /**
  * Run function for heart beat
  */
-void ulHeartBeatRun(ulHeartBeatStruct* heartBeat);
+void ulHeartBeatRun(ulHeartBeatStruct* const heartBeat);
 
 #endif /* UTILS_UL_HEART_BEAT_H_ */

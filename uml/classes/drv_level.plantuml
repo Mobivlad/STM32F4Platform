@@ -11,11 +11,11 @@ package DRV {
 }
 
 class drv_led {
-    void drvLedInit(drvLed_struct* ledStruct);
+    void drvLedInit(const drvLed_struct* const ledStruct);
 
-    void drvLedOn(drvLed_struct* ledStruct);
-    void drvLedOff(drvLed_struct* ledStruct);
-    void drvLedToggle(drvLed_struct* ledStruct);
+    void drvLedOn(drvLed_struct* const ledStruct);
+    void drvLedOff(drvLed_struct* const ledStruct);
+    void drvLedToggle(drvLed_struct* const ledStruct);
 }
 
 class drv_seven_segment {
@@ -26,10 +26,11 @@ class drv_seven_segment {
 }
 
 class drv_sysclock {
+    void drvSysClockInit(void);
     
     uint32_t drvSysClockGetTick(void);
 
-    drvSysClockPassStatus drvIsTimePased(uint32_t startTime, uint32_t delay);
+    drvSysClockPassStatus drvIsTimePased(const uint32_t startTime, const uint32_t delay);
 }
 
 class drv_timer {
@@ -40,11 +41,11 @@ class drv_timer {
 }
 
 class drv_button {
-    void drvButton_init(drvButton_struct* buttonStruct);
+    void drvButton_init(drvButton_struct* const buttonStruct);
     
-    void drvButton_Run(drvButton_struct* buttonStruct);
+    void drvButtonRun(drvButton_struct* const buttonStruct);
 
-    void drvButton_setCallBack(drvButton_struct* buttonStruct, drvButton_action action, drvButtonActionCallBack callback);
+    void drvButtonSetCallBack(drvButton_struct* const buttonStruct, const drvButton_action action, const drvButtonActionCallBack callback);
 }
 
 

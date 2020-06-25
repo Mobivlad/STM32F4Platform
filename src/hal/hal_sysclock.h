@@ -11,6 +11,11 @@
 #include "stm32f4xx.h"
 
 /**
+ * Initial function for SysTick timer
+ */
+void halSysClockInit(void);
+
+/**
  * Return SysTick timer value
  * @return SysTick counter value
  */

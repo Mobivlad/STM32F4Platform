@@ -16,12 +16,17 @@ typedef enum {
 } drvSysClockPassStatus;
 
 /**
+ * Initial function for SysTick timer
+ */
+void drvSysClockInit(void);
+
+/**
  * Function check if the time is elapsed
  * @param startTime value of start getTick
  * @param delay value of delay
  * @return 0 if time is not elapsed else value - elapsed
  */
-uint8_t drvIsTimePased(uint32_t startTime, uint32_t delay);
+drvSysClockPassStatus drvIsTimePased(const uint32_t startTime, const uint32_t delay);
 
 /**
  * Return SysTick timer value

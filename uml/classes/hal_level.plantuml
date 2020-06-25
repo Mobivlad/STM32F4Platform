@@ -9,6 +9,8 @@ package HAL {
 }
 
 class hal_sysclock {
+    void halSysClockInit(void);
+
     uint32_t halSysClockGetTick(void);
 }
 
@@ -23,13 +25,13 @@ class hal_spi {
 }
 
 class hal_gpio {
-    void halGPIOInit(halGPIO_struct* gpioStruct, const halGPIO_init_struct* initStruct);
+    void halGPIOInit(halGPIO_struct* const gpioStruct, const halGPIO_initStruct* const initStruct);
     
-    halGPIO_pinState halGPIOReadPin(halGPIO_struct* gpioStruct);
+    halGPIO_pinState halGPIOReadPin(const halGPIO_struct* const gpioStruct);
 
-    void halGPIOTogglePins(halGPIO_struct* gpioStruct);
-    void halGPIOResetPins(halGPIO_struct* gpioStruct);
-    void halGPIOSetPins(halGPIO_struct* gpioStruct);
+    void halGPIOTogglePins(halGPIO_struct* const gpioStruct);
+    void halGPIOResetPins(halGPIO_struct* const gpioStruct);
+    void halGPIOSetPins(halGPIO_struct* const gpioStruct);
 }
 
 class hal_base_timer {
