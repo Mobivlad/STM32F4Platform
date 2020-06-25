@@ -40,11 +40,11 @@ class drv_timer {
 }
 
 class drv_button {
-    void dvrButtonInit(drvInitStructButton* initStruct);
+    void drvButton_init(drvButton_struct* buttonStruct);
     
-    drvButtonErrorCode drvButtonRun();
+    void drvButton_Run(drvButton_struct* buttonStruct);
 
-    void drvButtonSetAction(drvButtonActionType actionType, drvButtonAction action);
+    void drvButton_setCallBack(drvButton_struct* buttonStruct, drvButton_action action, drvButtonActionCallBack callback);
 }
 
 

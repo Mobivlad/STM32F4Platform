@@ -23,7 +23,7 @@ class hal_spi {
 }
 
 class hal_gpio {
-    void halGPIOInit(halGPIO_struct* gpioStruct, halGPIO_init_struct* initStruct);
+    void halGPIOInit(halGPIO_struct* gpioStruct, const halGPIO_init_struct* initStruct);
     
     halGPIO_pinState halGPIOReadPin(halGPIO_struct* gpioStruct);
 
