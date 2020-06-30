@@ -7,8 +7,9 @@
 
 #include "drv_button.h"
 
-static const drvButton_data buttonData[drvButton_Count] = {
-    { halGPIO_PortA, halGPIO_Pin0 },
+static const drvButton_data buttonData[drvButton_Count] =
+{
+        { halGPIO_PortA, halGPIO_Pin0 },
 };
 
 void drvButtonInit(drvButton_struct* const buttonStruct) {
@@ -26,16 +27,16 @@ void drvButtonInit(drvButton_struct* const buttonStruct) {
 
     halGPIOInit(hal_GPIO_struct, &initStruct);
 
-    buttonStruct->click_counter = 0;
-    buttonStruct->click_duration = 0;
+    buttonStruct->click_counter     = 0;
+    buttonStruct->click_duration    = 0;
 
-    for (uint8_t i=0; i<drvButton_ActionsCount; i++){
+    for (uint8_t i = 0; i < drvButton_ActionsCount; i++) {
         buttonStruct->actionCallbacks[i] = NULL;
     }
 }
 
-void drvButtonSetCallBack(drvButton_struct* const buttonStruct,
-        const drvButton_action action, const drvButtonActionCallBack callback) {
+void drvButtonSetCallBack(drvButton_struct* const buttonStruct, const drvButton_action action,
+        const drvButtonActionCallBack callback) {
 
     buttonStruct->actionCallbacks[action] = callback;
 }
@@ -43,8 +44,8 @@ void drvButtonSetCallBack(drvButton_struct* const buttonStruct,
 static uint8_t drvButtonIsClicked(drvButton_struct* const buttonStruct) {
     // check on high pin level
     if (halGPIOReadPin((halGPIO_struct*) buttonStruct) == halGPIO_Set
-            // check out of limit
-            && buttonStruct->click_counter < 110) {
+    // check out of limit
+            && buttonStruct->click_counter < drvButtonHighLogicLevelLimit) {
 
         buttonStruct->click_counter++;
 
@@ -54,8 +55,13 @@ static uint8_t drvButtonIsClicked(drvButton_struct* const buttonStruct) {
 
     }
 
-    if (buttonStruct->click_counter > 100) return drvButton_Clicked;
-    if (buttonStruct->click_counter < 10)  return drvButton_Falled;
+    if (buttonStruct->click_counter > drvButtonFloatLimit) {
+        return drvButton_Clicked;
+    }
+
+    if (buttonStruct->click_counter < drvButtonLowLogicLevelLimit) {
+        return drvButton_Falled;
+    }
 
     return drvButton_Float;
 }
@@ -77,7 +83,7 @@ void drvButtonRun(drvButton_struct* const buttonStruct) {
             } else if (buttonStruct->click_duration > drvButtonSimplePressDuration &&
                     buttonStruct->actionCallbacks[drvButton_Press] != NULL) {
 
-                    buttonStruct->actionCallbacks[drvButton_Press]();
+                buttonStruct->actionCallbacks[drvButton_Press]();
 
             }
 
@@ -88,6 +94,4 @@ void drvButtonRun(drvButton_struct* const buttonStruct) {
             break;
     }
 }
-
-
 

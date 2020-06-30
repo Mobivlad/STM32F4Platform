@@ -6,7 +6,7 @@
  */
 #include "hal_sysclock.h"
 
-volatile uint32_t hal_ms_counter;
+volatile uint32_t halSysTick_msCounter;
 
 static uint8_t inited = 0;
 
@@ -15,16 +15,16 @@ void halSysClockInit() {
         SystemCoreClockUpdate();
         SysTick_Config(SystemCoreClock / 1000);
 
-        hal_ms_counter = 0;
+        halSysTick_msCounter = 0;
         inited = 1;
     }
 }
 
 uint32_t halSysClockGetTick() {
-    return hal_ms_counter;
+    return halSysTick_msCounter;
 }
 
 void SysTick_Handler(void) {
-    hal_ms_counter++;
+    halSysTick_msCounter++;
 }
 

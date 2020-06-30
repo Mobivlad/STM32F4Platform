@@ -78,25 +78,25 @@ typedef enum {
 
 /// GPIO pin initial structure
 typedef struct {
-    GPIO_InitTypeDef pinInitStruct;
+    GPIO_InitTypeDef    pinInitStruct;
 
-    halGPIO_port port;
-    halGPIO_pinState state;     /**< Show current pint state.
+    halGPIO_port        port;
+    halGPIO_pinState    state;     /**< Show current pint state.
                                          Used only for out type */
 } halGPIO_struct;
 
 /// initial parameters structure
 typedef struct {
-    halGPIO_pin pin;            /**< Configured pin number. */
-    halGPIO_mode mode;          /**< Pin work mode. */
-    halGPIO_speed speed;        /**< Pin frequency */
-    halGPIO_OType outType;      /**< Output states */
-    halGPIO_PuPd PuPd;          /**< Push-pull direction */
+    halGPIO_pin     pin;          /**< Configured pin number. */
+    halGPIO_mode    mode;         /**< Pin work mode. */
+    halGPIO_speed   speed;        /**< Pin frequency */
+    halGPIO_OType   outType;      /**< Output states */
+    halGPIO_PuPd    PuPd;         /**< Push-pull direction */
 } halGPIO_initStruct;
 
 typedef struct {
-  GPIO_TypeDef* const portDef;
-  uint32_t portClock;
+  GPIO_TypeDef* const   portDef;
+  uint32_t              portClock;
 
 } halGPIO_portTable;
 

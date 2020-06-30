@@ -7,7 +7,7 @@
 
 #include "drv_sysclock.h"
 
-void drvSysClockInit(){
+void drvSysClockInit() {
     halSysClockInit();
 }
 

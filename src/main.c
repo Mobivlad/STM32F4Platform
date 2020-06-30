@@ -7,15 +7,14 @@
   * @brief   Default main function.
   ******************************************************************************
 */
-
-
 #include "ul_heart_beat.h"
 
+#define BLINK_FREQUENCY_5_HZ 100
 
 int main(void)
 {
     ulHeartBeatStruct heartBeat;
-    heartBeat.frequency = 200;
+    heartBeat.frequency = BLINK_FREQUENCY_5_HZ;
     ulHeartBeatInit(&heartBeat);
 
 	for(;;){

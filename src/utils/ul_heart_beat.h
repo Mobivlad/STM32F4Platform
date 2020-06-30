@@ -12,9 +12,9 @@
 #include "drv_sysclock.h"
 
 typedef struct {
-    drvLed_struct led;      // information about led
-    uint32_t frequency;     // time between blink
-    uint32_t startTime;     // counter value when the led turn on of turn off
+    drvLed_struct   led;           // information about led
+    uint32_t        frequency;     // time between blink
+    uint32_t        startTime;     // counter value when the led turn on of turn off
 } ulHeartBeatStruct;
 
 /**

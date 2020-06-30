@@ -11,8 +11,8 @@
 #include "hal_sysclock.h"
 
 typedef enum {
-    NO_PASSED = 0,
-    PASSED =  !NO_PASSED
+    NO_PASSED   = 0,
+    PASSED      = !NO_PASSED
 } drvSysClockPassStatus;
 
 /**

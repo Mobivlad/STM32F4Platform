@@ -30,15 +30,15 @@ typedef enum {
 
 /// Led data structure
 typedef struct {
-    halGPIO_struct halGPIO;
-    drvLed led;
-    drvLed_state state;
-    drvLed_controlPin controlPin;
+    halGPIO_struct      halGPIO;
+    drvLed              led;
+    drvLed_state        state;
+    drvLed_controlPin   controlPin;
 } drvLed_struct;
 
 typedef struct {
-    halGPIO_port port;
-    halGPIO_pin pin;
+    halGPIO_port    port;
+    halGPIO_pin     pin;
 } drvLed_data;
 
 /**
