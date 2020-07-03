@@ -16,7 +16,8 @@
 #define LIBRARY_CAPASITY        11
 
 #define TIMER_CLOCK_PRESCULAR   5249
-#define DISPLAY_UPDATE_FREQ     50
+#define TIMER_TICKS_PER_SECOND  8000
+#define DISPLAY_UPDATE_FREQ     40
 
 typedef enum {
     seg_a  = 0x01,  // Segment A

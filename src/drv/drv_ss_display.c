@@ -103,7 +103,7 @@ void drvSSDisplayInit() {
 
     timer.TIM_ClockDivision = TIM_CKD_DIV4;
     timer.TIM_CounterMode = TIM_CounterMode_Up;
-    timer.TIM_Period = 8000 / DISPLAY_NUMBER_COUNT / DISPLAY_UPDATE_FREQ;
+    timer.TIM_Period = TIMER_TICKS_PER_SECOND / DISPLAY_NUMBER_COUNT / DISPLAY_UPDATE_FREQ;
     timer.TIM_Prescaler = TIMER_CLOCK_PRESCULAR;
     timer.TIM_RepetitionCounter = 0x00;
 
