@@ -67,7 +67,7 @@ static uint8_t drvButtonIsClicked(drvButton_struct* const buttonStruct) {
 }
 
 void drvButtonRun(drvButton_struct* const buttonStruct) {
-
+    drvButton_action action = drvButton_NoAction;
     switch (drvButtonIsClicked(buttonStruct)) {
 
         case drvButton_Clicked:
@@ -75,16 +75,10 @@ void drvButtonRun(drvButton_struct* const buttonStruct) {
             break;
 
         case drvButton_Falled:
-            if (buttonStruct->click_duration > drvButtonLongPressDuration &&
-                    buttonStruct->actionCallbacks[drvButton_LongPress] != NULL) {
-
-                buttonStruct->actionCallbacks[drvButton_LongPress]();
-
-            } else if (buttonStruct->click_duration > drvButtonSimplePressDuration &&
-                    buttonStruct->actionCallbacks[drvButton_Press] != NULL) {
-
-                buttonStruct->actionCallbacks[drvButton_Press]();
-
+            if (buttonStruct->click_duration > drvButtonLongPressDuration) {
+                action = drvButton_LongPress;
+            } else if (buttonStruct->click_duration > drvButtonSimplePressDuration) {
+                action = drvButton_Press;
             }
 
             buttonStruct->click_duration = 0;
@@ -92,6 +86,11 @@ void drvButtonRun(drvButton_struct* const buttonStruct) {
 
         default:
             break;
+    }
+    if (action != drvButton_NoAction) {
+        if (buttonStruct->actionCallbacks[drvButton_LongPress] != NULL) {
+            buttonStruct->actionCallbacks[action]();
+        }
     }
 }
 
