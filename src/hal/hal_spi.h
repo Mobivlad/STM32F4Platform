@@ -88,113 +88,136 @@ enum {
 typedef enum {
     halSPI_Read = 0,
     halSPI_Write = !halSPI_Read
-} halSPIOperation;
+} halSPI_operation;
 
 typedef enum {
     halSPI_OK = 0,
     halSPI_NOT_CONFIG,
     halSPI_BUSY,
-    halSPI_DATA_NULL_POINTER
-} halSPIErrorCode;
+    halSPI_DATA_NULL_POINTER,
+    halSPI_OUT_TIMEOUT
+} halSPI_errorCode;
 
 /// SPI data transferring enumeration
 typedef enum {
     halSPINotConfigured  = 0,
     halSPIReady
-} halSPIStatus;
+} halSPI_status;
 
 /// CPOL,CPHA modes enumeration
 typedef enum {
-    halSPIMode0 = 0,   /**< CPOL = 0, CPHA = 0 */
-    halSPIMode1,       /**< CPOL = 0, CPHA = 1 */
-    halSPIMode2,       /**< CPOL = 1, CPHA = 0 */
-    halSPIMode3        /**< CPOL = 1, CPHA = 1 */
-} halSPIMode;
+    halSPI_Mode0 = 0,   /**< CPOL = 0, CPHA = 0 */
+    halSPI_Mode1,       /**< CPOL = 0, CPHA = 1 */
+    halSPI_Mode2,       /**< CPOL = 1, CPHA = 0 */
+    halSPI_Mode3        /**< CPOL = 1, CPHA = 1 */
+} halSPI_mode;
 
 /// SPI data sizes enumeration
 typedef enum {
-    halSPIDataSize8b    = SPI_DataSize_8b,
+    halSPI_DataSize8b    = SPI_DataSize_8b,
     // halSPIDataSize16b = SPI_DataSize_16b   /** Not used. */
-} halSPIDataSize;
+} halSPI_dataSize;
 
 /// SPI data direction enumeration
 typedef enum {
-    halSPIFullDirection2Lines   = SPI_Direction_2Lines_FullDuplex,
-    halSPITXDirection1Line      = SPI_Direction_1Line_Tx,
-    halSPIRXDirection1Line      = SPI_Direction_1Line_Rx,
-    halSPIRXDirection2Line      = SPI_Direction_2Lines_RxOnly
-} halSPIDirection;
+    halSPI_FullDirection2Lines   = SPI_Direction_2Lines_FullDuplex,
+    halSPI_TXDirection1Line      = SPI_Direction_1Line_Tx,
+    halSPI_RXDirection1Line      = SPI_Direction_1Line_Rx,
+    halSPI_RXDirection2Line      = SPI_Direction_2Lines_RxOnly
+} halSPI_direction;
 
 /// SPI Frequency prescaller enumeration
 typedef enum {
-    halSPIFrequencyPrescaller2      = SPI_BaudRatePrescaler_2,
-    halSPIFrequencyPrescaller4      = SPI_BaudRatePrescaler_4,
-    halSPIFrequencyPrescaller8      = SPI_BaudRatePrescaler_8,
-    halSPIFrequencyPrescaller16     = SPI_BaudRatePrescaler_16,
-    halSPIFrequencyPrescaller32     = SPI_BaudRatePrescaler_32,
-    halSPIFrequencyPrescaller64     = SPI_BaudRatePrescaler_64,
-    halSPIFrequencyPrescaller128    = SPI_BaudRatePrescaler_128,
-    halSPIFrequencyPrescaller256    = SPI_BaudRatePrescaler_256
-} halSPIFrequencyPrescaller;
+    halSPI_FrequencyPrescaller2      = SPI_BaudRatePrescaler_2,
+    halSPI_FrequencyPrescaller4      = SPI_BaudRatePrescaler_4,
+    halSPI_FrequencyPrescaller8      = SPI_BaudRatePrescaler_8,
+    halSPI_FrequencyPrescaller16     = SPI_BaudRatePrescaler_16,
+    halSPI_FrequencyPrescaller32     = SPI_BaudRatePrescaler_32,
+    halSPI_FrequencyPrescaller64     = SPI_BaudRatePrescaler_64,
+    halSPI_FrequencyPrescaller128    = SPI_BaudRatePrescaler_128,
+    halSPI_FrequencyPrescaller256    = SPI_BaudRatePrescaler_256
+} halSPI_frequencyPrescaller;
 
 typedef enum {
-    halSPIFirstBitMSB = SPI_FirstBit_MSB,
-    halSPIFirstBitLSB = SPI_FirstBit_LSB
-} halSPIFirstBit;
+    halSPI_FirstBitMSB = SPI_FirstBit_MSB,
+    halSPI_FirstBitLSB = SPI_FirstBit_LSB
+} halSPI_firstBit;
 
 typedef enum {
-    halSPINSSTypeHard = SPI_NSS_Hard,
-    halSPINSSTypeSoft = SPI_NSS_Soft
-} halSPINSSType;
+    halSPI_NSSTypeHard = SPI_NSS_Hard,
+    halSPI_NSSTypeSoft = SPI_NSS_Soft
+} halSPI_NSSType;
 
 typedef struct{
-    halSPIMode                  halSPIMode;
-    halSPIDataSize              halSPIDataSize;
-    halSPIDirection             halSPIDirection;
-    halSPIFrequencyPrescaller   halSPIFrequencyPrescaller;
-    halSPIFirstBit              halSPIFirstBit;
-    halSPINSSType               halSPITypeNSS;
-} halSPIInitStruct;
+    halSPI_mode                  mode;
+    halSPI_dataSize              dataSize;
+    halSPI_direction             direction;
+    halSPI_frequencyPrescaller   frequencyPrescaller;
+    halSPI_firstBit              firstBit;
+    halSPI_NSSType               typeNSS;
+} halSPI_initStruct;
 
 /**
  * Initial function for SPI
  * @param spiStruct pointer on UART instance structure
  * @param initStruct structure of SPI configuration options
  */
-halSPIErrorCode halSPIInit(halSPI_struct* spiStruct, halSPIInitStruct* initStruct);
+halSPI_errorCode halSPIInit(halSPI_struct* spiStruct, halSPI_initStruct* initStruct);
 
 /**
  * Select SPI device
  * @param spiStruct pointer on UART instance structure
  */
-halSPIErrorCode halSPIResetCS(halSPI_struct* spiStruct);
+halSPI_errorCode halSPIResetCS(halSPI_struct* spiStruct);
 
 /**
  * Unselect SPI device
  * @param spiStruct pointer on UART instance structure
  */
-halSPIErrorCode halSPISetCS(halSPI_struct* spiStruct);
+halSPI_errorCode halSPISetCS(halSPI_struct* spiStruct);
 
 /**
- * Send data array function
+ * Send data array function using interrupt
  * @param spiStruct pointer on UART instance structure
  * @param data pointer on send data
  * @param dataSize size of send data
  * @param sendAction action on send complete
  * @return SPI error code
  */
-halSPIErrorCode halSPISend(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
+halSPI_errorCode halSPISendIT(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
         halSPICallBack sendAction);
 
 /**
- * Receive data array function
+ * Receive data array function using interrupt
  * @param spiStruct pointer on UART instance structure
  * @param data pointer on send data
  * @param dataSize size of send data
  * @param sendAction action on send complete
  * @return SPI error code
  */
-halSPIErrorCode halSPIReceive(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
+halSPI_errorCode halSPIReceiveIT(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
         halSPICallBack receiveAction);
+
+/**
+ * Send data array function using interrupt
+ * @param spiStruct pointer on UART instance structure
+ * @param data pointer on send data
+ * @param dataSize size of send data
+ * @param timeout timeout for one element sending
+ * @return SPI error code
+ */
+halSPI_errorCode halSPISend(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
+        uint16_t timeout);
+
+/**
+ * Receive data array function using interrupt
+ * @param spiStruct pointer on UART instance structure
+ * @param data pointer on send data
+ * @param dataSize size of send data
+ * @param timeout timeout for one element receiving
+ * @return SPI error code
+ */
+halSPI_errorCode halSPIReceive(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
+        uint16_t timeout);
 
 #endif /* HAL_HAL_SPI_H_ */
