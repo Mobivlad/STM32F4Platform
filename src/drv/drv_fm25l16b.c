@@ -162,7 +162,7 @@ drvFRAM_errorCode drvFRAMWriteData(drvFRAM_struct* framStruct, uint16_t memoryAd
 
     drvFRAM_operationInstruction* operation = &framStruct->currentOperation;
 
-    drvFRAMInitOperation(operation);
+    drvFRAMInitOperation(operation, memoryAddress, data, dataLen);
     operation->opcode = WRITE;
 
     framStruct->state = STATE_WAIT_TO_RUN;
@@ -186,7 +186,7 @@ drvFRAM_errorCode drvFRAMReadData(drvFRAM_struct* framStruct, uint16_t memoryAdd
 
     drvFRAM_operationInstruction* operation = &framStruct->currentOperation;
 
-    drvFRAMInitOperation(operation);
+    drvFRAMInitOperation(operation, memoryAddress, data, dataLen);
     operation->opcode = READ;
 
     return drvFRAM_OK;
