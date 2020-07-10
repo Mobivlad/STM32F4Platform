@@ -1,12 +1,12 @@
 /*
- * drv_ss_display.h
+ * drv_7segment_display.h
  *
  *  Created on: 3 лип. 2020 р.
  *      Author: vladyslav.daliavskyi
  */
 
-#ifndef DRV_DRV_SS_DISPLAY_H_
-#define DRV_DRV_SS_DISPLAY_H_
+#ifndef DRV_DRV_7SEGMENT_DISPLAY_H_
+#define DRV_DRV_7SEGMENT_DISPLAY_H_
 
 #include "hal_gpio.h"
 #include "stddef.h"
@@ -56,4 +56,4 @@ void drvSSDisplayInit();
  */
 void drvSSDisplaySetValue(uint8_t value);
 
-#endif /* DRV_DRV_SS_DISPLAY_H_ */
+#endif /* DRV_DRV_7SEGMENT_DISPLAY_H_ */

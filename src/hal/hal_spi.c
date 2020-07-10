@@ -109,6 +109,8 @@ halSPI_errorCode halSPIInit(halSPI_struct* spiStruct, halSPI_initStruct* initStr
     SPI_I2S_ITConfig(spi_data[spiStruct->spi].spi, SPI_I2S_IT_RXNE, DISABLE);
     SPI_I2S_ITConfig(spi_data[spiStruct->spi].spi, SPI_I2S_IT_TXE, DISABLE);
 
+    NVIC_EnableIRQ(spi_data[spiStruct->spi].spi_irnq);
+
     // start SPI
     SPI_Cmd(spi_data[spiStruct->spi].spi, ENABLE);
 
@@ -203,6 +205,10 @@ halSPI_errorCode halSPISendIT(halSPI_struct* spiStruct, uint8_t* data, uint16_t 
     return halSPISendReceive(spiStruct, halSPI_Write, data, dataSize, sendAction);
 }
 
+halSPI_errorCode halSPIIsReady(halSPI_struct* spiStruct) {
+    return (spiStruct->spiStatus & halSPI_Ready) ? halSPI_OK : halSPI_BUSY;
+}
+
 halSPI_errorCode halSPISend(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
         uint16_t timeout) {
     halSPI_errorCode checkRes = halSPICheckReadWriteOperation(spiStruct, data, dataSize);
@@ -215,7 +221,7 @@ halSPI_errorCode halSPISend(halSPI_struct* spiStruct, uint8_t* data, uint16_t da
     spiStruct->spiStatus &= ~halSPI_Ready;
     uint16_t iterationTimeout = timeout;
     for (uint16_t i = 0; i < dataSize; i++) {
-        while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_TXE)) {
+        while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_TXE) == RESET) {
             iterationTimeout--;
             if (iterationTimeout == 0) {
                 halSPI_structsPointers[spiStruct->spi]->spiStatus |= halSPI_Ready;
@@ -223,7 +229,7 @@ halSPI_errorCode halSPISend(halSPI_struct* spiStruct, uint8_t* data, uint16_t da
             }
         }
         SPI_I2S_SendData(spi_data[spiStruct->spi].spi, data[i]);
-        while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_RXNE)) {
+        while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_RXNE) == RESET) {
             iterationTimeout--;
             if (iterationTimeout == 0) {
                 halSPI_structsPointers[spiStruct->spi]->spiStatus |= halSPI_Ready;
@@ -249,7 +255,7 @@ halSPI_errorCode halSPIReceive(halSPI_struct* spiStruct, uint8_t* data, uint16_t
     spiStruct->spiStatus &= ~halSPI_Ready;
     uint16_t iterationTimeout = timeout;
     for (uint16_t i = 0; i < dataSize; i++) {
-        while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_TXE)) {
+        while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_TXE) == RESET) {
             iterationTimeout--;
             if (iterationTimeout == 0) {
                 halSPI_structsPointers[spiStruct->spi]->spiStatus |= halSPI_Ready;
@@ -257,7 +263,7 @@ halSPI_errorCode halSPIReceive(halSPI_struct* spiStruct, uint8_t* data, uint16_t
             }
         }
         SPI_I2S_SendData(spi_data[spiStruct->spi].spi, DUMMY_DATA);
-        while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_RXNE)) {
+        while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_RXNE) == RESET) {
             iterationTimeout--;
             if (iterationTimeout == 0) {
                 halSPI_structsPointers[spiStruct->spi]->spiStatus |= halSPI_Ready;

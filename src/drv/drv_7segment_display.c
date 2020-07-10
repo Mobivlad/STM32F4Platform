@@ -1,11 +1,11 @@
 /*
- * drv_ss_display.c
+ * drv_7segment_display.c
  *
  *  Created on: 3 лип. 2020 р.
  *      Author: vladyslav.daliavskyi
  */
 
-#include "drv_ss_display.h"
+#include <drv_7segment_display.h>
 
 // configuration data
 drvSSDislay_struct display_data = {
@@ -168,7 +168,7 @@ static void drvSSDispalySetSymbol(uint8_t pos, uint8_t symbolDef) {
 // Function change display number text
 void drvSSDisplaySetValue(uint8_t value) {
     for (uint8_t i = 0; i < DISPLAY_NUMBER_COUNT; i++) {
-        drvSSDispalySetSymbol(i, drvSSDisplayGetSymbolDefinition((value % 10) + 48));
+        drvSSDispalySetSymbol(i, drvSSDisplayGetSymbolDefinition((value % 10) + '0'));
         value /= 10;
     }
 }

@@ -98,12 +98,6 @@ typedef enum {
     halSPI_OUT_TIMEOUT
 } halSPI_errorCode;
 
-/// SPI data transferring enumeration
-typedef enum {
-    halSPINotConfigured  = 0,
-    halSPIReady
-} halSPI_status;
-
 /// CPOL,CPHA modes enumeration
 typedef enum {
     halSPI_Mode0 = 0,   /**< CPOL = 0, CPHA = 0 */
@@ -219,5 +213,12 @@ halSPI_errorCode halSPISend(halSPI_struct* spiStruct, uint8_t* data, uint16_t da
  */
 halSPI_errorCode halSPIReceive(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
         uint16_t timeout);
+
+/**
+ * Return ready status of SPI
+ * @param spiStruct pointer on UART instance structure
+ * @return halSPI_BUSY if SPI in transferring or receiving else halSPI_OK
+ */
+halSPI_errorCode halSPIIsReady(halSPI_struct* spiStruct);
 
 #endif /* HAL_HAL_SPI_H_ */
