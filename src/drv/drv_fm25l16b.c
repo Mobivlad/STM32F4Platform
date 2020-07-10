@@ -3,10 +3,14 @@
 static const fram_data_struct FRAM_data =
 {
         .spi = halSPI1,
-        .prescaller = halSPI_FrequencyPrescaller8
+        .prescaller = halSPI_FrequencyPrescaller16
 };
 
-static const uint8_t drvFRAM_opCodeValue[opCodes_Count] = { 0x06, 0x04, 0x05, 0x01, 0x03, 0x02 };
+// Operation code values
+static uint8_t drvFRAM_opCodeValue[opCodes_Count] = { 0x06, 0x04, 0x05, 0x01, 0x03, 0x02 };
+
+// Up limit for protection levels
+static uint16_t drvFRAM_BPLastAvailableAddress[drvBL_Count-1] = { 0x7FF, 0x5FF, 0x3FF };
 
 static drvFRAM_errorCode readBlockProtection(drvFRAM_struct* framStruct) {
     halSPISetCS((halSPI_struct*) framStruct);
@@ -75,7 +79,7 @@ drvFRAM_errorCode drvFRAMInit(drvFRAM_struct* framStruct) {
 drvFRAM_errorCode drvFRAMSetBP(drvFRAM_struct* framStruct, drvFRAM_protectionLevel newBP) {
     drvFRAM_state startState = framStruct->state;
 
-    if (!(framStruct->state == STATE_READY || STATE_READY == STATE_PROTECTED)) {
+    if (!(framStruct->state == STATE_READY || framStruct->state == STATE_PROTECTED)) {
         return drvFRAM_BUSY;
     }
 
@@ -86,7 +90,9 @@ drvFRAM_errorCode drvFRAMSetBP(drvFRAM_struct* framStruct, drvFRAM_protectionLev
     uint8_t operationResultCode = halSPISend((halSPI_struct*) framStruct, &drvFRAM_opCodeValue[WREN], 1,
             MAX_TIMEOUT);
     if (operationResultCode != halSPI_OK) {
+
         halSPIResetCS((halSPI_struct*) framStruct);
+
         framStruct->state = startState;
         return operationResultCode;
     }
@@ -97,7 +103,9 @@ drvFRAM_errorCode drvFRAMSetBP(drvFRAM_struct* framStruct, drvFRAM_protectionLev
     operationResultCode = halSPISend((halSPI_struct*) framStruct, &drvFRAM_opCodeValue[WRSR], 1,
             MAX_TIMEOUT);
     if (operationResultCode != halSPI_OK) {
+
         halSPIResetCS((halSPI_struct*) framStruct);
+
         framStruct->state = startState;
         return operationResultCode;
     }
@@ -106,7 +114,9 @@ drvFRAM_errorCode drvFRAMSetBP(drvFRAM_struct* framStruct, drvFRAM_protectionLev
     operationResultCode = halSPISend((halSPI_struct*) framStruct, &operationData, 1,
             MAX_TIMEOUT);
     if (operationResultCode != halSPI_OK) {
+
         halSPIResetCS((halSPI_struct*) framStruct);
+
         framStruct->state = startState;
         return operationResultCode;
     }
@@ -120,19 +130,41 @@ drvFRAM_errorCode drvFRAMSetBP(drvFRAM_struct* framStruct, drvFRAM_protectionLev
     return drvFRAM_OK;
 }
 
+static void drvFRAMInitOperation(drvFRAM_operationInstruction* operation, uint16_t memoryAddress,
+        uint8_t* data, uint16_t dataLen) {
+
+    operation->address[0]   = FIRST_ADDRESS_BYTE(memoryAddress);
+    operation->address[1]   = SECOND_ADDRESS_BYTE(memoryAddress);
+    operation->data         = data;
+    operation->dataLen      = dataLen;
+    operation->step         = STEP_WREN;
+}
+
 drvFRAM_errorCode drvFRAMWriteData(drvFRAM_struct* framStruct, uint16_t memoryAddress,
         uint8_t* data, uint16_t dataLen) {
+    if (framStruct == NULL || data == NULL) {
+        return drvFRAM_DATA_NULL_POINTER;
+    }
+
     if (framStruct->state != STATE_READY) {
         return drvFRAM_BUSY;
     }
 
+    if (memoryAddress + dataLen >= MEMORY_SIZE) {
+        return drvFRAM_OUT_OF_MEMORY;
+    }
+
+    if (framStruct->protectionLevel == drvBP3
+            || memoryAddress + dataLen
+                    > drvFRAM_BPLastAvailableAddress[framStruct->protectionLevel]) {
+        return drvFRAM_READ_ONLY;
+    }
+
     drvFRAM_operationInstruction* operation = &framStruct->currentOperation;
+
+    drvFRAMInitOperation(operation);
     operation->opcode = WRITE;
-    operation->address[0] = FIRST_ADDRESS_BYTE(memoryAddress);
-    operation->address[1] = SECOND_ADDRESS_BYTE(memoryAddress);
-    operation->data = data;
-    operation->dataLen = dataLen;
-    operation->step = STEP_WREN;
+
     framStruct->state = STATE_WAIT_TO_RUN;
 
     return drvFRAM_OK;
@@ -140,18 +172,22 @@ drvFRAM_errorCode drvFRAMWriteData(drvFRAM_struct* framStruct, uint16_t memoryAd
 
 drvFRAM_errorCode drvFRAMReadData(drvFRAM_struct* framStruct, uint16_t memoryAddress, uint8_t* data,
         uint16_t dataLen) {
+    if (framStruct == NULL || data == NULL) {
+        return drvFRAM_DATA_NULL_POINTER;
+    }
+
+    if (memoryAddress + dataLen >= MEMORY_SIZE) {
+        return drvFRAM_OUT_OF_MEMORY;
+    }
+
     if (!(framStruct->state == STATE_READY || framStruct->state == STATE_PROTECTED)) {
         return drvFRAM_BUSY;
     }
 
     drvFRAM_operationInstruction* operation = &framStruct->currentOperation;
+
+    drvFRAMInitOperation(operation);
     operation->opcode = READ;
-    operation->address[0] = FIRST_ADDRESS_BYTE(memoryAddress);
-    operation->address[1] = SECOND_ADDRESS_BYTE(memoryAddress);
-    operation->data = data;
-    operation->dataLen = dataLen;
-    operation->step = STEP_OPERATION;
-    framStruct->state = STATE_WAIT_TO_RUN;
 
     return drvFRAM_OK;
 }

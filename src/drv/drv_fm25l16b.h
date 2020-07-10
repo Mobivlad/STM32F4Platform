@@ -20,6 +20,8 @@
 
 #define MAX_TIMEOUT                 0xFFFF
 
+#define MEMORY_SIZE                 0x800
+
 #define FIRST_ADDRESS_BYTE(x)       ((uint8_t)(((x) >> ONE_BYTE_OFFSET) & ADDRESS_FIRST_BYTE_MASK))
 #define SECOND_ADDRESS_BYTE(x)      ((uint8_t)((x) & ADDRESS_SECOND_BYTE_MASK))
 #define GET_BP_FROM_SR(x)           (((x) >> (WP_BITS_OFFSET)) & TWO_BITS_MASK)
@@ -38,13 +40,13 @@ typedef enum {
 } drvFRAM_errorCode;
 
 typedef enum {
-    STATE_NOT_INITED,
-    STATE_IN_INIT,
-    STATE_PROTECTED,
-    STATE_BP_CHANGING,
-    STATE_WAIT_TO_RUN,
-    STATE_RUN,
-    STATE_READY
+    STATE_NOT_INITED,       // FRAM is not inited
+    STATE_IN_INIT,          // FRAM is in the initialization
+    STATE_PROTECTED,        // FRAM ready read only
+    STATE_BP_CHANGING,      // FRAM is in process of changing block protection level
+    STATE_WAIT_TO_RUN,      // FRAM have command but not execute it
+    STATE_RUN,              // FRAM execute command
+    STATE_READY             // FRAM ready to read and write
 } drvFRAM_state;
 
 typedef enum {
@@ -61,24 +63,24 @@ typedef struct {
     halSPI_frequencyPrescaller  prescaller;
 } fram_data_struct;
 
+typedef enum {
+    WREN = 0,       // Enable write operation
+    WRDI,           // Disable write operation
+    RDSR,           // Read status register
+    WRSR,           // Write to status register
+    READ,           // Read data from FRAM
+    WRITE,          // Write data to FRAM
+    opCodes_Count
+} drvFRAM_opCodesNames;
+
 /// Structure for write-read operation
 typedef struct {
-    uint8_t                     opcode;                         /** Operation code */
+    drvFRAM_opCodesNames        opcode;                         /** Operation code */
     uint8_t                     address[ADDRESS_BYTE_COUNT];    /** Memory address for read/write operations */
     uint8_t*                    data;                           /** Sending/Receiving data array */
     uint16_t                    dataLen;                        /** Data array size */
     drvFRAM_operationStep       step;                           /** Data array size */
 } drvFRAM_operationInstruction;
-
-typedef enum {
-    WREN = 0,
-    WRDI,
-    RDSR,
-    WRSR,
-    READ,
-    WRITE,
-    opCodes_Count
-} drvFRAM_opCodes;
 
 typedef enum {
     drvBP0 = 0x00,      // not protected
@@ -95,17 +97,48 @@ typedef struct {
     drvFRAM_protectionLevel         protectionLevel;
 } drvFRAM_struct;
 
+/**
+ * FRAM initial function
+ * @param framStruct FRAM data structure
+ * @return execute result code
+ */
+drvFRAM_errorCode drvFRAMInit(drvFRAM_struct* framStruct);
+
+/**
+ * FRAM execute function
+ * @param framStruct FRAM data structure
+ * @return execute result code
+ */
 drvFRAM_errorCode drvFRAMRun(drvFRAM_struct* framStruct);
 
+/**
+ * Read data array from FRAM
+ * @param framStruct FRAM data structure
+ * @param memoryAddress memory address for the first element
+ * @param data pointer on data destination array
+ * @param dataLen size of data destination array
+ * @return execute result code
+ */
 drvFRAM_errorCode drvFRAMReadData(drvFRAM_struct* framStruct, uint16_t memoryAddress, uint8_t* data,
         uint16_t dataLen);
 
+/**
+ * Write data array to FRAM
+ * @param framStruct FRAM data structure
+ * @param memoryAddress memory address for the first element
+ * @param data pointer on data source array
+ * @param dataLen size of data source array
+ * @return execute result code
+ */
 drvFRAM_errorCode drvFRAMWriteData(drvFRAM_struct* framStruct, uint16_t memoryAddress, uint8_t* data,
         uint16_t dataLen);
 
+/**
+ * Change block protection level
+ * @param framStruct FRAM data structure
+ * @param newBP new block protection level
+ * @return execute result code
+ */
 drvFRAM_errorCode drvFRAMSetBP(drvFRAM_struct* framStruct, drvFRAM_protectionLevel newBP);
-
-drvFRAM_errorCode drvFRAMInit(drvFRAM_struct* framStruct);
-
 
 #endif /* DRV_DRV_FM25L16B_H_ */
