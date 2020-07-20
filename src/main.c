@@ -9,11 +9,20 @@
 */
 
 
-#include "stm32f7xx.h"
-			
+#include "ul_heart_beat.h"
 
+#define BLINK_FREQUENCY_5_HZ 200
+
+ ulHeartBeatStruct heartBeat;
 int main(void)
 {
+    HAL_Init();
 
-	for(;;);
+    heartBeat.frequency = BLINK_FREQUENCY_5_HZ;
+    ulHeartBeatInit(&heartBeat);
+
+    xTaskCreate(ulHeartBeatTaskFunction, (signed char *) "HEART_BEAT", configMINIMAL_STACK_SIZE,
+                (void*) &heartBeat, 6, (xTaskHandle *) NULL);
+
+    vTaskStartScheduler();
 }
