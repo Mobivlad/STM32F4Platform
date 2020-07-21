@@ -20,7 +20,6 @@ void ulHeartBeatInit(ulHeartBeatStruct* const heartBeat) {
 
 void ulHeartBeatRun(ulHeartBeatStruct* const heartBeat) {
     drvLedToggle((drvLed_struct*) heartBeat);
-
 }
 
 void ulHeartBeatTaskFunction(void* parametr) {

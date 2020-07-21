@@ -9,6 +9,9 @@
 #define HAL_HAL_ADC_H_
 
 #include "stm32f7xx.h"
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
 
 #define UINT16_MAX_VALUE        0xFF
 #define CHANNEL_RANK            1
@@ -16,6 +19,10 @@
 
 #define EVENTS_ON_PERIOD        1000
 #define TIMER_PRESCALER         13499
+#define CONV_TIMEOUT            0xFF
+
+#define ADC_IRQn_PRIORITY       6
+#define ADC_IRQn_SUB_PRIORITY   7
 
 typedef enum {
     halADC1,
@@ -93,6 +100,7 @@ typedef struct {
     halADC_dataAlign        dataAlign;
 
     halADC_timerInitStruct  triggerTimerInitStruct;
+    QueueHandle_t*          queue;
 } halADC_initStruct;
 
 typedef struct {
@@ -103,7 +111,7 @@ typedef struct {
     halADC_channel          channel;
 
     halADC_convertationMode mode;
-
+    QueueHandle_t*          queue;
 } halADC_struct;
 
 typedef struct {
@@ -125,5 +133,8 @@ typedef struct {
 } halADC_timerDef;
 
 void halADCInit(halADC_struct* adcStruct, halADC_initStruct* adcInitStruct);
+void halADCStart(halADC_struct* adcStruct);
+void halADCStop(halADC_struct* adcStruct);
+uint16_t halADCGetValue(halADC_struct* adcStruct);
 
 #endif /* HAL_HAL_ADC_H_ */

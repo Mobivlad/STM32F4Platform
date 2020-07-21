@@ -89,11 +89,15 @@ static const uint32_t channelValues[halADC_ChannelCount] = {
         ADC_CHANNEL_12, ADC_CHANNEL_13, ADC_CHANNEL_14, ADC_CHANNEL_15
 };
 
+static halADC_struct* initedADC[halADC_Count] = { NULL };
+
 void halADCInit(halADC_struct* adcStruct, halADC_initStruct* adcInitStruct) {
     // enable RCC
     uint8_t adcId = adcInitStruct->adc;
     SET_BIT(RCC->APB2ENR, adc_def[adcId].adc_rcc);
     SET_BIT(RCC->AHB1ENR, adc_def[adcId].adcPins[adcInitStruct->channel].port_rcc);
+
+    adcStruct->queue = adcInitStruct->queue;
 
     GPIO_InitTypeDef    pinInitStruct;
     pinInitStruct.Mode      = GPIO_MODE_ANALOG;
@@ -138,12 +142,17 @@ void halADCInit(halADC_struct* adcStruct, halADC_initStruct* adcInitStruct) {
 
         HAL_TIM_Base_Init(&(adcStruct->timer));
 
+        TIM_MasterConfigTypeDef sMastrConfig = { 0 };
+        sMastrConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+        HAL_TIMEx_MasterConfigSynchronization(&(adcStruct->timer), &sMastrConfig);
     } else {
 
         adc->Init.ExternalTrigConvEdge  = ADC_EXTERNALTRIGCONVEDGE_NONE;
 
     }
     HAL_ADC_Init(adc);
+
+
 
     adcStruct->mode = adcInitStruct->convMode;
 
@@ -153,16 +162,46 @@ void halADCInit(halADC_struct* adcStruct, halADC_initStruct* adcInitStruct) {
     channelConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
 
     HAL_ADC_ConfigChannel(adc, &channelConfig);
+
+    HAL_NVIC_SetPriority(ADC_IRQn, ADC_IRQn_PRIORITY, ADC_IRQn_SUB_PRIORITY);
+    HAL_NVIC_EnableIRQ(ADC_IRQn);
+
+    initedADC[adcStruct->adc] = adcStruct;
 }
 
 void halADCStart(halADC_struct* adcStruct) {
-    HAL_ADC_Start((ADC_HandleTypeDef*)adcStruct);
+    HAL_ADC_Start_IT((ADC_HandleTypeDef*)adcStruct);
+    if (adcStruct->mode == halADC_triggerConvMode) {
+        HAL_TIM_Base_Start(&(adcStruct->timer));
+    }
 }
 
 void halADCStop(halADC_struct* adcStruct) {
-    HAL_ADC_Stop((ADC_HandleTypeDef*)adcStruct);
+    HAL_ADC_Stop_IT((ADC_HandleTypeDef*)adcStruct);
+    if (adcStruct->mode == halADC_triggerConvMode) {
+        HAL_TIM_Base_Stop(&(adcStruct->timer));
+    }
 }
 
 uint16_t halADCGetValue(halADC_struct* adcStruct) {
+    if (adcStruct->mode == halADC_singleConvMode) {
+        HAL_ADC_PollForConversion((ADC_HandleTypeDef*)adcStruct, CONV_TIMEOUT);
+    }
     return HAL_ADC_GetValue((ADC_HandleTypeDef*)adcStruct);
+}
+
+void ADC_IRQHandler(void) {
+    for (uint8_t i = 0; i < halADC_Count; i++) {
+        HAL_ADC_IRQHandler(&(initedADC[i]->adcDef));
+    }
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
+    BaseType_t res;
+    for (uint8_t i=0; i < halADC_Count; i++) {
+        if (adc_def[i].adc == hadc->Instance) {
+            const uint16_t value = HAL_ADC_GetValue(hadc);
+            res = xQueueSendFromISR(*(initedADC[i]->queue), (const void* )&value, NULL);
+        }
+    }
 }
