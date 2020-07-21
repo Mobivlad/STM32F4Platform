@@ -12,8 +12,8 @@
 #include "ul_heart_beat.h"
 #include "ul_moving_average.h"
 
-#define BLINK_FREQUENCY_5_HZ 200
-#define ADC_FREQUENCY_1_HZ 1
+#define BLINK_FREQUENCY_5_HZ 100
+#define ADC_FREQUENCY_100_HZ 100
 
  ulHeartBeatStruct heartBeat;
  ulMovingAvarege_struct adc;
@@ -25,14 +25,14 @@ int main(void)
     ulHeartBeatInit(&heartBeat);
 
     adc.adc = drvADC1;
-    adc.frequency = ADC_FREQUENCY_1_HZ;
+    adc.frequency = ADC_FREQUENCY_100_HZ;
 
     ulMovingAvaregeInit(&adc);
 
-    xTaskCreate(ulHeartBeatTaskFunction, (signed char *) "HEART_BEAT", configMINIMAL_STACK_SIZE,
+    xTaskCreate(ulHeartBeatTaskFunction, "HEART_BEAT", configMINIMAL_STACK_SIZE,
                 (void*) &heartBeat, 6, (xTaskHandle *) NULL);
 
-    xTaskCreate(ulMovingAvaregeTaskFunction, (signed char *) "ADC", configMINIMAL_STACK_SIZE,
+    xTaskCreate(ulMovingAvaregeTaskFunction, "ADC", configMINIMAL_STACK_SIZE,
                     (void*) &adc, 6, (xTaskHandle *) NULL);
 
     vTaskStartScheduler();

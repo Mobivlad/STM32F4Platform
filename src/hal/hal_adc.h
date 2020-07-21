@@ -100,7 +100,7 @@ typedef struct {
     halADC_dataAlign        dataAlign;
 
     halADC_timerInitStruct  triggerTimerInitStruct;
-    QueueHandle_t*          queue;
+    QueueHandle_t          queue;
 } halADC_initStruct;
 
 typedef struct {
@@ -111,7 +111,7 @@ typedef struct {
     halADC_channel          channel;
 
     halADC_convertationMode mode;
-    QueueHandle_t*          queue;
+    QueueHandle_t           queue;
 } halADC_struct;
 
 typedef struct {

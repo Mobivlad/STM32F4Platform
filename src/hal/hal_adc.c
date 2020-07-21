@@ -201,7 +201,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
     for (uint8_t i=0; i < halADC_Count; i++) {
         if (adc_def[i].adc == hadc->Instance) {
             const uint16_t value = HAL_ADC_GetValue(hadc);
-            res = xQueueSendFromISR(*(initedADC[i]->queue), (const void* )&value, NULL);
+            res = xQueueSendFromISR(initedADC[i]->queue, &value, NULL);
         }
     }
 }

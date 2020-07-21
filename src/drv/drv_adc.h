@@ -27,7 +27,7 @@ typedef struct {
     halADC_struct       halADC;
 } drvADC_struct;
 
-void drvADCInit(drvADC_struct* adc_struct, drvADC adc, uint32_t frequency, QueueHandle_t* queue);
+void drvADCInit(drvADC_struct* adc_struct, drvADC adc, uint32_t frequency, QueueHandle_t queue);
 
 void drvADCStart(drvADC_struct* adc_struct);
 

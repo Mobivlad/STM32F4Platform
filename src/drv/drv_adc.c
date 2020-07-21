@@ -16,7 +16,7 @@ static const drvADC_def_t drvADC_def[drvADC_Count] = {
         }
 };
 
-void drvADCInit(drvADC_struct* adc_struct, drvADC adc, uint32_t frequency, QueueHandle_t* queue) {
+void drvADCInit(drvADC_struct* adc_struct, drvADC adc, uint32_t frequency, QueueHandle_t queue) {
 
     halADC_initStruct initStruct;
 
