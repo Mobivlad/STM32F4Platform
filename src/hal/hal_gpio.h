@@ -53,9 +53,10 @@ typedef enum {
     halGPIO_PortCount
 } halGPIO_port;
 
-typedef enum {
-    GPIO_NO_AF
-} halGPIO_AFType;
+typedef struct {
+  GPIO_TypeDef* const   portDef;
+  uint32_t              enablePortClockDef;
+} halGPIO_portDef_t;
 
 /// Pins functional type enumeration
 typedef enum {
@@ -103,12 +104,6 @@ typedef struct {
     halGPIO_OType   outType;      /**< Output states */
     halGPIO_PuPd    PuPd;         /**< Push-pull direction */
 } halGPIO_initStruct;
-
-typedef struct {
-  GPIO_TypeDef* const   portDef;
-  uint32_t              enablePortClockDef;
-
-} halGPIO_portTable;
 
 /**
  * Configured GPIO function.

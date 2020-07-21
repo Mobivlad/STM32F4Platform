@@ -6,7 +6,7 @@
  */
 #include "drv_led.h"
 
-static const drvLed_data led_data[drvLed_Count] =
+static const drvLed_def_t led_define[drvLed_Count] =
 {
         { halGPIO_PortJ, halGPIO_Pin5 },
 };
@@ -14,10 +14,10 @@ static const drvLed_data led_data[drvLed_Count] =
 void drvLedInit(const drvLed_struct* const ledStruct) {
     halGPIO_struct* hal_GPIO_struct = (halGPIO_struct*) ledStruct;
 
-    hal_GPIO_struct->port = led_data[ledStruct->led].port;
+    hal_GPIO_struct->port = led_define[ledStruct->led].port;
 
     const halGPIO_initStruct initStruct = {
-            led_data[ledStruct->led].pin,
+            led_define[ledStruct->led].pin,
             halGPIO_ModeOut,
             halGPIO_Speed2Mhz,
             halGPIO_OTPP,

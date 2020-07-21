@@ -1,6 +1,6 @@
 #include "hal_gpio.h"
 
-static const halGPIO_portTable port_table[halGPIO_PortCount] =
+static const halGPIO_portDef_t port_table[halGPIO_PortCount] =
 {
         { GPIOA, RCC_AHB1ENR_GPIOAEN },
         { GPIOB, RCC_AHB1ENR_GPIOBEN },

@@ -39,7 +39,7 @@ typedef struct {
 typedef struct {
     halGPIO_port    port;
     halGPIO_pin     pin;
-} drvLed_data;
+} drvLed_def_t;
 
 /**
  * Led configuration function.

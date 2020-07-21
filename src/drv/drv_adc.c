@@ -16,7 +16,7 @@ static const drvADC_def_t drvADC_def[drvADC_Count] = {
         }
 };
 
-void drvADCInit(drvADC_struct* adc_struct, drvADC adc, uint32_t frequency, QueueHandle_t queue) {
+void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueHandle_t queue) {
 
     halADC_initStruct initStruct;
 
@@ -31,18 +31,18 @@ void drvADCInit(drvADC_struct* adc_struct, drvADC adc, uint32_t frequency, Queue
     initStruct.convMode                         = halADC_triggerConvMode;
     initStruct.dataAlign                        = halADC_dataAlignRight;
 
-    halADCInit((halADC_struct*)adc_struct, &initStruct);
+    halADCInit((halADC_struct*)adcStruct, &initStruct);
 }
 
 
-void drvADCStart(drvADC_struct* adc_struct) {
-    halADCStart((halADC_struct*)adc_struct);
+void drvADCStart(drvADC_struct* adcStruct) {
+    halADCStart((halADC_struct*)adcStruct);
 }
 
-void drvADCStop(drvADC_struct* adc_struct) {
-    halADCStop((halADC_struct*)adc_struct);
+void drvADCStop(drvADC_struct* adcStruct) {
+    halADCStop((halADC_struct*)adcStruct);
 }
 
-void drvADCGetValue(drvADC_struct* adc_struct) {
-    halADCGetValue((halADC_struct*)adc_struct);
+void drvADCGetValue(drvADC_struct* adcStruct) {
+    halADCGetValue((halADC_struct*)adcStruct);
 }

@@ -51,6 +51,25 @@ typedef enum {
     halADC_ChannelCount
 } halADC_channel;
 
+typedef struct {
+    GPIO_TypeDef *          port;
+    uint32_t                port_rcc;
+    uint16_t                pin;
+} halADC_pin_def_t;
+
+typedef struct {
+    ADC_TypeDef *           adc;
+    uint32_t                adc_rcc;
+    halADC_pin_def_t        adcPins[halADC_ChannelCount];
+} halADC_def_t;
+
+typedef struct {
+    TIM_TypeDef *           timer;
+    uint32_t                timer_rcc;
+    uint32_t                trigger_value;
+} halADC_timerDef_t;
+
+
 typedef enum {
     halADC_clockDiv2        = ADC_CLOCK_SYNC_PCLK_DIV2,
     halADC_clockDiv4        = ADC_CLOCK_SYNC_PCLK_DIV4,
@@ -114,27 +133,30 @@ typedef struct {
     QueueHandle_t           queue;
 } halADC_struct;
 
-typedef struct {
-    GPIO_TypeDef *          port;
-    uint32_t                port_rcc;
-    uint16_t                pin;
-} halADC_pin_def;
 
-typedef struct {
-    ADC_TypeDef *           adc;
-    uint32_t                adc_rcc;
-    halADC_pin_def          adcPins[halADC_ChannelCount];
-} halADC_def;
-
-typedef struct {
-    TIM_TypeDef *           timer;
-    uint32_t                timer_rcc;
-    uint32_t                trigger_value;
-} halADC_timerDef;
-
+/**
+ * Initial function for ADC
+ * @param adcStruct pointer on ADC state structure
+ * @param adcInitStruct pointer on structure with initial parameters
+ */
 void halADCInit(halADC_struct* adcStruct, halADC_initStruct* adcInitStruct);
+
+/**
+ * Start ADC function
+ * @param adcStruct pointer on ADC state structure
+ */
 void halADCStart(halADC_struct* adcStruct);
+
+/**
+ * Stop ADC function
+ * @param adcStruct pointer on ADC state structure
+ */
 void halADCStop(halADC_struct* adcStruct);
+
+/**
+ * Get currently ADC value
+ * @param adcStruct pointer on ADC state structure
+ */
 uint16_t halADCGetValue(halADC_struct* adcStruct);
 
 #endif /* HAL_HAL_ADC_H_ */

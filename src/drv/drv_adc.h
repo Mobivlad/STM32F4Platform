@@ -27,12 +27,31 @@ typedef struct {
     halADC_struct       halADC;
 } drvADC_struct;
 
-void drvADCInit(drvADC_struct* adc_struct, drvADC adc, uint32_t frequency, QueueHandle_t queue);
+/**
+ * Initial function for ADC
+ * @param adc_struct pointer on ADC state structure
+ * @param adc name of ADC
+ * @param frequency count of ADC measurements on 1 s
+ * @param queue queue buffer for results
+ */
+void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueHandle_t queue);
 
-void drvADCStart(drvADC_struct* adc_struct);
+/**
+ * Start ADC function
+ * @param adcStruct pointer on ADC state structure
+ */
+void drvADCStart(drvADC_struct* adcStruct);
 
-void drvADCStop(drvADC_struct* adc_struct);
+/**
+ * Stop ADC function
+ * @param adcStruct pointer on ADC state structure
+ */
+void drvADCStop(drvADC_struct* adcStruct);
 
-void drvADCGetVal(drvADC_struct* adc_struct);
+/**
+ * Get currently ADC value
+ * @param adcStruct pointer on ADC state structure
+ */
+void drvADCGetVal(drvADC_struct* adcStruct);
 
 #endif /* DRV_DRV_ADC_H_ */

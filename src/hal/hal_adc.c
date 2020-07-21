@@ -7,7 +7,7 @@
 
 #include "hal_adc.h"
 
-static const halADC_timerDef timer_def[halADC_timersCount] =
+static const halADC_timerDef_t timer_def[halADC_timersCount] =
 {
         {   TIM2, RCC_APB1ENR_TIM2EN, ADC_EXTERNALTRIGCONV_T2_TRGO    },
         {   TIM4, RCC_APB1ENR_TIM4EN, ADC_EXTERNALTRIGCONV_T4_TRGO    },
@@ -15,7 +15,7 @@ static const halADC_timerDef timer_def[halADC_timersCount] =
         {   TIM6, RCC_APB1ENR_TIM6EN, ADC_EXTERNALTRIGCONV_T6_TRGO    }
 };
 
-static const halADC_def adc_def[halADC_Count] =
+static const halADC_def_t adc_def[halADC_Count] =
 {
         {
                 ADC1,   RCC_APB2ENR_ADC1EN,
@@ -197,11 +197,11 @@ void ADC_IRQHandler(void) {
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-    BaseType_t res;
-    for (uint8_t i=0; i < halADC_Count; i++) {
+    for (uint8_t i = 0; i < halADC_Count; i++) {
         if (adc_def[i].adc == hadc->Instance) {
             const uint16_t value = HAL_ADC_GetValue(hadc);
-            res = xQueueSendFromISR(initedADC[i]->queue, &value, NULL);
+            // send to queue
+            xQueueSendFromISR(initedADC[i]->queue, &value, NULL);
         }
     }
 }
