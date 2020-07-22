@@ -16,7 +16,7 @@ static const drvADC_def_t drvADC_def[drvADC_Count] = {
         }
 };
 
-void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueHandle_t queue) {
+void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueHandle_t queue, SemaphoreHandle_t semaphore) {
 
     halADC_initStruct initStruct;
 
@@ -26,6 +26,7 @@ void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueH
     initStruct.triggerTimerInitStruct.timer     = drvADC_def[adc].timer;
     initStruct.triggerTimerInitStruct.frequency = frequency;
     initStruct.queue                            = queue;
+    initStruct.semaphore                        = semaphore;
 
     initStruct.clockPrescaler                   = halADC_clockDiv4;
     initStruct.convMode                         = halADC_triggerConvMode;

@@ -36,6 +36,7 @@
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1160858143" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/bl&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
@@ -47,9 +48,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/CMSIS/core&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/CMSIS/device&quot;"/>
 								</option>
-								<option id="gnu.c.compiler.option.include.files.1934504814" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files" useByScannerDiscovery="false" valueType="includeFiles">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/CMSIS/device/stm32f769xx.h&quot;"/>
-								</option>
+								<option id="gnu.c.compiler.option.include.files.1934504814" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files" useByScannerDiscovery="false" valueType="includeFiles"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.1030164318" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s.478723528" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s"/>
 							</tool>
@@ -68,6 +67,7 @@
 							<tool command="as" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="" id="fr.ac6.managedbuild.tool.gnu.cross.assembler.33240163" name="MCU GCC Assembler" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler">
 								<option id="gnu.both.asm.option.include.paths.1969798495" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/bl&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
@@ -128,6 +128,7 @@
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.2081153331" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/bl&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
@@ -136,8 +137,8 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FreeRTOS/Source/portable/GCC/ARM_CM7&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FreeRTOS/Source/CMSIS_RTOS&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FreeRTOS/Source/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/CMSIS/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/CMSIS/core&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/CMSIS/device&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.281154640" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.1209308506" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
@@ -158,6 +159,7 @@
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.assembler.exe.release.1934045478" name="MCU GCC Assembler" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.exe.release">
 								<option id="gnu.both.asm.option.include.paths.375916448" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/bl&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>

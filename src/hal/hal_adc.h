@@ -12,6 +12,7 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "task.h"
+#include "semphr.h"
 
 #define UINT16_MAX_VALUE        0xFF
 #define CHANNEL_RANK            1
@@ -119,7 +120,8 @@ typedef struct {
     halADC_dataAlign        dataAlign;
 
     halADC_timerInitStruct  triggerTimerInitStruct;
-    QueueHandle_t          queue;
+    QueueHandle_t           queue;
+    SemaphoreHandle_t       semaphore;
 } halADC_initStruct;
 
 typedef struct {
@@ -131,6 +133,7 @@ typedef struct {
 
     halADC_convertationMode mode;
     QueueHandle_t           queue;
+    SemaphoreHandle_t       semaphore;
 } halADC_struct;
 
 

@@ -9,12 +9,15 @@
 void ulMovingAvaregeInit(ulMovingAvarege_struct* ulMA_struct) {
     ulMA_struct->adcValue = INCORRECT_DATA;
 
-    ulMA_struct->queue = xQueueCreate(QUEUE_SIZE, sizeof(uint16_t));
+    ulMA_struct->queue      = xQueueCreate(QUEUE_SIZE, sizeof(uint16_t));
+    ulMA_struct->semaphore  = xSemaphoreCreateBinary();
 
     drvADCInit((drvADC_struct*) ulMA_struct, ulMA_struct->adc, ulMA_struct->frequency,
-            ulMA_struct->queue);
+            ulMA_struct->queue, ulMA_struct->semaphore);
 
-    drvADCStart((drvADC_struct*) ulMA_struct);
+    ulMA_struct->state = SUSPENDED;
+
+    ulMovingAvaregeStop(ulMA_struct);
 }
 
 static uint16_t getAverage(uint16_t* arr, uint16_t size){
@@ -25,13 +28,25 @@ static uint16_t getAverage(uint16_t* arr, uint16_t size){
     return (uint16_t)(sum/size);
 }
 
-void ulMovingAvaregeRun(ulMovingAvarege_struct* ulMA_struct) {
-    if (uxQueueMessagesWaiting(ulMA_struct->queue) != 0){
-        xQueueReceive(ulMA_struct->queue, &(ulMA_struct->windowsData[ulMA_struct->windowsIndex++]),
-                DELAY_TIME);
+void ulMovingAvaregeStart(ulMovingAvarege_struct* ulMA_struct) {
+    drvADCStart((drvADC_struct*) ulMA_struct);
+    ulMA_struct->state = IN_RUN;
+}
 
-        if ((ulMA_struct->adcValue == INCORRECT_DATA && ulMA_struct->windowsIndex == WINDOW_SIZE) ||
-                (ulMA_struct->adcValue != INCORRECT_DATA)) {
+void ulMovingAvaregeStop(ulMovingAvarege_struct* ulMA_struct) {
+    drvADCStop((drvADC_struct*) ulMA_struct);
+    ulMA_struct->state = SUSPENDED;
+}
+
+void ulMovingAvaregeTaskFunction(void* parametr) {
+    ulMovingAvarege_struct* const ulMA_struct = (ulMovingAvarege_struct* const ) parametr;
+
+    while (1) {
+        xQueueReceive(ulMA_struct->queue, &(ulMA_struct->windowsData[ulMA_struct->windowsIndex++]),
+                portMAX_DELAY);
+
+        if ((ulMA_struct->adcValue == INCORRECT_DATA && ulMA_struct->windowsIndex == WINDOW_SIZE)
+                || (ulMA_struct->adcValue != INCORRECT_DATA)) {
             ulMA_struct->adcValue = getAverage(ulMA_struct->windowsData, WINDOW_SIZE);
         }
 
@@ -39,10 +54,14 @@ void ulMovingAvaregeRun(ulMovingAvarege_struct* ulMA_struct) {
     }
 }
 
-void ulMovingAvaregeTaskFunction(void* parametr) {
-    ulMovingAvarege_struct* const movingAverage = (ulMovingAvarege_struct* const ) parametr;
+void ulMovingAvaregeControlFunction(void* parametr) {
+    ulMovingAvarege_struct* const ulMA_struct = (ulMovingAvarege_struct* const ) parametr;
     while (1) {
-        ulMovingAvaregeRun(movingAverage);
-        vTaskDelay(MIN_DELAY);
+        xSemaphoreTake(ulMA_struct->semaphore, portMAX_DELAY);
+        if (ulMA_struct->state == IN_RUN) {
+            ulMovingAvaregeStop(ulMA_struct);
+        } else {
+            ulMovingAvaregeStart(ulMA_struct);
+        }
     }
 }

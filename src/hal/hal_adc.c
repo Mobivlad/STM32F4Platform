@@ -97,7 +97,8 @@ void halADCInit(halADC_struct* adcStruct, halADC_initStruct* adcInitStruct) {
     SET_BIT(RCC->APB2ENR, adc_def[adcId].adc_rcc);
     SET_BIT(RCC->AHB1ENR, adc_def[adcId].adcPins[adcInitStruct->channel].port_rcc);
 
-    adcStruct->queue = adcInitStruct->queue;
+    adcStruct->queue        = adcInitStruct->queue;
+    adcStruct->semaphore    = adcInitStruct->semaphore;
 
     GPIO_InitTypeDef    pinInitStruct;
     pinInitStruct.Mode      = GPIO_MODE_ANALOG;
@@ -151,8 +152,6 @@ void halADCInit(halADC_struct* adcStruct, halADC_initStruct* adcInitStruct) {
 
     }
     HAL_ADC_Init(adc);
-
-
 
     adcStruct->mode = adcInitStruct->convMode;
 
