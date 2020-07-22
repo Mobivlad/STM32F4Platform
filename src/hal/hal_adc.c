@@ -191,7 +191,9 @@ uint16_t halADCGetValue(halADC_struct* adcStruct) {
 
 void ADC_IRQHandler(void) {
     for (uint8_t i = 0; i < halADC_Count; i++) {
-        HAL_ADC_IRQHandler(&(initedADC[i]->adcDef));
+        if (initedADC[i] != NULL) {
+            HAL_ADC_IRQHandler(&(initedADC[i]->adcDef));
+        }
     }
 }
 

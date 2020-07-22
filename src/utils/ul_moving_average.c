@@ -1,7 +1,7 @@
 /*
  * ul_moving_average.c
  *
- *  Created on: 21 лип. 2020 р.
+ *  Created on: 21 пїЅпїЅпїЅ. 2020 пїЅ.
  *      Author: vladyslav.daliavskyi
  */
 #include "ul_moving_average.h"
