@@ -40,6 +40,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FatFS&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc/Legacy&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FreeRTOS/Source/portable/GCC/ARM_CM7&quot;"/>
@@ -48,7 +49,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/CMSIS/core&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/CMSIS/device&quot;"/>
 								</option>
-								<option id="gnu.c.compiler.option.include.files.1934504814" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files" useByScannerDiscovery="false" valueType="includeFiles"/>
+								<option id="gnu.c.compiler.option.include.files.1934504814" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files" useByScannerDiscovery="false"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.1030164318" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s.478723528" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s"/>
 							</tool>
@@ -71,6 +72,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FatFS&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc/Legacy&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FreeRTOS/Source/portable/GCC/ARM_CM7&quot;"/>
@@ -132,6 +134,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FatFS&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc/Legacy&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FreeRTOS/Source/portable/GCC/ARM_CM7&quot;"/>
@@ -163,6 +166,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FatFS&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc/Legacy&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FreeRTOS/Source/portable/GCC/ARM_CM7&quot;"/>
