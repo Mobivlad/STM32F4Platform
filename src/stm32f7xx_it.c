@@ -40,3 +40,9 @@ void SysTick_Handler(void)
 	osSystickHandler();
 #endif
 }
+
+void Error_Handler(void) {
+    while (1) {
+        ;
+    }
+}

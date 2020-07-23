@@ -41,6 +41,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FatFS&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/LCD&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc/Legacy&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FreeRTOS/Source/portable/GCC/ARM_CM7&quot;"/>
@@ -72,6 +73,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/LCD&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FatFS&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc/Legacy&quot;"/>
@@ -135,6 +137,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FatFS&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/LCD&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc/Legacy&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FreeRTOS/Source/portable/GCC/ARM_CM7&quot;"/>
@@ -166,6 +169,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/drv&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/utils&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/LCD&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/FatFS&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/libs/HAL_Driver/Inc/Legacy&quot;"/>
