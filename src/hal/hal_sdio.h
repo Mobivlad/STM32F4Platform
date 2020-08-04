@@ -98,7 +98,8 @@ typedef enum
   halSDIO_ERROR    = HAL_ERROR,
   halSDIO_BUSY     = HAL_BUSY,
   halSDIO_TIMEOUT  = HAL_TIMEOUT,
-  halSDIO_SD_NOT_PRESENT
+  halSDIO_SD_NOT_PRESENT,
+  halSDIO_NULL_POINT
 } halSDIO_error;
 
 typedef struct {

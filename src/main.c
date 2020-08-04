@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 
-
+#include "stm32f7xx_hal.h"
 #include "stm32f7xx_it.h"
 #include "stm32f769i_discovery_lcd.h"
 
@@ -78,9 +78,6 @@ static void SystemClock_Config(void) {
     RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
     RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = { 0 };
 
-    __HAL_RCC_PWR_CLK_ENABLE();
-    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
     RCC_OscInitStruct.HSEState = RCC_HSE_ON;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -90,8 +87,6 @@ static void SystemClock_Config(void) {
     RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
     RCC_OscInitStruct.PLL.PLLQ = 9;
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) Error_Handler();
-
-    if (HAL_PWREx_EnableOverDrive() != HAL_OK) Error_Handler();
 
     RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1
             | RCC_CLOCKTYPE_PCLK2;

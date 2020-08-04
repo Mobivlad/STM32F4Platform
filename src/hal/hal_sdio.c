@@ -49,7 +49,11 @@ static halSDIO_SDPresentState halSDIOSDIsDetected(halSDIO_struct* sdio_struct) {
 }
 
 halSDIO_error halSDIOInit(halSDIO_struct* sdio_struct, halSDIO_initStruct* initStruct) {
-    SET_BIT(RCC->APB2ENR, sdio_def[sdio_struct->sdio].rcc);
+    if (sdio_struct == NULL || initStruct == NULL) {
+    	return halSDIO_NULL_POINT;
+    }
+
+	SET_BIT(RCC->APB2ENR, sdio_def[sdio_struct->sdio].rcc);
 
     halSDIO_error SD_state = halSDIO_OK;
 
@@ -91,26 +95,35 @@ halSDIO_error halSDIOInit(halSDIO_struct* sdio_struct, halSDIO_initStruct* initS
 
 halSDIO_error halSDIOGetStatus(halSDIO_struct* sdio_struct)
 {
-    return HAL_SD_GetCardStatus(&sdio_struct->sdHandle, &sdio_struct->sdStatus);
+    return sdio_struct == NULL ? halSDIO_NULL_POINT
+    		: HAL_SD_GetCardStatus(&sdio_struct->sdHandle, &sdio_struct->sdStatus);
 }
 
 halSDIO_state halSDIOGetCardState(halSDIO_struct* sdio_struct)
 {
-    return ((HAL_SD_GetCardState(&sdio_struct->sdHandle) == HAL_SD_CARD_TRANSFER) ?
+    if (sdio_struct == NULL) {
+    	return halSDIO_NULL_POINT;
+    }
+	return ((HAL_SD_GetCardState(&sdio_struct->sdHandle) == HAL_SD_CARD_TRANSFER) ?
             halSDIO_TRANSFER_OK : halSDIO_TRANSFER_BUSY);
 }
 
 void halSDIOGetCardInfo(halSDIO_struct* sdio_struct)
 {
-    HAL_SD_GetCardInfo(&sdio_struct->sdHandle, &sdio_struct->sdInfo);
+	if (sdio_struct == NULL) {
+		return;
+	}
+	HAL_SD_GetCardInfo(&sdio_struct->sdHandle, &sdio_struct->sdInfo);
 }
 
 halSDIO_error halSDIOWriteBlocks(halSDIO_struct* sdio_struct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber, uint32_t timeout) {
-    return HAL_SD_WriteBlocks(&sdio_struct->sdHandle, pData, blockAdd, blocksNumber, timeout);
+		return sdio_struct == NULL || pData == NULL ? halSDIO_NULL_POINT
+				: HAL_SD_WriteBlocks(&sdio_struct->sdHandle, pData, blockAdd, blocksNumber, timeout);
 }
 
 halSDIO_error halSDIOReadBlocks(halSDIO_struct* sdio_struct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber, uint32_t timeout) {
-    return HAL_SD_ReadBlocks(&sdio_struct->sdHandle, pData, blockAdd, blocksNumber, timeout);
+	return sdio_struct == NULL || pData == NULL ? halSDIO_NULL_POINT
+			: HAL_SD_ReadBlocks(&sdio_struct->sdHandle, pData, blockAdd, blocksNumber, timeout);
 }
 
 

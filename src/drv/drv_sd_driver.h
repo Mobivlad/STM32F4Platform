@@ -40,7 +40,8 @@ typedef enum
   drvSD_ERROR        = halSDIO_ERROR,
   drvSD_BUSY         = halSDIO_BUSY,
   drvSD_TIMEOUT      = halSDIO_TIMEOUT,
-  drvSD_NOT_PRESENT  = halSDIO_SD_NOT_PRESENT
+  drvSD_NOT_PRESENT  = halSDIO_SD_NOT_PRESENT,
+  drvSD_NULL_POINT	 = halSDIO_NULL_POINT
 } drvSD_error;
 
 typedef struct {
@@ -54,7 +55,7 @@ drvSD_state drvSDGetCardState(drvSDDriver_struct* sdStruct);
 drvSD_error drvSDGetStatus(drvSDDriver_struct* sdStruct);
 void drvSDGetSDInfo(drvSDDriver_struct* sdStruct);
 
-drvSD_error drvSDWriteBlocks(drvSDDriver_struct* sdStruct, const uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber);
+drvSD_error drvSDWriteBlocks(drvSDDriver_struct* sdStruct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber);
 drvSD_error drvSDReadBlocks(drvSDDriver_struct* sdStruct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber);
 
 #endif /* DRV_DRV_SD_DRIVER_H_ */

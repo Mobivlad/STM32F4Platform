@@ -12,6 +12,7 @@ static const drvLed_def_t led_define[drvLed_Count] =
 };
 
 void drvLedInit(const drvLed_struct* const ledStruct) {
+	if (ledStruct == NULL) return;
     halGPIO_struct* hal_GPIO_struct = (halGPIO_struct*) ledStruct;
 
     hal_GPIO_struct->port = led_define[ledStruct->led].port;
@@ -34,6 +35,7 @@ void drvLedInit(const drvLed_struct* const ledStruct) {
 }
 
 void drvLedOn(drvLed_struct* const ledStruct) {
+	if (ledStruct == NULL) return;
     // change state in structure
     ledStruct->state = drvLed_On;
 
@@ -41,6 +43,7 @@ void drvLedOn(drvLed_struct* const ledStruct) {
 }
 
 void drvLedOff(drvLed_struct* const ledStruct) {
+	if (ledStruct == NULL) return;
     // change state in structure
     ledStruct->state = drvLed_Off;
 
@@ -48,6 +51,7 @@ void drvLedOff(drvLed_struct* const ledStruct) {
 }
 
 void drvLedToggle(drvLed_struct* const ledStruct) {
+	if (ledStruct == NULL) return;
     // change state in structure
     ledStruct->state = (ledStruct->state == drvLed_On) ? drvLed_Off : drvLed_On;
 

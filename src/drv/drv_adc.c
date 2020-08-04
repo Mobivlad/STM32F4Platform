@@ -18,6 +18,8 @@ static const drvADC_def_t drvADC_def[drvADC_Count] = {
 
 void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueHandle_t queue, SemaphoreHandle_t semaphore) {
 
+	if (adcStruct == NULL) return;
+
     halADC_initStruct initStruct;
 
     initStruct.adc                              = drvADC_def[adc].adc;
@@ -37,13 +39,16 @@ void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueH
 
 
 void drvADCStart(drvADC_struct* adcStruct) {
+	if (adcStruct == NULL) return;
     halADCStart((halADC_struct*)adcStruct);
 }
 
 void drvADCStop(drvADC_struct* adcStruct) {
+	if (adcStruct == NULL) return;
     halADCStop((halADC_struct*)adcStruct);
 }
 
 void drvADCGetValue(drvADC_struct* adcStruct) {
+	if (adcStruct == NULL) return;
     halADCGetValue((halADC_struct*)adcStruct);
 }

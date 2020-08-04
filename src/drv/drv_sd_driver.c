@@ -18,6 +18,9 @@ static const drvSDDriver_def_t sd_def = {
 };
 
 drvSD_error drvSDInit(drvSDDriver_struct* sdStruct) {
+	if (sdStruct == NULL) {
+		return drvSD_NULL_POINT;
+	}
     halSDIO_initStruct init;
     sdStruct->SDIO.sdio = sd_def.sdio;
     init.wideWigth      = sd_def.wideWigth;
@@ -31,22 +34,37 @@ drvSD_error drvSDInit(drvSDDriver_struct* sdStruct) {
 }
 
 drvSD_error drvSDGetStatus(drvSDDriver_struct* sdStruct) {
+	if (sdStruct == NULL) {
+		return drvSD_NULL_POINT;
+	}
     return halSDIOGetStatus((halSDIO_struct*)sdStruct);
 }
 
 drvSD_state drvSDGetCardState(drvSDDriver_struct* sdStruct) {
+	if (sdStruct == NULL) {
+		return drvSD_NULL_POINT;
+	}
     return halSDIOGetCardState((halSDIO_struct*)sdStruct);
 }
 
 void drvSDGetSDInfo(drvSDDriver_struct* sdStruct) {
+	if (sdStruct == NULL) {
+		return;
+	}
     halSDIOGetCardInfo((halSDIO_struct*)sdStruct);
 }
 
-drvSD_error drvSDWriteBlocks(drvSDDriver_struct* sdStruct, const uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber) {
+drvSD_error drvSDWriteBlocks(drvSDDriver_struct* sdStruct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber) {
+	if (sdStruct == NULL || pData == NULL) {
+		return drvSD_NULL_POINT;
+	}
     return halSDIOWriteBlocks((halSDIO_struct*)sdStruct, pData, blockAdd, blocksNumber, SD_OPERATION_TIMEOUT);
 }
 
 drvSD_error drvSDReadBlocks(drvSDDriver_struct* sdStruct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber) {
-    return halSDIOReadBlocks((halSDIO_struct*)sdStruct, pData, blockAdd, blocksNumber, SD_OPERATION_TIMEOUT);
+	if (sdStruct == NULL || pData == NULL) {
+		return drvSD_NULL_POINT;
+	}
+	return halSDIOReadBlocks((halSDIO_struct*)sdStruct, pData, blockAdd, blocksNumber, SD_OPERATION_TIMEOUT);
 }
 

@@ -92,6 +92,9 @@ static const uint32_t channelValues[halADC_ChannelCount] = {
 static halADC_struct* initedADC[halADC_Count] = { NULL };
 
 void halADCInit(halADC_struct* adcStruct, halADC_initStruct* adcInitStruct) {
+	if (adcInitStruct == NULL || adcStruct == NULL) {
+		return;
+	}
     // enable RCC
     uint8_t adcId = adcInitStruct->adc;
     SET_BIT(RCC->APB2ENR, adc_def[adcId].adc_rcc);
@@ -169,6 +172,9 @@ void halADCInit(halADC_struct* adcStruct, halADC_initStruct* adcInitStruct) {
 }
 
 void halADCStart(halADC_struct* adcStruct) {
+	if (adcStruct == NULL) {
+		return;
+	}
     HAL_ADC_Start_IT((ADC_HandleTypeDef*)adcStruct);
     if (adcStruct->mode == halADC_triggerConvMode) {
         HAL_TIM_Base_Start(&(adcStruct->timer));
@@ -176,6 +182,9 @@ void halADCStart(halADC_struct* adcStruct) {
 }
 
 void halADCStop(halADC_struct* adcStruct) {
+	if (adcStruct == NULL) {
+		return;
+	}
     HAL_ADC_Stop_IT((ADC_HandleTypeDef*)adcStruct);
     if (adcStruct->mode == halADC_triggerConvMode) {
         HAL_TIM_Base_Stop(&(adcStruct->timer));
@@ -183,6 +192,9 @@ void halADCStop(halADC_struct* adcStruct) {
 }
 
 uint16_t halADCGetValue(halADC_struct* adcStruct) {
+	if (adcStruct == NULL) {
+		return -1;
+	}
     if (adcStruct->mode == halADC_singleConvMode) {
         HAL_ADC_PollForConversion((ADC_HandleTypeDef*)adcStruct, CONV_TIMEOUT);
     }

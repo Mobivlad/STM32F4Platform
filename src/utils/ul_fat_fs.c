@@ -65,7 +65,7 @@ static DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count) {
 static DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count) {
     DRESULT res = RES_ERROR;
 
-    if (drvSDWriteBlocks(&current_fatfs->sd, buff, sector, count) == drvSD_OK) {
+    if (drvSDWriteBlocks(&current_fatfs->sd, (uint8_t*)buff, sector, count) == drvSD_OK) {
         /* wait until the read operation is finished */
         while (drvSDGetCardState(&current_fatfs->sd) != drvSD_TRANSFER_OK) {
         }
@@ -137,6 +137,7 @@ ulFatFS_error ulFatFSInit(ulFatFS_struct* fatfs) {
     return FATFS_LinkDriver(&SD_Driver, SDPath)==0 ? ulFatFS_OK : ulFatFS_DISK_ERR;
 }
 
+// @TODO Remove this function after use
 // test function for FatFS
 void test() {
     FIL fil; /* File object */

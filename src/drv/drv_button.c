@@ -13,6 +13,7 @@ static const drvButton_data buttonData[drvButton_Count] =
 };
 
 void drvButtonInit(drvButton_struct* const buttonStruct) {
+	if (buttonStruct == NULL) return;
     halGPIO_struct* hal_GPIO_struct = (halGPIO_struct*) buttonStruct;
 
     hal_GPIO_struct->port = buttonData[buttonStruct->button].port;
@@ -37,6 +38,7 @@ void drvButtonInit(drvButton_struct* const buttonStruct) {
 
 void drvButtonSetCallBack(drvButton_struct* const buttonStruct, const drvButton_action action,
         const drvButtonActionCallBack callback) {
+	if (buttonStruct == NULL) return;
 
     buttonStruct->actionCallbacks[action] = callback;
 }
@@ -67,6 +69,7 @@ static uint8_t drvButtonIsClicked(drvButton_struct* const buttonStruct) {
 }
 
 void drvButtonRun(drvButton_struct* const buttonStruct) {
+	if (buttonStruct == NULL) return;
     drvButton_action action = drvButton_NoAction;
     switch (drvButtonIsClicked(buttonStruct)) {
 
