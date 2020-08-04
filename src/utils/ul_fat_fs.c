@@ -82,30 +82,25 @@ static DRESULT SD_ioctl(BYTE lun, BYTE cmd, void *buff) {
 
     if (Stat & STA_NOINIT)
         return RES_NOTRDY;
-
+    uint8_t synhData;
     switch (cmd) {
         case CTRL_SYNC:
-            res = RES_OK;
+            res = drvSDSynh(&current_fatfs->sd, &synhData);
             break;
 
         case GET_SECTOR_COUNT:
-            drvSDGetSDInfo(&current_fatfs->sd);
-            *(DWORD*) buff = current_fatfs->sd.SDIO.sdInfo.LogBlockNbr;
-            res = RES_OK;
+            res = drvSDSDIOGetSectorCount(&current_fatfs->sd, buff);
             break;
 
         case GET_SECTOR_SIZE:
-            drvSDGetSDInfo(&current_fatfs->sd);
-            *(WORD*) buff = current_fatfs->sd.SDIO.sdInfo.LogBlockSize;
-            res = RES_OK;
+            res = drvSDSDIOGetSectorSize(&current_fatfs->sd, buff);
             break;
 
         case GET_BLOCK_SIZE:
-            drvSDGetSDInfo(&current_fatfs->sd);
+            drvSDGetInfo(&current_fatfs->sd);
             *(DWORD*) buff = current_fatfs->sd.SDIO.sdInfo.LogBlockSize / SD_BLOCK_SIZE;
             res = RES_OK;
             break;
-
         default:
             res = RES_PARERR;
     }
@@ -145,35 +140,18 @@ void test() {
     FILINFO fno;
 
     /* Gives a work area to the default drive */
-    FRESULT res = f_mount(&current_fatfs->FatFs, "0:", 0);
+    FRESULT res = f_mount(&current_fatfs->FatFs, "", 0);
     if (res != FR_OK) {
         Error_Handler();
     }
-    uint8_t count = 0;
-    res = f_findfirst(&dir, &fno, "folder/f", "text*.txt" );
-    if (res != FR_OK) {
-        Error_Handler();
-    } else {
-
-        while(res == FR_OK && fno.fname[0]){
-            count++;
-            res = f_findnext(&dir, &fno);
-        }
-    }
-    f_mkdir("somedir");
+    f_mkdir("hello");
     /* Open a text file */
     res = f_open(&fil, "hello/message.txt", FA_CREATE_ALWAYS);
     if (res != FR_OK) {
         Error_Handler();
     }
-
-
-    /* Close the file */
-    res = f_close(&fil);
-    if (res != FR_OK) {
-        Error_Handler();
-    }
-    res = f_mount(0, "0:", 0);
+    f_close(&fil);
+    res = f_mount(0, "", 0);
     if (res != FR_OK) {
         Error_Handler();
     }

@@ -105,8 +105,8 @@ void halSDIOGetCardInfo(halSDIO_struct* sdio_struct)
     HAL_SD_GetCardInfo(&sdio_struct->sdHandle, &sdio_struct->sdInfo);
 }
 
-halSDIO_error halSDIOWriteBlocks(halSDIO_struct* sdio_struct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber, uint32_t timeout) {
-    return HAL_SD_WriteBlocks(&sdio_struct->sdHandle, pData, blockAdd, blocksNumber, timeout);
+halSDIO_error halSDIOWriteBlocks(halSDIO_struct* sdio_struct, const uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber, uint32_t timeout) {
+    return HAL_SD_WriteBlocks(&sdio_struct->sdHandle, (uint8_t*)pData, blockAdd, blocksNumber, timeout);
 }
 
 halSDIO_error halSDIOReadBlocks(halSDIO_struct* sdio_struct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber, uint32_t timeout) {

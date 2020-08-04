@@ -114,6 +114,6 @@ halSDIO_state halSDIOGetCardState(halSDIO_struct* sdio_struct);
 halSDIO_error halSDIOGetStatus(halSDIO_struct* sdio_struct);
 void halSDIOGetCardInfo(halSDIO_struct* sdio_struct);
 
-halSDIO_error halSDIOWriteBlocks(halSDIO_struct* sdio_struct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber, uint32_t timeout);
+halSDIO_error halSDIOWriteBlocks(halSDIO_struct* sdio_struct, const uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber, uint32_t timeout);
 halSDIO_error halSDIOReadBlocks(halSDIO_struct* sdio_struct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber, uint32_t timeout);
 #endif /* HAL_HAL_SDIO_H_ */
