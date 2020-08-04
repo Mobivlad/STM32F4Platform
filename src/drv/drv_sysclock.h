@@ -21,6 +21,11 @@ typedef enum {
 void drvSysClockInit(void);
 
 /**
+ * Deinitial function for SysTick timer
+ */
+void drvSysClockDeinit();
+
+/**
  * Function check if the time is elapsed
  * @param startTime value of start getTick
  * @param delay value of delay

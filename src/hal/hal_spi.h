@@ -159,6 +159,12 @@ typedef struct{
 halSPI_errorCode halSPIInit(halSPI_struct* spiStruct, halSPI_initStruct* initStruct);
 
 /**
+ * Deinitial function for SPI
+ * @param spiStruct pointer on UART instance structure
+ */
+halSPI_errorCode halSPIDeinit(halSPI_struct* spiStruct);
+
+/**
  * Select SPI device
  * @param spiStruct pointer on UART instance structure
  */

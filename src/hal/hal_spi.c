@@ -124,6 +124,26 @@ halSPI_errorCode halSPIInit(halSPI_struct* spiStruct, halSPI_initStruct* initStr
     return halSPI_OK;
 }
 
+halSPI_errorCode halSPIDeinit(halSPI_struct* spiStruct) {
+    if(spiStruct == NULL) {
+        return halSPI_DATA_NULL_POINTER;
+    }
+
+    spiStruct->spiStatus = 0;
+
+    SPI_Cmd(spi_data[spiStruct->spi].spi, DISABLE);
+
+    NVIC_DisableIRQ(spi_data[spiStruct->spi].spi_irnq);
+
+    SPI_I2S_DeInit(spi_data[spiStruct->spi].spi);
+
+    spi_data[spiStruct->spi].spi_rcc_function(spi_data[spiStruct->spi].spi_rcc, DISABLE);
+
+    halSPI_structsPointers[spiStruct->spi] = NULL;
+
+    return halSPI_OK;
+}
+
 halSPI_errorCode halSPISetCS(halSPI_struct* spiStruct) {
     if (spiStruct == NULL) {
         return halSPI_DATA_NULL_POINTER;

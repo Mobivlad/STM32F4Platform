@@ -11,6 +11,10 @@ void drvSysClockInit() {
     halSysClockInit();
 }
 
+void drvSysClockDeinit() {
+    halSysClockDeinit();
+}
+
 drvSysClockPassStatus drvIsTimePased(const uint32_t startTime, const uint32_t delay) {
     return (startTime + delay) < drvSysClockGetTick() ? PASSED : NO_PASSED;
 }

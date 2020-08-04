@@ -35,7 +35,7 @@ typedef struct {
 
 /// UART instance enumerations
 typedef enum {
-    halUART1 = 0,
+    halUART1 = 0,       // DO NOT WORK ON STM32F4DISCOVERY
     halUART2,
     halUART3,
     halUART4,
@@ -128,7 +128,14 @@ typedef enum {
  * @param uartStruct pointer on UART instance structure
  * @param initStruct pointer on structure for UART initialization
  */
-halUARTErrorCode halInitUART(halUART_struct* uartStruct, halUARTInitStruct* initStruct);
+halUARTErrorCode halUARTInit(halUART_struct* uartStruct, halUARTInitStruct* initStruct);
+
+/**
+ * Deinitial function for UART
+ * @param uartStruct pointer on UART instance structure
+ * @param initStruct pointer on structure for UART initialization
+ */
+halUARTErrorCode halUARTDeinit(halUART_struct* uartStruct);
 
 /**
  * UART receive function

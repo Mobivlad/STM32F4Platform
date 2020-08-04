@@ -54,7 +54,6 @@ typedef void (*drvButtonActionCallBack)();
 /// Button initial structure
 typedef struct {
     halGPIO_struct          halGPIO;
-    drvButton               button;
 
     uint32_t                click_counter;
     uint32_t                click_duration;
@@ -65,8 +64,9 @@ typedef struct {
 /**
  * Function that configurate button.
  * @param buttonStruct pointer on structure with data of button
+ * @param button defined button name
  */
-void drvButtonInit(drvButton_struct* const buttonStruct);
+void drvButtonInit(drvButton_struct* const buttonStruct, const drvButton button);
 
 /**
  * Set action callback function

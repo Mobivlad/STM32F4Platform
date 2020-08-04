@@ -16,6 +16,11 @@
 void halSysClockInit(void);
 
 /**
+ * Deinitial function for SysTick timer
+ */
+void halSysClockDeinit(void);
+
+/**
  * Return SysTick timer value
  * @return SysTick counter value
  */

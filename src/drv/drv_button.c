@@ -12,13 +12,13 @@ static const drvButton_data buttonData[drvButton_Count] =
         { halGPIO_PortA, halGPIO_Pin0 },
 };
 
-void drvButtonInit(drvButton_struct* const buttonStruct) {
+void drvButtonInit(drvButton_struct* const buttonStruct, const drvButton button) {
     halGPIO_struct* hal_GPIO_struct = (halGPIO_struct*) buttonStruct;
 
-    hal_GPIO_struct->port = buttonData[buttonStruct->button].port;
+    hal_GPIO_struct->port = buttonData[button].port;
 
     const halGPIO_initStruct initStruct = {
-            buttonData[buttonStruct->button].pin,
+            buttonData[button].pin,
             halGPIO_ModeIn,
             halGPIO_Speed2Mhz,
             halGPIO_OTPP,

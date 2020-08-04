@@ -20,6 +20,10 @@ void halSysClockInit() {
     }
 }
 
+void halSysClockDeinit(void) {
+	inited = 0;
+}
+
 uint32_t halSysClockGetTick() {
     return halSysTick_msCounter;
 }

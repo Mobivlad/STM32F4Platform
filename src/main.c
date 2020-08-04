@@ -8,26 +8,33 @@
   ******************************************************************************
 */
 
-#include "drv_fm25l16b.h"
+#include "drv_com_port.h"
 #include "ul_heart_beat.h"
+#include "drv_sysclock.h"
 
-#define BLINK_FREQUENCY_5_HZ 100
-uint8_t data[5] = {0x05, 0x04, 0x03, 0x02, 0x01};
-drvFRAM_struct fram_struct1;
+#define BLINK_FREQUENCY_5_HZ 200
+drvCOMPort_struct comPortStruct;
+char array[255] = "Hello world!";
+
+void uartRec() {
+    drvCOMPortWriteString(&comPortStruct, "OK\r\n", NULL);
+    memset(array, 0, sizeof(array));
+    drvCOMPortReadString(&comPortStruct, array, 255, uartRec);
+}
 int main(void)
 {
-    /*drvSSDisplayInit();
-    drvSSDisplaySetValue(125);
-    for(;;);*/
+    drvSysClockInit();
+
+    drvCOMPortInit(&comPortStruct, drvCOMPort1);
+    drvCOMPortWriteString(&comPortStruct, array, NULL);
+    drvCOMPortReadString(&comPortStruct, array, 255, uartRec);
+    //drvCOMPortWriteString(&comPortStruct, array, uartRec);
+
     ulHeartBeatStruct heartBeat;
     heartBeat.frequency = BLINK_FREQUENCY_5_HZ;
     ulHeartBeatInit(&heartBeat);
 
-
-    drvFRAMInit(&fram_struct1);
-    drvFRAMReadData(&fram_struct1, 0x0000, data, 5);
     while(1){
-        drvFRAMRun(&fram_struct1);
         ulHeartBeatRun(&heartBeat);
     }
 }

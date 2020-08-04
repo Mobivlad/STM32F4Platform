@@ -9,8 +9,6 @@
 
 void ulHeartBeatInit(ulHeartBeatStruct* const heartBeat) {
 
-    drvSysClockInit();
-
     drvLed_struct* drvLedStruct = (drvLed_struct*) heartBeat;
 
     drvLedStruct->led           = drvLed1;

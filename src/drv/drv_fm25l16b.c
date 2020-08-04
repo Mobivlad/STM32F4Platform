@@ -76,6 +76,13 @@ drvFRAM_errorCode drvFRAMInit(drvFRAM_struct* framStruct) {
     return drvFRAM_OK;
 }
 
+drvFRAM_errorCode drvFRAMDeinit(drvFRAM_struct* framStruct) {
+
+    framStruct->state = STATE_NOT_INITED;
+
+    return halSPIDeinit((halSPI_struct*)framStruct);
+}
+
 drvFRAM_errorCode drvFRAMSetBP(drvFRAM_struct* framStruct, drvFRAM_protectionLevel newBP) {
     drvFRAM_state startState = framStruct->state;
 
@@ -190,6 +197,10 @@ drvFRAM_errorCode drvFRAMReadData(drvFRAM_struct* framStruct, uint16_t memoryAdd
     operation->opcode = READ;
 
     return drvFRAM_OK;
+}
+
+drvFRAM_state drvFRAMGetState(drvFRAM_struct* framStruct) {
+    return framStruct->state;
 }
 
 drvFRAM_errorCode drvFRAMRun(drvFRAM_struct* framStruct) {

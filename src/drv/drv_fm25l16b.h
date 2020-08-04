@@ -105,6 +105,13 @@ typedef struct {
 drvFRAM_errorCode drvFRAMInit(drvFRAM_struct* framStruct);
 
 /**
+ * FRAM deinitial function
+ * @param framStruct FRAM data structure
+ * @return execute result code
+ */
+drvFRAM_errorCode drvFRAMDeinit(drvFRAM_struct* framStruct)
+
+/**
  * FRAM execute function
  * @param framStruct FRAM data structure
  * @return execute result code
@@ -140,5 +147,12 @@ drvFRAM_errorCode drvFRAMWriteData(drvFRAM_struct* framStruct, uint16_t memoryAd
  * @return execute result code
  */
 drvFRAM_errorCode drvFRAMSetBP(drvFRAM_struct* framStruct, drvFRAM_protectionLevel newBP);
+
+/**
+ * Get current FRAM state
+ * @param framStruct FRAM data structure
+ * @return FRAM current state
+ */
+drvFRAM_state drvFRAMGetState(drvFRAM_struct* framStruct);
 
 #endif /* DRV_DRV_FM25L16B_H_ */
