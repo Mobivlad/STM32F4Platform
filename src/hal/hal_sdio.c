@@ -45,15 +45,15 @@ static void halSDIOInitPin(const halSDIO_pinDef_t* pinData, halSDIO_PuPdType ppT
 
 static halSDIO_SDPresentState halSDIOSDIsDetected(halSDIO_struct* sdio_struct) {
     halSDIO_pinDef_t detectPin = sdio_def[sdio_struct->sdio].detectPin;
-    return HAL_GPIO_ReadPin(detectPin.port, detectPin.pin) == GPIO_PIN_RESET ? halSDIO_Present : halSDIO_NotPresent;
+    return (HAL_GPIO_ReadPin(detectPin.port, detectPin.pin) == GPIO_PIN_RESET) ? halSDIO_Present : halSDIO_NotPresent;
 }
 
 halSDIO_error halSDIOInit(halSDIO_struct* sdio_struct, halSDIO_initStruct* initStruct) {
     if (sdio_struct == NULL || initStruct == NULL) {
-    	return halSDIO_NULL_POINT;
+        return halSDIO_NULL_POINT;
     }
 
-	SET_BIT(RCC->APB2ENR, sdio_def[sdio_struct->sdio].rcc);
+    SET_BIT(RCC->APB2ENR, sdio_def[sdio_struct->sdio].rcc);
 
     halSDIO_error SD_state = halSDIO_OK;
 
@@ -72,14 +72,14 @@ halSDIO_error halSDIOInit(halSDIO_struct* sdio_struct, halSDIO_initStruct* initS
     if (halSDIOSDIsDetected(sdio_struct) != halSDIO_Present) {
         return halSDIO_SD_NOT_PRESENT;
     }
-    halSDIOInitPin(&sdio_def[sdio_struct->sdio].cmd, initStruct->ppType,
+    halSDIOInitPin(&sdio_def[sdio_struct->sdio].commandPin, initStruct->ppType,
             halSDIO_pinSDIO);
-    halSDIOInitPin(&sdio_def[sdio_struct->sdio].ck, halSDIO_Hard,
+    halSDIOInitPin(&sdio_def[sdio_struct->sdio].clockPin, halSDIO_Hard,
             halSDIO_pinSDIO);
 
     for (uint8_t i = 0; i < (initStruct->wideWigth == halSDIO_1Bit ? WIDE_WIDTH_1 : WIDE_WIDTH_4);
             i++) {
-        halSDIOInitPin(&sdio_def[sdio_struct->sdio].d[i], initStruct->ppType, halSDIO_pinSDIO);
+        halSDIOInitPin(&sdio_def[sdio_struct->sdio].dataPins[i], initStruct->ppType, halSDIO_pinSDIO);
     }
 
     if (HAL_SD_Init(sd_handle) != HAL_OK) {
@@ -96,34 +96,34 @@ halSDIO_error halSDIOInit(halSDIO_struct* sdio_struct, halSDIO_initStruct* initS
 halSDIO_error halSDIOGetStatus(halSDIO_struct* sdio_struct)
 {
     return sdio_struct == NULL ? halSDIO_NULL_POINT
-    		: HAL_SD_GetCardStatus(&sdio_struct->sdHandle, &sdio_struct->sdStatus);
+            : HAL_SD_GetCardStatus(&sdio_struct->sdHandle, &sdio_struct->sdStatus);
 }
 
 halSDIO_state halSDIOGetCardState(halSDIO_struct* sdio_struct)
 {
     if (sdio_struct == NULL) {
-    	return halSDIO_NULL_POINT;
+        return halSDIO_NULL_POINT;
     }
-	return ((HAL_SD_GetCardState(&sdio_struct->sdHandle) == HAL_SD_CARD_TRANSFER) ?
+    return ((HAL_SD_GetCardState(&sdio_struct->sdHandle) == HAL_SD_CARD_TRANSFER) ?
             halSDIO_TRANSFER_OK : halSDIO_TRANSFER_BUSY);
 }
 
 void halSDIOGetCardInfo(halSDIO_struct* sdio_struct)
 {
-	if (sdio_struct == NULL) {
-		return;
-	}
-	HAL_SD_GetCardInfo(&sdio_struct->sdHandle, &sdio_struct->sdInfo);
+    if (sdio_struct == NULL) {
+        return;
+    }
+    HAL_SD_GetCardInfo(&sdio_struct->sdHandle, &sdio_struct->sdInfo);
 }
 
 halSDIO_error halSDIOWriteBlocks(halSDIO_struct* sdio_struct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber, uint32_t timeout) {
-		return sdio_struct == NULL || pData == NULL ? halSDIO_NULL_POINT
-				: HAL_SD_WriteBlocks(&sdio_struct->sdHandle, pData, blockAdd, blocksNumber, timeout);
+    return (sdio_struct == NULL || pData == NULL) ? halSDIO_NULL_POINT
+            : HAL_SD_WriteBlocks(&sdio_struct->sdHandle, pData, blockAdd, blocksNumber, timeout);
 }
 
 halSDIO_error halSDIOReadBlocks(halSDIO_struct* sdio_struct, uint8_t *pData, uint32_t blockAdd, uint32_t blocksNumber, uint32_t timeout) {
-	return sdio_struct == NULL || pData == NULL ? halSDIO_NULL_POINT
-			: HAL_SD_ReadBlocks(&sdio_struct->sdHandle, pData, blockAdd, blocksNumber, timeout);
+    return (sdio_struct == NULL || pData == NULL) ? halSDIO_NULL_POINT
+            : HAL_SD_ReadBlocks(&sdio_struct->sdHandle, pData, blockAdd, blocksNumber, timeout);
 }
 
 

@@ -18,6 +18,7 @@
 #include "ul_heart_beat.h"
 #include "ul_moving_average.h"
 #include "bl_adc_controller.h"
+#include "bl_adc_file_writer.h"
 #include "ul_fat_fs.h"
 
 #define BLINK_FREQUENCY_5_HZ 100
@@ -30,7 +31,6 @@
 static void SystemClock_Config(void);
 
 ulHeartBeatStruct      heartBeat;
-ulMovingAvarege_struct adc;
 blADCController_struct adcController;
 
 int main(void)
@@ -40,10 +40,17 @@ int main(void)
     SystemClock_Config();
     SystemCoreClockUpdate();
 
-    ulFatFS_struct fatfs;
-    ulFatFSInit(&fatfs);
+    ulFatFS_struct ff;
+    ulFatFSInit(&ff);
 
     test();
+
+
+    /*blADCController_struct adcController;
+    blADCControllerInit(&adcController, ADC_FREQUENCY_100_HZ);
+
+    blADCFileWriter_struct adcw;
+    blADCFileWriterInit(&adcw, adcController.fileMutex, &adcController.movingAvarageUtil.adcValue);
 
     heartBeat.frequency = BLINK_FREQUENCY_5_HZ;
     ulHeartBeatInit(&heartBeat);
@@ -51,26 +58,16 @@ int main(void)
     xTaskCreate(ulHeartBeatTaskFunction, "HEART_BEAT", configMINIMAL_STACK_SIZE,
                     (void*) &heartBeat, 1, (xTaskHandle *) NULL);
 
-    adc.adc = drvADC1;
-    adc.frequency = ADC_FREQUENCY_100_HZ;
-
-    ulMovingAvaregeInit(&adc);
-
-    adcController.controlSemaphore = adc.semaphore;
-    blADCControllerInit(&adcController);
-
-
-
     xTaskCreate(ulMovingAvaregeTaskFunction, "ADC", configMINIMAL_STACK_SIZE,
-                    (void*) &adc, 1, (xTaskHandle *) NULL);
+                    (void*) &adcController.movingAvarageUtil, 1, (xTaskHandle *) NULL);
 
-    xTaskCreate(ulMovingAvaregeControlFunction, "ADC_control", configMINIMAL_STACK_SIZE,
-                        (void*) &adc, 1, (xTaskHandle *) NULL);
-
-    xTaskCreate(blADCControllerTask, "BUTTON_HANDLER", configMINIMAL_STACK_SIZE,
+    xTaskCreate(blADCControllerButtonTask, "BUTTON_HANDLER", configMINIMAL_STACK_SIZE,
                     (void*) &adcController, 1, (xTaskHandle *) NULL);
 
-    vTaskStartScheduler();
+    xTaskCreate(blADCControllerStartStopTask, "START_STOP_HANDLER", configMINIMAL_STACK_SIZE,
+                    (void*) &adcController, 1, (xTaskHandle *) NULL);
+
+    vTaskStartScheduler();*/
 }
 
 static void SystemClock_Config(void) {

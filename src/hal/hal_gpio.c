@@ -16,9 +16,9 @@ static const halGPIO_portDef_t port_table[halGPIO_PortCount] =
 };
 
 void halGPIOInit(halGPIO_struct* const gpioStruct, const halGPIO_initStruct* const initStruct) {
-	if (gpioStruct == NULL || initStruct == NULL) {
-		return;
-	}
+    if (gpioStruct == NULL || initStruct == NULL) {
+        return;
+    }
     // enable RCC
     SET_BIT(RCC->AHB1ENR, port_table[gpioStruct->port].enablePortClockDef);
 
@@ -52,27 +52,27 @@ void halGPIOInit(halGPIO_struct* const gpioStruct, const halGPIO_initStruct* con
 }
 
 void halGPIOSetPins(halGPIO_struct* const gpioStruct) {
-	if (gpioStruct == NULL) {
-		return;
-	}
+    if (gpioStruct == NULL) {
+        return;
+    }
     gpioStruct->state = halGPIO_Set;
 
     HAL_GPIO_WritePin(port_table[gpioStruct->port].portDef, gpioStruct->pinInitStruct.Pin, SET);
 }
 
 void halGPIOResetPins(halGPIO_struct* const gpioStruct) {
-	if (gpioStruct == NULL) {
-		return;
-	}
-	gpioStruct->state = halGPIO_Reset;
+    if (gpioStruct == NULL) {
+        return;
+    }
+    gpioStruct->state = halGPIO_Reset;
 
     HAL_GPIO_WritePin(port_table[gpioStruct->port].portDef, gpioStruct->pinInitStruct.Pin, RESET);
 }
 
 void halGPIOTogglePins(halGPIO_struct* const gpioStruct) {
-	if (gpioStruct == NULL) {
-		return;
-	}
+    if (gpioStruct == NULL) {
+        return;
+    }
     gpioStruct->state = (gpioStruct->state == halGPIO_Set) ? halGPIO_Reset : halGPIO_Set;
 
     HAL_GPIO_TogglePin(port_table[gpioStruct->port].portDef, gpioStruct->pinInitStruct.Pin);

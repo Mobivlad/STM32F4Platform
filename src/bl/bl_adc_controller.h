@@ -11,16 +11,31 @@
 #include "ul_moving_average.h"
 #include "drv_button.h"
 
-typedef struct {
-    drvButton_struct    button;
+#define ADC_DRIVER  drvADC1
 
-    SemaphoreHandle_t   controlSemaphore;
+typedef enum {
+    SUSPENDED,
+    IN_RUN
+} blADC_state;
+
+typedef struct {
+    drvButton_struct        button;
+
+    ulMovingAvarege_struct  movingAvarageUtil;
+
+    SemaphoreHandle_t       startStorSemaphore;
+    SemaphoreHandle_t       fileMutex;
+    SemaphoreHandle_t       displayMutex;
+
+    blADC_state             state;
+
 } blADCController_struct;
 
 
+void blADCControllerInit(blADCController_struct* controllerStruct, uint32_t frequency);
 
-void blADCControllerInit(blADCController_struct* controllerStruct);
+void blADCControllerButtonTask(void* parametr);
 
-void blADCControllerTask(void* parametr);
+void blADCControllerStartStopTask(void* parametr);
 
 #endif /* BL_BL_ADC_CONTROLLER_H_ */

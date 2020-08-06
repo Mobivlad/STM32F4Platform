@@ -15,8 +15,6 @@ static ulFatFS_struct* current_fatfs;
 
 static volatile DSTATUS Stat = STA_NOINIT;
 
-char SDPath[4];
-
 static DSTATUS SD_CheckStatus(BYTE lun) {
     Stat = STA_NOINIT;
 
@@ -134,7 +132,7 @@ static const Diskio_drvTypeDef  SD_Driver =
 ulFatFS_error ulFatFSInit(ulFatFS_struct* fatfs) {
     current_fatfs = fatfs;
     fatfs->sd.sddriver = drvSDDriver1;
-    return FATFS_LinkDriver(&SD_Driver, SDPath)==0 ? ulFatFS_OK : ulFatFS_DISK_ERR;
+    return FATFS_LinkDriver(&SD_Driver) == 0 ? ulFatFS_OK : ulFatFS_DISK_ERR;
 }
 
 // @TODO Remove this function after use
@@ -150,20 +148,9 @@ void test() {
     if (res != FR_OK) {
         Error_Handler();
     }
-    uint8_t count = 0;
-    res = f_findfirst(&dir, &fno, "folder/f", "text*.txt" );
-    if (res != FR_OK) {
-        Error_Handler();
-    } else {
-
-        while(res == FR_OK && fno.fname[0]){
-            count++;
-            res = f_findnext(&dir, &fno);
-        }
-    }
-    f_mkdir("somedir");
+    f_mkdir("hello1");
     /* Open a text file */
-    res = f_open(&fil, "hello/message.txt", FA_CREATE_ALWAYS);
+    res = f_open(&fil, "hello1/message.txt", FA_CREATE_ALWAYS);
     if (res != FR_OK) {
         Error_Handler();
     }
@@ -194,7 +181,7 @@ ulFatFS_error ulFatFSCreateFolder(ulFatFS_struct* fatfs, char* folderName) {
 }
 
 ulFatFS_error ulFatFSFindCount(ulFatFS_struct* fatfs, char* folderPath, char* fileMask,
-        uint8_t* count) {
+        ulFatFS_elementType elementType, uint8_t* count) {
     if (fatfs == NULL || folderPath == NULL || fileMask == NULL || count == NULL) {
         return ulFatFS_DATA_NULL_POINT;
     }
@@ -202,33 +189,53 @@ ulFatFS_error ulFatFSFindCount(ulFatFS_struct* fatfs, char* folderPath, char* fi
     FILINFO fno;
     uint8_t tmp_count = 0;
     FRESULT fr = f_findfirst(&dir, &fno, folderPath, fileMask);
-    if (fr != (FRESULT) ulFatFS_OK) {
-        return fr;
-    }
-    while (*(fno.fname)) {
-        if (fr != (FRESULT) ulFatFS_OK) {
+    switch (fr) {
+        case FR_NO_PATH: {
+            *count = 0;
+            return FR_OK;
+        }
+        case FR_OK: {
+            while (*(fno.fname)) {
+                if (fr != (FRESULT) ulFatFS_OK) {
+                    return fr;
+                }
+                switch (elementType) {
+                    case ulFatFS_Folder:
+                        if (fno.fattrib & AM_DIR) {
+                            tmp_count++;
+                        }
+                        break;
+                    case ulFatFS_File:
+                        if (!(fno.fattrib & AM_DIR)) {
+                            tmp_count++;
+                        }
+                        break;
+                }
+                fr = f_findnext(&dir, &fno);
+            }
+            fr = f_closedir(&dir);
+            *count = (fr == (FRESULT) ulFatFS_OK) ? tmp_count : SD_ERROR_VALUE;
             return fr;
         }
-        tmp_count++;
-        fr = f_findnext(&dir, &fno);
+        default: {
+            return fr;
+        }
     }
-    fr = f_closedir(&dir);
-    *count = (fr == (FRESULT) ulFatFS_OK) ? tmp_count : SD_ERROR_VALUE;
-    return fr;
 }
 
-ulFatFS_error ulFatFSOpenFile(ulFatFS_struct* fatfs, ulFatFS_File_t* file, char* fileName,
-        ulFatFS_filePosix posix) {
+ulFatFS_error ulFatFSOpenFile(ulFatFS_struct* fatfs, ulFatFS_File_t* file, const char* fileName,
+        ulFatFS_FileOpenAttribute_t posix) {
     return f_open(file, fileName, posix);
 }
 
-ulFatFS_error ulFatFSWrite(ulFatFS_struct* fatfs, ulFatFS_File_t* file, uint8_t* data, uint16_t dataLen) {
+ulFatFS_error ulFatFSWrite(ulFatFS_struct* fatfs, ulFatFS_File_t* file, const uint8_t* data,
+        uint16_t dataLen) {
     if (fatfs == NULL || data == NULL || file == NULL) {
         return ulFatFS_DATA_NULL_POINT;
     }
     uint16_t writtenBytes = 0;
     FRESULT fr = f_write(file, data, dataLen, (unsigned int*) &writtenBytes);
-    if ( fr!= (FRESULT) ulFatFS_OK ) {
+    if (fr != (FRESULT) ulFatFS_OK) {
         return fr;
     }
     return writtenBytes == dataLen ? ulFatFS_OK : ulFatFS_COMPLETE_OPERATION_ERROR;
@@ -241,19 +248,20 @@ ulFatFS_error ulFatFSWriteString(ulFatFS_struct* fatfs, ulFatFS_File_t* file, co
     uint16_t writtenBytes = 0;
     uint16_t dataLen = strlen(str);
     FRESULT fr = f_write(file, str, dataLen, (unsigned int*) &writtenBytes);
-    if ( fr!= (FRESULT) ulFatFS_OK ) {
+    if (fr != (FRESULT) ulFatFS_OK) {
         return fr;
     }
     return writtenBytes == dataLen ? ulFatFS_OK : ulFatFS_COMPLETE_OPERATION_ERROR;
 }
 
-ulFatFS_error ulFatFSRead(ulFatFS_struct* fatfs, ulFatFS_File_t* file, uint8_t* data, uint16_t dataLen) {
+ulFatFS_error ulFatFSRead(ulFatFS_struct* fatfs, ulFatFS_File_t* file, uint8_t* data,
+        uint16_t dataLen) {
     if (fatfs == NULL || data == NULL || file == NULL) {
         return ulFatFS_DATA_NULL_POINT;
     }
     uint16_t readBytes = 0;
     FRESULT fr = f_read(file, data, dataLen, (unsigned int*) &readBytes);
-    if ( fr!= (FRESULT) ulFatFS_OK ) {
+    if (fr != (FRESULT) ulFatFS_OK) {
         return fr;
     }
     return readBytes == dataLen ? ulFatFS_OK : ulFatFS_COMPLETE_OPERATION_ERROR;

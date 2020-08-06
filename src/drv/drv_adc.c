@@ -16,9 +16,9 @@ static const drvADC_def_t drvADC_def[drvADC_Count] = {
         }
 };
 
-void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueHandle_t queue, SemaphoreHandle_t semaphore) {
+void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueHandle_t queue) {
 
-	if (adcStruct == NULL) return;
+    if (adcStruct == NULL) return;
 
     halADC_initStruct initStruct;
 
@@ -28,27 +28,26 @@ void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueH
     initStruct.triggerTimerInitStruct.timer     = drvADC_def[adc].timer;
     initStruct.triggerTimerInitStruct.frequency = frequency;
     initStruct.queue                            = queue;
-    initStruct.semaphore                        = semaphore;
 
     initStruct.clockPrescaler                   = halADC_clockDiv4;
     initStruct.convMode                         = halADC_triggerConvMode;
     initStruct.dataAlign                        = halADC_dataAlignRight;
 
-    halADCInit((halADC_struct*)adcStruct, &initStruct);
+    halADCInit((halADC_struct*)adcStruct, (const halADC_initStruct*) &initStruct);
 }
 
 
 void drvADCStart(drvADC_struct* adcStruct) {
-	if (adcStruct == NULL) return;
+    if (adcStruct == NULL) return;
     halADCStart((halADC_struct*)adcStruct);
 }
 
 void drvADCStop(drvADC_struct* adcStruct) {
-	if (adcStruct == NULL) return;
+    if (adcStruct == NULL) return;
     halADCStop((halADC_struct*)adcStruct);
 }
 
 void drvADCGetValue(drvADC_struct* adcStruct) {
-	if (adcStruct == NULL) return;
+    if (adcStruct == NULL) return;
     halADCGetValue((halADC_struct*)adcStruct);
 }

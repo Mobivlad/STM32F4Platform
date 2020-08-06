@@ -9,6 +9,9 @@
 #define UTILS_UL_FAT_FS_H_
 
 #include "drv_sd_driver.h"
+
+#include "FreeRTOS.h"
+#include "semphr.h"
 #include <string.h>
 #include "ff_gen_drv.h"
 #include "ffconf.h"
@@ -57,6 +60,11 @@ typedef enum {
 } ulFatFS_error;
 
 typedef enum {
+    ulFatFS_File = 0,
+    ulFatFS_Folder
+} ulFatFS_elementType;
+
+typedef enum {
     R   = FA_READ,
     RW  = R | FA_WRITE,
     CW  = FA_CREATE_ALWAYS | FA_WRITE,
@@ -65,9 +73,23 @@ typedef enum {
     AR  = A  | FA_READ,
     OW  = FA_CREATE_NEW | FA_WRITE,
     OWR = OW | R
-} ulFatFS_filePosix;
+} ulFatFS_FileOpenAttribute_t;
 
 ulFatFS_error ulFatFSInit(ulFatFS_struct* fatfs);
+
+ulFatFS_error ulFatFSMountSD(ulFatFS_struct* fatfs);
+ulFatFS_error ulFatFSUnmountSD(ulFatFS_struct* fatfs);
+
+ulFatFS_error ulFatFSCreateFolder(ulFatFS_struct* fatfs, char* folderName);
+
+ulFatFS_error ulFatFSOpenFile(ulFatFS_struct* fatfs, ulFatFS_File_t* file, const char* fileName, ulFatFS_FileOpenAttribute_t posix);
+ulFatFS_error ulFatFSCloseFile(ulFatFS_struct* fatfs, ulFatFS_File_t* file);
+
+ulFatFS_error ulFatFSWrite(ulFatFS_struct* fatfs, ulFatFS_File_t* file, const uint8_t* data, uint16_t dataLen) ;
+ulFatFS_error ulFatFSWriteString(ulFatFS_struct* fatfs, ulFatFS_File_t* file, const char* str);
+ulFatFS_error ulFatFSRead(ulFatFS_struct* fatfs, ulFatFS_File_t* file, uint8_t* data, uint16_t dataLen);
+
+ulFatFS_error ulFatFSFindCount(ulFatFS_struct* fatfs, char* folderPath, char* fileMask, ulFatFS_elementType elementType, uint8_t* count);
 
 void test();
 

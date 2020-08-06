@@ -121,7 +121,6 @@ typedef struct {
 
     halADC_timerInitStruct  triggerTimerInitStruct;
     QueueHandle_t           queue;
-    SemaphoreHandle_t       semaphore;
 } halADC_initStruct;
 
 typedef struct {
@@ -142,7 +141,7 @@ typedef struct {
  * @param adcStruct pointer on ADC state structure
  * @param adcInitStruct pointer on structure with initial parameters
  */
-void halADCInit(halADC_struct* adcStruct, halADC_initStruct* adcInitStruct);
+void halADCInit(halADC_struct* adcStruct, const halADC_initStruct* adcInitStruct);
 
 /**
  * Start ADC function

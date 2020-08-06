@@ -35,7 +35,7 @@ typedef struct {
  * @param queue queue buffer for results
  * @param semaphore control semaphore
  */
-void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueHandle_t queue, SemaphoreHandle_t semaphore);
+void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueHandle_t queue);
 
 /**
  * Start ADC function

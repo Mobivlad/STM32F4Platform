@@ -41,7 +41,7 @@ typedef enum
   drvSD_BUSY         = halSDIO_BUSY,
   drvSD_TIMEOUT      = halSDIO_TIMEOUT,
   drvSD_NOT_PRESENT  = halSDIO_SD_NOT_PRESENT,
-  drvSD_NULL_POINT	 = halSDIO_NULL_POINT
+  drvSD_NULL_POINT   = halSDIO_NULL_POINT
 } drvSD_error;
 
 typedef struct {

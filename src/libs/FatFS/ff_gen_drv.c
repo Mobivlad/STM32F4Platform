@@ -36,21 +36,16 @@ Disk_drvTypeDef disk = {{0},{0},{0},0};
             else the parameter must be equal to 0
   * @retval Returns 0 in case of success, otherwise 1.
   */
-uint8_t FATFS_LinkDriverEx(const Diskio_drvTypeDef *drv, char *path, uint8_t lun)
+uint8_t FATFS_LinkDriverEx(const Diskio_drvTypeDef *drv, uint8_t lun)
 {
   uint8_t ret = 1;
-  uint8_t DiskNum = 0;
 
   if(disk.nbr < _VOLUMES)
   {
     disk.is_initialized[disk.nbr] = 0;
     disk.drv[disk.nbr] = drv;
     disk.lun[disk.nbr] = lun;
-    DiskNum = disk.nbr++;
-    path[0] = DiskNum + '0';
-    path[1] = ':';
-    path[2] = '/';
-    path[3] = 0;
+    ++disk.nbr;
     ret = 0;
   }
 
@@ -65,9 +60,9 @@ uint8_t FATFS_LinkDriverEx(const Diskio_drvTypeDef *drv, char *path, uint8_t lun
   * @param  path: pointer to the logical drive path
   * @retval Returns 0 in case of success, otherwise 1.
   */
-uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
+uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv)
 {
-  return FATFS_LinkDriverEx(drv, path, 0);
+  return FATFS_LinkDriverEx(drv, 0);
 }
 
 /**

@@ -18,11 +18,6 @@
 #define INCORRECT_DATA          0x1FFF
 #define DELAY_TIME              0xFF
 
-typedef enum {
-    SUSPENDED,
-    IN_RUN
-} ulMovingAvarege_state;
-
 typedef struct {
     drvADC_struct           adc_srtuct;
 
@@ -34,9 +29,9 @@ typedef struct {
 
     uint16_t                adcValue;
     QueueHandle_t           queue;
-    SemaphoreHandle_t       semaphore;
+    SemaphoreHandle_t       fileMutex;
+    SemaphoreHandle_t       displayMutex;
 
-    ulMovingAvarege_state   state;
 } ulMovingAvarege_struct;
 
 /**
@@ -52,8 +47,4 @@ void ulMovingAvaregeStop(ulMovingAvarege_struct* ulMA_struct);
  */
 void ulMovingAvaregeTaskFunction(void* parametr);
 
-/**
- * Task function for ADC control
- */
-void ulMovingAvaregeControlFunction(void* parametr);
 #endif /* UTILS_UL_MOVING_AVERAGE_H_ */

@@ -41,9 +41,9 @@ typedef struct {
 typedef struct {
     SDMMC_TypeDef *  instance;
     uint32_t         rcc;
-    halSDIO_pinDef_t ck;
-    halSDIO_pinDef_t cmd;
-    halSDIO_pinDef_t d[WIDE_WIDTH_4];
+    halSDIO_pinDef_t clockPin;
+    halSDIO_pinDef_t commandPin;
+    halSDIO_pinDef_t dataPins[WIDE_WIDTH_4];
     halSDIO_pinDef_t detectPin;
 } halSDIO_def_t;
 
