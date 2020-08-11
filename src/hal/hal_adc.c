@@ -95,6 +95,8 @@ void halADCInit(halADC_struct* adcStruct, const halADC_initStruct* adcInitStruct
     if (adcInitStruct == NULL || adcStruct == NULL) {
         return;
     }
+
+
     // enable RCC
     uint8_t adcId = adcInitStruct->adc;
     SET_BIT(RCC->APB2ENR, adc_def[adcId].adc_rcc);
@@ -124,7 +126,6 @@ void halADCInit(halADC_struct* adcStruct, const halADC_initStruct* adcInitStruct
 
     adc->Init.ContinuousConvMode    =
                 adcInitStruct->convMode == halADC_continuousConvMode ? ENABLE : DISABLE;
-
     if (adcInitStruct->convMode == halADC_triggerConvMode) {
 
         adc->Init.ExternalTrigConv =
@@ -139,7 +140,7 @@ void halADCInit(halADC_struct* adcStruct, const halADC_initStruct* adcInitStruct
         timer->Prescaler            = TIMER_PRESCALER;
         timer->CounterMode          = TIM_COUNTERMODE_UP;
         timer->Period               = EVENTS_ON_PERIOD / adcInitStruct->triggerTimerInitStruct.frequency;
-        timer->ClockDivision        = TIM_CLOCKDIVISION_DIV4;
+        timer->ClockDivision        = TIM_CLOCKDIVISION_DIV1;
 
         timer->AutoReloadPreload    = TIM_AUTORELOAD_PRELOAD_DISABLE;
 
@@ -154,7 +155,6 @@ void halADCInit(halADC_struct* adcStruct, const halADC_initStruct* adcInitStruct
 
     }
     HAL_ADC_Init(adc);
-
     adcStruct->mode = adcInitStruct->convMode;
 
     ADC_ChannelConfTypeDef channelConfig;
@@ -166,7 +166,6 @@ void halADCInit(halADC_struct* adcStruct, const halADC_initStruct* adcInitStruct
 
     HAL_NVIC_SetPriority(ADC_IRQn, ADC_IRQn_PRIORITY, ADC_IRQn_SUB_PRIORITY);
     HAL_NVIC_EnableIRQ(ADC_IRQn);
-
     initedADC[adcStruct->adc] = adcStruct;
 }
 

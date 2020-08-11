@@ -18,12 +18,12 @@
 #define CHANNEL_RANK            1
 #define CONVERTATIONS_NUMBER    1
 
-#define EVENTS_ON_PERIOD        1000
-#define TIMER_PRESCALER         13499
+#define EVENTS_ON_PERIOD        4000
+#define TIMER_PRESCALER         26999
 #define CONV_TIMEOUT            0xFF
 
-#define ADC_IRQn_PRIORITY       6
-#define ADC_IRQn_SUB_PRIORITY   7
+#define ADC_IRQn_PRIORITY       15
+#define ADC_IRQn_SUB_PRIORITY   16
 
 typedef enum {
     halADC1,

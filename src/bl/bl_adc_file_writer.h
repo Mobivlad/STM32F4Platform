@@ -13,6 +13,7 @@
 #include "stdio.h"
 
 #define BUFFER_SIZE             50
+#define WRITE_BUFFER_SIZE       255
 
 #define FOLDER_PREFIX           "adcData"
 #define FILE_PREFIX             "file"
@@ -29,17 +30,17 @@
 #define MAX_ADC_VAL             0x0FFF
 
 typedef struct {
-
     ulFatFS_struct      fatFS;
-    uint16_t*           adcValue;
-    uint8_t             fileNumber;
-    SemaphoreHandle_t   mutex;
 
-    ulFatFS_File_t*     currentFile;
+    QueueHandle_t       adcValues;
+
+    uint8_t             fileNumber;
+
+    ulFatFS_File_t      currentFile;
 
     char fileNameBuffer[BUFFER_SIZE];
     char folderNameBuffer[BUFFER_SIZE];
-    char dataStrBuffer[BUFFER_SIZE];
+    char dataStrBuffer[WRITE_BUFFER_SIZE];
 } blADCFileWriter_struct;
 
 typedef enum {
@@ -48,7 +49,12 @@ typedef enum {
     blADCFW_NULL_POINT
 } blADCFW_error;
 
-blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct, SemaphoreHandle_t writeMutex, uint16_t* valuePtr);
+blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct, QueueHandle_t writeValues);
+
+void blADCFileWriterTask(void* parametr);
+
+blADCFW_error blADCCloseFile(blADCFileWriter_struct* fileWriterStruct);
+blADCFW_error blADCOpenFile(blADCFileWriter_struct* fileWriterStruct);
 
 
 #endif /* BL_BL_ADC_FILE_WRITER_H_ */

@@ -12,7 +12,7 @@
 
 #define WINDOW_SIZE             10
 
-#define QUEUE_SIZE              10
+#define UTIL_QUEUE_SIZE         10
 
 #define MIN_DELAY               1
 #define INCORRECT_DATA          0x1FFF
@@ -29,8 +29,9 @@ typedef struct {
 
     uint16_t                adcValue;
     QueueHandle_t           queue;
-    SemaphoreHandle_t       fileMutex;
-    SemaphoreHandle_t       displayMutex;
+
+    QueueHandle_t           fileValues;
+    QueueHandle_t           displayValues;
 
 } ulMovingAvarege_struct;
 

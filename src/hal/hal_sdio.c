@@ -125,7 +125,3 @@ halSDIO_error halSDIOReadBlocks(halSDIO_struct* sdio_struct, uint8_t *pData, uin
     return (sdio_struct == NULL || pData == NULL) ? halSDIO_NULL_POINT
             : HAL_SD_ReadBlocks(&sdio_struct->sdHandle, pData, blockAdd, blocksNumber, timeout);
 }
-
-
-
-

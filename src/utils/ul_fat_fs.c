@@ -132,52 +132,40 @@ static const Diskio_drvTypeDef  SD_Driver =
 ulFatFS_error ulFatFSInit(ulFatFS_struct* fatfs) {
     current_fatfs = fatfs;
     fatfs->sd.sddriver = drvSDDriver1;
+
+    fatfs->sdMutex = xSemaphoreCreateMutex();
+
     return FATFS_LinkDriver(&SD_Driver) == 0 ? ulFatFS_OK : ulFatFS_DISK_ERR;
 }
 
-// @TODO Remove this function after use
-// test function for FatFS
-void test() {
-    FIL fil; /* File object */
-    DIR dir;
-    FRESULT fr; /* FatFs return code */
-    FILINFO fno;
-
-    /* Gives a work area to the default drive */
-    FRESULT res = f_mount(&current_fatfs->FatFs, "0:", 0);
-    if (res != FR_OK) {
-        Error_Handler();
-    }
-    f_mkdir("hello1");
-    /* Open a text file */
-    res = f_open(&fil, "hello1/message.txt", FA_CREATE_ALWAYS);
-    if (res != FR_OK) {
-        Error_Handler();
-    }
-
-
-    /* Close the file */
-    res = f_close(&fil);
-    if (res != FR_OK) {
-        Error_Handler();
-    }
-    res = f_mount(0, "0:", 0);
-    if (res != FR_OK) {
-        Error_Handler();
-    }
-}
-
 ulFatFS_error ulFatFSMountSD(ulFatFS_struct* fatfs) {
-    return fatfs == NULL ? ulFatFS_DATA_NULL_POINT : f_mount(&current_fatfs->FatFs, "", 0);
+    if (fatfs == NULL) {
+        return ulFatFS_DATA_NULL_POINT;
+    }
+    xSemaphoreTake(fatfs->sdMutex, portMAX_DELAY);
+    FRESULT functionRes = f_mount(&current_fatfs->FatFs, "", 0);
+    xSemaphoreGive(fatfs->sdMutex);
+    return functionRes;
 }
 
 ulFatFS_error ulFatFSUnmountSD(ulFatFS_struct* fatfs) {
-
-    return fatfs == NULL ? ulFatFS_DATA_NULL_POINT : f_mount(NULL, "", 0);
+    if (fatfs == NULL) {
+        return ulFatFS_DATA_NULL_POINT;
+    }
+    xSemaphoreTake(fatfs->sdMutex, portMAX_DELAY);
+    FRESULT functionRes = f_mount(NULL, "", 0);
+    xSemaphoreGive(fatfs->sdMutex);
+    return functionRes;
 }
 
 ulFatFS_error ulFatFSCreateFolder(ulFatFS_struct* fatfs, char* folderName) {
-    return fatfs == NULL ? ulFatFS_DATA_NULL_POINT : f_mkdir(folderName);
+    if (fatfs == NULL) {
+        return ulFatFS_DATA_NULL_POINT;
+    }
+    xSemaphoreTake(fatfs->sdMutex, portMAX_DELAY);
+    FRESULT functionRes = f_mkdir(folderName);
+    xSemaphoreGive(fatfs->sdMutex);
+    return functionRes;
 }
 
 ulFatFS_error ulFatFSFindCount(ulFatFS_struct* fatfs, char* folderPath, char* fileMask,
@@ -185,6 +173,7 @@ ulFatFS_error ulFatFSFindCount(ulFatFS_struct* fatfs, char* folderPath, char* fi
     if (fatfs == NULL || folderPath == NULL || fileMask == NULL || count == NULL) {
         return ulFatFS_DATA_NULL_POINT;
     }
+    xSemaphoreTake(fatfs->sdMutex, portMAX_DELAY);
     DIR dir;
     FILINFO fno;
     uint8_t tmp_count = 0;
@@ -192,11 +181,13 @@ ulFatFS_error ulFatFSFindCount(ulFatFS_struct* fatfs, char* folderPath, char* fi
     switch (fr) {
         case FR_NO_PATH: {
             *count = 0;
-            return FR_OK;
+            fr = FR_OK;
+            break;
         }
         case FR_OK: {
             while (*(fno.fname)) {
                 if (fr != (FRESULT) ulFatFS_OK) {
+                    xSemaphoreGive(fatfs->sdMutex);
                     return fr;
                 }
                 switch (elementType) {
@@ -215,17 +206,26 @@ ulFatFS_error ulFatFSFindCount(ulFatFS_struct* fatfs, char* folderPath, char* fi
             }
             fr = f_closedir(&dir);
             *count = (fr == (FRESULT) ulFatFS_OK) ? tmp_count : SD_ERROR_VALUE;
-            return fr;
+            break;
         }
         default: {
-            return fr;
+            break;
         }
     }
+    xSemaphoreGive(fatfs->sdMutex);
+    return fr;
+
 }
 
 ulFatFS_error ulFatFSOpenFile(ulFatFS_struct* fatfs, ulFatFS_File_t* file, const char* fileName,
         ulFatFS_FileOpenAttribute_t posix) {
-    return f_open(file, fileName, posix);
+    if (fatfs == NULL) {
+        return ulFatFS_DATA_NULL_POINT;
+    }
+    xSemaphoreTake(fatfs->sdMutex, portMAX_DELAY);
+    FRESULT functionRes = f_open(file, fileName, posix);
+    xSemaphoreGive(fatfs->sdMutex);
+    return functionRes;
 }
 
 ulFatFS_error ulFatFSWrite(ulFatFS_struct* fatfs, ulFatFS_File_t* file, const uint8_t* data,
@@ -233,11 +233,14 @@ ulFatFS_error ulFatFSWrite(ulFatFS_struct* fatfs, ulFatFS_File_t* file, const ui
     if (fatfs == NULL || data == NULL || file == NULL) {
         return ulFatFS_DATA_NULL_POINT;
     }
+    xSemaphoreTake(fatfs->sdMutex, portMAX_DELAY);
     uint16_t writtenBytes = 0;
     FRESULT fr = f_write(file, data, dataLen, (unsigned int*) &writtenBytes);
     if (fr != (FRESULT) ulFatFS_OK) {
+        xSemaphoreGive(fatfs->sdMutex);
         return fr;
     }
+    xSemaphoreGive(fatfs->sdMutex);
     return writtenBytes == dataLen ? ulFatFS_OK : ulFatFS_COMPLETE_OPERATION_ERROR;
 }
 
@@ -245,12 +248,15 @@ ulFatFS_error ulFatFSWriteString(ulFatFS_struct* fatfs, ulFatFS_File_t* file, co
     if (fatfs == NULL || str == NULL || file == NULL) {
         return ulFatFS_DATA_NULL_POINT;
     }
+    xSemaphoreTake(fatfs->sdMutex, portMAX_DELAY);
     uint16_t writtenBytes = 0;
     uint16_t dataLen = strlen(str);
     FRESULT fr = f_write(file, str, dataLen, (unsigned int*) &writtenBytes);
     if (fr != (FRESULT) ulFatFS_OK) {
+        xSemaphoreGive(fatfs->sdMutex);
         return fr;
     }
+    xSemaphoreGive(fatfs->sdMutex);
     return writtenBytes == dataLen ? ulFatFS_OK : ulFatFS_COMPLETE_OPERATION_ERROR;
 }
 
@@ -259,14 +265,24 @@ ulFatFS_error ulFatFSRead(ulFatFS_struct* fatfs, ulFatFS_File_t* file, uint8_t* 
     if (fatfs == NULL || data == NULL || file == NULL) {
         return ulFatFS_DATA_NULL_POINT;
     }
+    xSemaphoreTake(fatfs->sdMutex, portMAX_DELAY);
     uint16_t readBytes = 0;
     FRESULT fr = f_read(file, data, dataLen, (unsigned int*) &readBytes);
     if (fr != (FRESULT) ulFatFS_OK) {
+        xSemaphoreGive(fatfs->sdMutex);
         return fr;
     }
+    xSemaphoreGive(fatfs->sdMutex);
     return readBytes == dataLen ? ulFatFS_OK : ulFatFS_COMPLETE_OPERATION_ERROR;
+
 }
 
 ulFatFS_error ulFatFSCloseFile(ulFatFS_struct* fatfs, ulFatFS_File_t* file) {
-    return f_close(file);
+    if (fatfs == NULL || file == NULL) {
+        return ulFatFS_DATA_NULL_POINT;
+    }
+    xSemaphoreTake(fatfs->sdMutex, portMAX_DELAY);
+    FRESULT fr = f_close(file);
+    xSemaphoreGive(fatfs->sdMutex);
+    return fr;
 }

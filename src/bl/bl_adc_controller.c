@@ -14,10 +14,10 @@ static void buttonAction(){
 }
 
 void blADCControllerInit(blADCController_struct* controllerStruct, uint32_t frequency) {
-
     controllerStruct->startStorSemaphore    = xSemaphoreCreateBinary();
-    controllerStruct->fileMutex             = xSemaphoreCreateMutex();
-    controllerStruct->displayMutex          = xSemaphoreCreateMutex();
+
+    controllerStruct->displayQueue       = xQueueCreate(QUEUE_SIZE, sizeof(uint16_t));
+    controllerStruct->fileWriterQueue    = xQueueCreate(QUEUE_SIZE, sizeof(uint16_t));
 
     controllerStruct->button.button = drvButton1;
     drvButtonInit((drvButton_struct*)controllerStruct);
@@ -28,8 +28,8 @@ void blADCControllerInit(blADCController_struct* controllerStruct, uint32_t freq
     controllerStruct->movingAvarageUtil.adc = ADC_DRIVER;
     controllerStruct->movingAvarageUtil.frequency = frequency;
 
-    controllerStruct->movingAvarageUtil.fileMutex = controllerStruct->fileMutex;
-    controllerStruct->movingAvarageUtil.displayMutex = controllerStruct->displayMutex;
+    controllerStruct->movingAvarageUtil.fileValues      = controllerStruct->fileWriterQueue;
+    controllerStruct->movingAvarageUtil.displayValues   = controllerStruct->displayQueue;
 
     ulMovingAvaregeInit(&controllerStruct->movingAvarageUtil);
 
@@ -49,9 +49,13 @@ void blADCControllerStartStopTask(void* parametr) {
         xSemaphoreTake(controllerStruct->startStorSemaphore, portMAX_DELAY);
         if (controllerStruct->state == IN_RUN) {
             ulMovingAvaregeStop(&controllerStruct->movingAvarageUtil);
+            blADCDisplayStop(&controllerStruct->adcd);
+            blADCCloseFile(&controllerStruct->adcw);
             controllerStruct->state = SUSPENDED;
         } else {
             ulMovingAvaregeStart(&controllerStruct->movingAvarageUtil);
+            blADCDisplayStart(&controllerStruct->adcd);
+            blADCOpenFile(&controllerStruct->adcw);
             controllerStruct->state = IN_RUN;
         }
     }

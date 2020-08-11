@@ -18,39 +18,39 @@
 #include "ul_heart_beat.h"
 #include "ul_moving_average.h"
 #include "bl_adc_controller.h"
-#include "bl_adc_file_writer.h"
 #include "ul_fat_fs.h"
 
 #define BLINK_FREQUENCY_5_HZ 100
-#define ADC_FREQUENCY_100_HZ 100
-
-#define LCD_FRAME_BUFFER          SDRAM_DEVICE_ADDR
-#define RGB565_BYTE_PER_PIXEL     2
-#define ARBG8888_BYTE_PER_PIXEL   4
+#define ADC_FREQUENCY 10
 
 static void SystemClock_Config(void);
 
 ulHeartBeatStruct      heartBeat;
 blADCController_struct adcController;
 
+
+void initialTask();
+
 int main(void)
 {
     HAL_Init();
-
     SystemClock_Config();
     SystemCoreClockUpdate();
 
-    ulFatFS_struct ff;
-    ulFatFSInit(&ff);
+    xTaskCreate(initialTask, "Initial task", (uint16_t)2 * configMINIMAL_STACK_SIZE, NULL, 1, (xTaskHandle *)NULL);
 
-    test();
+    vTaskStartScheduler();
+}
 
+blADCController_struct adcController;
 
-    /*blADCController_struct adcController;
-    blADCControllerInit(&adcController, ADC_FREQUENCY_100_HZ);
+void initialTask() {
 
-    blADCFileWriter_struct adcw;
-    blADCFileWriterInit(&adcw, adcController.fileMutex, &adcController.movingAvarageUtil.adcValue);
+    blADCControllerInit(&adcController, ADC_FREQUENCY);
+
+    blADCFW_error initRes = blADCFileWriterInit(&adcController.adcw, adcController.fileWriterQueue);
+
+    blADCDisplayInit(&adcController.adcd, adcController.displayQueue);
 
     heartBeat.frequency = BLINK_FREQUENCY_5_HZ;
     ulHeartBeatInit(&heartBeat);
@@ -67,7 +67,17 @@ int main(void)
     xTaskCreate(blADCControllerStartStopTask, "START_STOP_HANDLER", configMINIMAL_STACK_SIZE,
                     (void*) &adcController, 1, (xTaskHandle *) NULL);
 
-    vTaskStartScheduler();*/
+    if (initRes == blADCFW_OK) {
+        xTaskCreate(blADCFileWriterTask, "ADC_WRITER", configMINIMAL_STACK_SIZE, (void*) &adcController.adcw, 1,
+                (xTaskHandle *) NULL);
+    }
+
+    xTaskCreate(blADCDisplayTask, "ADC_DISPLAY", configMINIMAL_STACK_SIZE, (void*) &adcController.adcd, 1,
+            (xTaskHandle *) NULL);
+
+    while(1) {
+        taskYIELD();
+    }
 }
 
 static void SystemClock_Config(void) {

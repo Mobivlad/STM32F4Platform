@@ -36,7 +36,6 @@ void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueH
     halADCInit((halADC_struct*)adcStruct, (const halADC_initStruct*) &initStruct);
 }
 
-
 void drvADCStart(drvADC_struct* adcStruct) {
     if (adcStruct == NULL) return;
     halADCStart((halADC_struct*)adcStruct);

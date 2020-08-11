@@ -11,7 +11,12 @@
 #include "ul_moving_average.h"
 #include "drv_button.h"
 
+#include "bl_adc_file_writer.h"
+#include "bl_adc_display.h"
+
 #define ADC_DRIVER  drvADC1
+
+#define QUEUE_SIZE  100
 
 typedef enum {
     SUSPENDED,
@@ -24,10 +29,14 @@ typedef struct {
     ulMovingAvarege_struct  movingAvarageUtil;
 
     SemaphoreHandle_t       startStorSemaphore;
-    SemaphoreHandle_t       fileMutex;
-    SemaphoreHandle_t       displayMutex;
+
+    QueueHandle_t           fileWriterQueue;
+    QueueHandle_t           displayQueue;
 
     blADC_state             state;
+
+    blADCDisplay_struct adcd;
+    blADCFileWriter_struct adcw;
 
 } blADCController_struct;
 

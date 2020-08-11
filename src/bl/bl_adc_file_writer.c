@@ -21,12 +21,10 @@ static blADCFW_error initSaveFolder(blADCFileWriter_struct* fileWriterStruct) {
     return blADCFW_OK;
 }
 
-blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct, SemaphoreHandle_t writeMutex, uint16_t* valuePtr) {
+blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct, QueueHandle_t writeValues) {
     if (fileWriterStruct == NULL) return blADCFW_NULL_POINT;
 
-
-    fileWriterStruct->adcValue  = valuePtr;
-    fileWriterStruct->mutex     = writeMutex;
+    fileWriterStruct->adcValues = writeValues;
 
     if (ulFatFSInit(&fileWriterStruct->fatFS) != ulFatFS_OK) {
         return blADCFW_EROOR;
@@ -39,7 +37,6 @@ blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct, Sema
         return blADCFW_EROOR;
     }
     fileWriterStruct->fileNumber    = 0;
-    fileWriterStruct->currentFile   = NULL;
     return blADCFW_OK;
 }
 
@@ -53,7 +50,7 @@ blADCFW_error blADCOpenFile(blADCFileWriter_struct* fileWriterStruct) {
         return blADCFW_NULL_POINT;
     }
     blADCInitFileName(fileWriterStruct);
-    if (ulFatFSOpenFile(&fileWriterStruct->fatFS, fileWriterStruct->currentFile,
+    if (ulFatFSOpenFile(&fileWriterStruct->fatFS, &fileWriterStruct->currentFile,
             fileWriterStruct->fileNameBuffer, OW) != ulFatFS_OK) {
         return blADCFW_EROOR;
     }
@@ -65,11 +62,10 @@ blADCFW_error blADCCloseFile(blADCFileWriter_struct* fileWriterStruct) {
         return blADCFW_NULL_POINT;
     }
     memset(fileWriterStruct->fileNameBuffer, 0, BUFFER_SIZE);
-    if (ulFatFSCloseFile(&fileWriterStruct->fatFS, fileWriterStruct->currentFile) != ulFatFS_OK) {
+    if (ulFatFSCloseFile(&fileWriterStruct->fatFS, &fileWriterStruct->currentFile) != ulFatFS_OK) {
         return blADCFW_EROOR;
     }
     fileWriterStruct->fileNumber++;
-    fileWriterStruct->currentFile = NULL;
     return blADCFW_OK;
 }
 
@@ -78,19 +74,21 @@ static blADCFW_error blADCWriteValue(blADCFileWriter_struct* fileWriterStruct, f
         return blADCFW_NULL_POINT;
     }
     memset(fileWriterStruct->dataStrBuffer, 0, sizeof(fileWriterStruct->dataStrBuffer));
-    sprintf(fileWriterStruct->dataStrBuffer, "%.2f;\n", value);
-    if (ulFatFSWriteString(&fileWriterStruct->fatFS, fileWriterStruct->currentFile,
+    sprintf(fileWriterStruct->dataStrBuffer, "%.2f\n", value);
+    if (ulFatFSWriteString(&fileWriterStruct->fatFS, &fileWriterStruct->currentFile,
             (const char*) fileWriterStruct->dataStrBuffer) != ulFatFS_OK) {
         return blADCFW_EROOR;
     }
     return blADCFW_OK;
 }
 
-void blADCControllerTask(void* parametr) {
+void blADCFileWriterTask(void* parametr) {
     blADCFileWriter_struct* fileWriterStruct = (blADCFileWriter_struct*) parametr;
     while(1) {
-        xSemaphoreTake(fileWriterStruct->mutex, portMAX_DELAY);
-        float value = (float)*fileWriterStruct->adcValue * MAX_VOLTAGE / MAX_ADC_VAL;
+        uint16_t adcValue;
+        xQueueReceive(fileWriterStruct->adcValues, &adcValue, portMAX_DELAY);
+
+        float value = (float)adcValue * MAX_VOLTAGE / MAX_ADC_VAL;
         blADCWriteValue(fileWriterStruct, value);
     }
 }

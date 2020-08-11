@@ -31,6 +31,8 @@
 #define ulFatFS_Directory_t      DIR
 
 typedef struct {
+    SemaphoreHandle_t  sdMutex;
+
     drvSDDriver_struct sd;
     FATFS FatFs;
 } ulFatFS_struct;
@@ -90,9 +92,6 @@ ulFatFS_error ulFatFSWriteString(ulFatFS_struct* fatfs, ulFatFS_File_t* file, co
 ulFatFS_error ulFatFSRead(ulFatFS_struct* fatfs, ulFatFS_File_t* file, uint8_t* data, uint16_t dataLen);
 
 ulFatFS_error ulFatFSFindCount(ulFatFS_struct* fatfs, char* folderPath, char* fileMask, ulFatFS_elementType elementType, uint8_t* count);
-
-void test();
-
 
 
 #endif /* UTILS_UL_FAT_FS_H_ */
