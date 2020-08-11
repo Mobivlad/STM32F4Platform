@@ -29,7 +29,7 @@ void drvADCInit(drvADC_struct* adcStruct, drvADC adc, uint32_t frequency, QueueH
     initStruct.triggerTimerInitStruct.frequency = frequency;
     initStruct.queue                            = queue;
 
-    initStruct.clockPrescaler                   = halADC_clockDiv4;
+    initStruct.clockPrescaler                   = halADC_clockDiv2;
     initStruct.convMode                         = halADC_triggerConvMode;
     initStruct.dataAlign                        = halADC_dataAlignRight;
 

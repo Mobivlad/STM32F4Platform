@@ -37,6 +37,7 @@ blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct, Queu
         return blADCFW_EROOR;
     }
     fileWriterStruct->fileNumber    = 0;
+
     return blADCFW_OK;
 }
 
@@ -45,13 +46,30 @@ void blADCInitFileName(blADCFileWriter_struct* fileWriterStruct) {
             FILE_PREFIX, fileWriterStruct->fileNumber + 1);
 }
 
+static blADCFW_bufferCopyError clearBuffer(blADCFileWriter_struct* fileWriterStruct) {
+    memset(fileWriterStruct->fileWriteData, 0, sizeof(fileWriterStruct->fileWriteData));
+    fileWriterStruct->index = 0;
+    return blADCFW_COPY_OK;
+}
+
 blADCFW_error blADCOpenFile(blADCFileWriter_struct* fileWriterStruct) {
     if (fileWriterStruct == NULL) {
         return blADCFW_NULL_POINT;
     }
+
+    clearBuffer(fileWriterStruct);
+
     blADCInitFileName(fileWriterStruct);
     if (ulFatFSOpenFile(&fileWriterStruct->fatFS, &fileWriterStruct->currentFile,
             fileWriterStruct->fileNameBuffer, OW) != ulFatFS_OK) {
+        return blADCFW_EROOR;
+    }
+    return blADCFW_OK;
+}
+
+static blADCFW_error pushBuffer(blADCFileWriter_struct* fileWriterStruct) {
+    if (ulFatFSWriteString(&fileWriterStruct->fatFS, &fileWriterStruct->currentFile,
+            (const char*) fileWriterStruct->fileWriteData) != ulFatFS_OK) {
         return blADCFW_EROOR;
     }
     return blADCFW_OK;
@@ -61,12 +79,30 @@ blADCFW_error blADCCloseFile(blADCFileWriter_struct* fileWriterStruct) {
     if (fileWriterStruct == NULL) {
         return blADCFW_NULL_POINT;
     }
-    memset(fileWriterStruct->fileNameBuffer, 0, BUFFER_SIZE);
+
+    if (fileWriterStruct->index != 0) {
+        if (pushBuffer(fileWriterStruct) != blADCFW_OK) {
+            return blADCFW_EROOR;
+        }
+    }
+
     if (ulFatFSCloseFile(&fileWriterStruct->fatFS, &fileWriterStruct->currentFile) != ulFatFS_OK) {
         return blADCFW_EROOR;
     }
+
     fileWriterStruct->fileNumber++;
     return blADCFW_OK;
+}
+
+static blADCFW_bufferCopyError addToBuffer(blADCFileWriter_struct* fileWriterStruct, char* data) {
+    uint16_t dataLen = strlen(data);
+    if (fileWriterStruct->index + dataLen > WRITE_BUFFER_SIZE) {
+        return blADCFW_COPY_OVERLOAD;
+    }
+    memcpy(&fileWriterStruct->fileWriteData[fileWriterStruct->index], data, dataLen);
+    fileWriterStruct->index += dataLen;
+
+    return blADCFW_COPY_OK;
 }
 
 static blADCFW_error blADCWriteValue(blADCFileWriter_struct* fileWriterStruct, float value) {
@@ -75,10 +111,15 @@ static blADCFW_error blADCWriteValue(blADCFileWriter_struct* fileWriterStruct, f
     }
     memset(fileWriterStruct->dataStrBuffer, 0, sizeof(fileWriterStruct->dataStrBuffer));
     sprintf(fileWriterStruct->dataStrBuffer, "%.2f\n", value);
-    if (ulFatFSWriteString(&fileWriterStruct->fatFS, &fileWriterStruct->currentFile,
-            (const char*) fileWriterStruct->dataStrBuffer) != ulFatFS_OK) {
-        return blADCFW_EROOR;
+
+    if (addToBuffer(fileWriterStruct, fileWriterStruct->dataStrBuffer) != blADCFW_COPY_OK) {
+        if (pushBuffer(fileWriterStruct) != blADCFW_OK) {
+            return blADCFW_EROOR;
+        }
+        clearBuffer(fileWriterStruct);
+        addToBuffer(fileWriterStruct, fileWriterStruct->dataStrBuffer);
     }
+
     return blADCFW_OK;
 }
 

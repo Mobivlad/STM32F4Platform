@@ -21,7 +21,7 @@
 #include "ul_fat_fs.h"
 
 #define BLINK_FREQUENCY_5_HZ 100
-#define ADC_FREQUENCY 10
+#define ADC_FREQUENCY 1000
 
 static void SystemClock_Config(void);
 

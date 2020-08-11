@@ -39,7 +39,7 @@ static const halADC_def_t adc_def[halADC_Count] =
                 }
         },
         {
-                ADC2,   RCC_APB2ENR_ADC1EN,
+                ADC2,   RCC_APB2ENR_ADC2EN,
                 {
                         {GPIOA, RCC_AHB1ENR_GPIOAEN, GPIO_PIN_0},
                         {GPIOA, RCC_AHB1ENR_GPIOAEN, GPIO_PIN_1},
@@ -60,7 +60,7 @@ static const halADC_def_t adc_def[halADC_Count] =
                 }
         },
         {
-                ADC3,   RCC_APB2ENR_ADC1EN,
+                ADC3,   RCC_APB2ENR_ADC2EN,
                 {
                         {GPIOA, RCC_AHB1ENR_GPIOAEN, GPIO_PIN_0},
                         {GPIOA, RCC_AHB1ENR_GPIOAEN, GPIO_PIN_1},

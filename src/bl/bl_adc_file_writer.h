@@ -13,7 +13,7 @@
 #include "stdio.h"
 
 #define BUFFER_SIZE             50
-#define WRITE_BUFFER_SIZE       255
+#define WRITE_BUFFER_SIZE       0xFFFF
 
 #define FOLDER_PREFIX           "adcData"
 #define FILE_PREFIX             "file"
@@ -40,7 +40,10 @@ typedef struct {
 
     char fileNameBuffer[BUFFER_SIZE];
     char folderNameBuffer[BUFFER_SIZE];
-    char dataStrBuffer[WRITE_BUFFER_SIZE];
+    char dataStrBuffer[BUFFER_SIZE];
+
+    char fileWriteData[WRITE_BUFFER_SIZE];
+    uint16_t index;
 } blADCFileWriter_struct;
 
 typedef enum {
@@ -48,6 +51,11 @@ typedef enum {
     blADCFW_EROOR,
     blADCFW_NULL_POINT
 } blADCFW_error;
+
+typedef enum {
+    blADCFW_COPY_OK = 0,
+    blADCFW_COPY_OVERLOAD,
+} blADCFW_bufferCopyError;
 
 blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct, QueueHandle_t writeValues);
 
