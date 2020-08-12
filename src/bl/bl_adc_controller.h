@@ -16,7 +16,7 @@
 
 #define ADC_DRIVER  drvADC1
 
-#define QUEUE_SIZE  100
+#define QUEUE_SIZE  200
 
 typedef enum {
     SUSPENDED,

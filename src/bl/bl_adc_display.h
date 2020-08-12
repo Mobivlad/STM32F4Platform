@@ -19,6 +19,8 @@
 #define ARBG8888_BYTE_PER_PIXEL   4
 
 #define DISPLAY_NAME        "DIGITAL VOLTMETER"
+#define SD_OK_TEXT          "SD WRITING WORK"
+#define SD_ERROR_TEXT       "SD WRITING DON'T WORK"
 #define TEXT_Y_POS          10
 
 #define UIN16_MAX           0xFFFF
@@ -34,13 +36,14 @@
 #define GRAPH_HEIGHT        (DISPLAY_HEIGHT - GRAPH_MARGIN - GRAPH_TOP_MARGIN)
 #define GRAPH_WIDTH         (DISPLAY_WIDTH - 2 * GRAPH_MARGIN)
 
+#define STEPS_COUNT          156
+#define WIDTH_STEP          ((uint8_t)(GRAPH_WIDTH / STEPS_COUNT))
+
 #define GRAPH_PADDING       5
 #define AREA_HEIGHT         (GRAPH_HEIGHT - 2 * GRAPH_PADDING)
 
 #define START_X             GRAPH_MARGIN
 #define END_X               DISPLAY_WIDTH - GRAPH_MARGIN
-
-#define WIDTH_STEP          5
 
 typedef enum {
     blADCDisplay_OK = 0,
@@ -48,15 +51,20 @@ typedef enum {
     blADCDisplay_NULL_POINT
 } blADCDisplay_error;
 
+typedef enum {
+    blADCDisplay_SD_OK = 0,
+    blADCDisplay_SD_EROOR,
+} blADCDisplay_SDStatus;
+
 typedef struct {
     QueueHandle_t       adcValues;
 
-    uint16_t            currentX;
-    uint16_t            currentY;
-    uint16_t            lastY;
+    uint16_t            Y[STEPS_COUNT];
+    uint16_t            stepIndex;
 } blADCDisplay_struct;
 
 blADCDisplay_error blADCDisplayInit(blADCDisplay_struct* displayStruct, QueueHandle_t queueValues);
+void blADCDisplaySDStatus(blADCDisplay_SDStatus sdStatus);
 
 void blADCDisplayTask(void* parametr);
 

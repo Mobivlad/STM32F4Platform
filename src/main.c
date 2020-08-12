@@ -21,7 +21,7 @@
 #include "ul_fat_fs.h"
 
 #define BLINK_FREQUENCY_5_HZ 100
-#define ADC_FREQUENCY 1000
+#define ADC_FREQUENCY 100
 
 static void SystemClock_Config(void);
 
@@ -37,7 +37,7 @@ int main(void)
     SystemClock_Config();
     SystemCoreClockUpdate();
 
-    xTaskCreate(initialTask, "Initial task", (uint16_t)2 * configMINIMAL_STACK_SIZE, NULL, 1, (xTaskHandle *)NULL);
+    xTaskCreate(initialTask, "Initial task", (uint16_t)2 * configMINIMAL_STACK_SIZE, NULL, 2, (xTaskHandle *)NULL);
 
     vTaskStartScheduler();
 }
@@ -52,27 +52,33 @@ void initialTask() {
 
     blADCDisplayInit(&adcController.adcd, adcController.displayQueue);
 
+    if (initRes == blADCFW_OK) {
+        blADCDisplaySDStatus(blADCDisplay_SD_OK);
+    } else {
+        blADCDisplaySDStatus(blADCDisplay_SD_EROOR);
+    }
+
     heartBeat.frequency = BLINK_FREQUENCY_5_HZ;
     ulHeartBeatInit(&heartBeat);
 
     xTaskCreate(ulHeartBeatTaskFunction, "HEART_BEAT", configMINIMAL_STACK_SIZE,
-                    (void*) &heartBeat, 1, (xTaskHandle *) NULL);
+                    (void*) &heartBeat, 2, (xTaskHandle *) NULL);
 
     xTaskCreate(ulMovingAvaregeTaskFunction, "ADC", configMINIMAL_STACK_SIZE,
-                    (void*) &adcController.movingAvarageUtil, 1, (xTaskHandle *) NULL);
+                    (void*) &adcController.movingAvarageUtil, 2, (xTaskHandle *) NULL);
 
     xTaskCreate(blADCControllerButtonTask, "BUTTON_HANDLER", configMINIMAL_STACK_SIZE,
-                    (void*) &adcController, 1, (xTaskHandle *) NULL);
+                    (void*) &adcController, 2, (xTaskHandle *) NULL);
 
     xTaskCreate(blADCControllerStartStopTask, "START_STOP_HANDLER", configMINIMAL_STACK_SIZE,
-                    (void*) &adcController, 1, (xTaskHandle *) NULL);
+                    (void*) &adcController, 2, (xTaskHandle *) NULL);
 
     if (initRes == blADCFW_OK) {
-        xTaskCreate(blADCFileWriterTask, "ADC_WRITER", configMINIMAL_STACK_SIZE, (void*) &adcController.adcw, 1,
+        xTaskCreate(blADCFileWriterTask, "ADC_WRITER", configMINIMAL_STACK_SIZE, (void*) &adcController.adcw, 2,
                 (xTaskHandle *) NULL);
     }
 
-    xTaskCreate(blADCDisplayTask, "ADC_DISPLAY", configMINIMAL_STACK_SIZE, (void*) &adcController.adcd, 1,
+    xTaskCreate(blADCDisplayTask, "ADC_DISPLAY", configMINIMAL_STACK_SIZE, (void*) &adcController.adcd, 2,
             (xTaskHandle *) NULL);
 
     while(1) {
