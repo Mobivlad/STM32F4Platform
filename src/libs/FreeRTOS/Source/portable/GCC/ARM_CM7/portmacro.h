@@ -237,6 +237,10 @@ portFORCE_INLINE static void vPortSetBASEPRI( uint32_t ulNewMaskValue )
 }
 /*-----------------------------------------------------------*/
 
+#ifdef configASSERT
+    void vSetVarulMaxPRIGROUPValue( void );
+#endif
+
 
 #ifdef __cplusplus
 }

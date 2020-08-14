@@ -95,6 +95,8 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelayUntil        0
 #define INCLUDE_vTaskDelay             1
 #define INCLUDE_xTaskGetSchedulerState 1
+#define INCLUDE_xTaskGetIdleTaskHandle 1
+#define INCLUDE_pxTaskGetStackStart    1
 
 /*------------- CMSIS-RTOS V2 specific defines -----------*/
 /* When using CMSIS-RTOSv2 set configSUPPORT_STATIC_ALLOCATION to 1
@@ -118,6 +120,7 @@ to exclude the API function. */
 
 */
 
+#define __NVIC_PRIO_BITS    4
 
 /* Cortex-M specific definitions. */
 #ifdef __NVIC_PRIO_BITS
@@ -157,6 +160,8 @@ header file. */
               using a different time base (TIM based for example).
  */
 /* #define xPortSysTickHandler SysTick_Handler */
+
+#include "SEGGER_SYSVIEW_FreeRTOS.h"
 
 #endif /* FREERTOS_CONFIG_H */
 

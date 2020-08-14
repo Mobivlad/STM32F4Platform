@@ -100,7 +100,7 @@ int _read (int file, char *ptr, int len)
 return len;
 }
 
-int _write(int file, char *ptr, int len)
+/*int _write(int file, char *ptr, int len)
 {
 	int DataIdx;
 
@@ -109,7 +109,7 @@ int _write(int file, char *ptr, int len)
 		__io_putchar(*ptr++);
 	}
 	return len;
-}
+}*/
 
 caddr_t _sbrk(int incr)
 {

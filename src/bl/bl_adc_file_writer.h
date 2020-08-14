@@ -13,7 +13,7 @@
 #include "stdio.h"
 
 #define BUFFER_SIZE             50
-#define WRITE_BUFFER_SIZE       0xFFFF
+#define WRITE_BUFFER_SIZE       250
 
 #define FOLDER_PREFIX           "adcData"
 #define FILE_PREFIX             "file"

@@ -40,10 +40,11 @@ void blADCControllerButtonTask(void* parametr) {
     blADCController_struct* controllerStruct = (blADCController_struct*) parametr;
     while (1) {
         drvButtonRun((drvButton_struct*)controllerStruct);
+        taskYIELD();
     }
 }
 
-void blADCControllerStartStopTask(void* parametr) {
+void blADCControllerSwitchTask(void* parametr) {
     blADCController_struct* controllerStruct = (blADCController_struct*) parametr;
     while (1) {
         xSemaphoreTake(controllerStruct->startStorSemaphore, portMAX_DELAY);

@@ -45,6 +45,6 @@ void blADCControllerInit(blADCController_struct* controllerStruct, uint32_t freq
 
 void blADCControllerButtonTask(void* parametr);
 
-void blADCControllerStartStopTask(void* parametr);
+void blADCControllerSwitchTask(void* parametr);
 
 #endif /* BL_BL_ADC_CONTROLLER_H_ */

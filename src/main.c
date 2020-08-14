@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 
-
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_it.h"
 #include "stm32f769i_discovery_lcd.h"
@@ -21,25 +20,39 @@
 #include "ul_fat_fs.h"
 
 #define BLINK_FREQUENCY_5_HZ 100
-#define ADC_FREQUENCY 100
+#define ADC_FREQUENCY 1000
 
 static void SystemClock_Config(void);
 
 ulHeartBeatStruct      heartBeat;
 blADCController_struct adcController;
 
+void vApplicationIdleHook( void ) {
+}
 
 void initialTask();
+void initSystemView();
 
 int main(void)
 {
     HAL_Init();
+
     SystemClock_Config();
     SystemCoreClockUpdate();
+
+    initSystemView();
 
     xTaskCreate(initialTask, "Initial task", (uint16_t)2 * configMINIMAL_STACK_SIZE, NULL, 2, (xTaskHandle *)NULL);
 
     vTaskStartScheduler();
+}
+
+void initSystemView() {
+    DWT->CTRL |= (1<<0);
+
+    SEGGER_SYSVIEW_Conf();
+    vSetVarulMaxPRIGROUPValue();
+    SEGGER_SYSVIEW_Start();
 }
 
 blADCController_struct adcController;
@@ -70,7 +83,7 @@ void initialTask() {
     xTaskCreate(blADCControllerButtonTask, "BUTTON_HANDLER", configMINIMAL_STACK_SIZE,
                     (void*) &adcController, 2, (xTaskHandle *) NULL);
 
-    xTaskCreate(blADCControllerStartStopTask, "START_STOP_HANDLER", configMINIMAL_STACK_SIZE,
+    xTaskCreate(blADCControllerSwitchTask, "ADC_SWITCH_HANDLER", configMINIMAL_STACK_SIZE,
                     (void*) &adcController, 2, (xTaskHandle *) NULL);
 
     if (initRes == blADCFW_OK) {
