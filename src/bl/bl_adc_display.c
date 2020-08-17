@@ -89,7 +89,6 @@ static void redrawAll(blADCDisplay_struct* displayStruct) {
 
 static void drawGraph(blADCDisplay_struct* displayStruct, uint16_t newVal) {
     uint16_t index = displayStruct->stepIndex;
-    //uint16_t pr_index = (displayStruct->stepIndex + STEPS_COUNT - 1) % STEPS_COUNT;
     uint16_t next_index = (displayStruct->stepIndex + 1) % STEPS_COUNT;
     if (displayStruct->Y[next_index] == UIN16_MAX) {
         displayStruct->Y[index] = newVal;
@@ -107,10 +106,11 @@ static void drawGraph(blADCDisplay_struct* displayStruct, uint16_t newVal) {
                     DISPLAY_HEIGHT - GRAPH_PADDING - displayStruct->Y[index] - GRAPH_MARGIN);
         }
     } else {
-        BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-        redrawAll(displayStruct);
         displayStruct->stepIndex = (displayStruct->stepIndex + 1) % STEPS_COUNT;
         displayStruct->Y[displayStruct->stepIndex] = newVal;
+        BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+        BSP_LCD_FillRect(GRAPH_MARGIN + 1, GRAPH_TOP_MARGIN + 1, GRAPH_WIDTH - 2,
+                GRAPH_HEIGHT - 2);
         BSP_LCD_SetTextColor(LCD_COLOR_RED);
         redrawAll(displayStruct);
     }
@@ -121,27 +121,6 @@ void blADCDisplayTask(void* parametr) {
     while (1) {
         uint16_t adcValue;
         xQueueReceive(displayStruct->adcValues, &adcValue, portMAX_DELAY);
-
-        //displayStruct->Y[displayStruct->stepIndex] = adcValue * AREA_HEIGHT / MAX_ADC_VAL;
         drawGraph(displayStruct, adcValue * AREA_HEIGHT / MAX_ADC_VAL);
-        /*displayStruct->currentX += WIDTH_STEP;
-        if (displayStruct->currentX > GRAPH_WIDTH + GRAPH_MARGIN) {
-            clearArea();
-            displayStruct->currentX = GRAPH_MARGIN + WIDTH_STEP;
-        }
-
-        uint16_t adcValue;
-        xQueueReceive(displayStruct->adcValues, &adcValue, portMAX_DELAY);
-
-        if (displayStruct->currentY == UIN16_MAX) {
-            displayStruct->currentY = adcValue * AREA_HEIGHT / MAX_ADC_VAL;
-            continue;
-        }
-        displayStruct->lastY = displayStruct->currentY;
-        displayStruct->currentY = adcValue * AREA_HEIGHT / MAX_ADC_VAL;
-        BSP_LCD_DrawLine(displayStruct->currentX - WIDTH_STEP,
-                DISPLAY_HEIGHT - GRAPH_PADDING - displayStruct->lastY - GRAPH_MARGIN, displayStruct->currentX,
-                DISPLAY_HEIGHT - GRAPH_PADDING - displayStruct->currentY - GRAPH_MARGIN);
-        */
     }
 }

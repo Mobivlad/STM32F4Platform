@@ -18,6 +18,8 @@
 #define RGB565_BYTE_PER_PIXEL     2
 #define ARBG8888_BYTE_PER_PIXEL   4
 
+#define ADC_MAX_FREQ        1000
+
 #define DISPLAY_NAME        "DIGITAL VOLTMETER"
 #define SD_OK_TEXT          "SD WRITING WORK"
 #define SD_ERROR_TEXT       "SD WRITING DON'T WORK"

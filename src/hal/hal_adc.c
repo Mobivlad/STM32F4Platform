@@ -139,7 +139,7 @@ void halADCInit(halADC_struct* adcStruct, const halADC_initStruct* adcInitStruct
 
         timer->Prescaler            = TIMER_PRESCALER;
         timer->CounterMode          = TIM_COUNTERMODE_UP;
-        timer->Period               = EVENTS_ON_PERIOD / adcInitStruct->triggerTimerInitStruct.frequency;
+        timer->Period               = EVENTS_ON_PERIOD / adcInitStruct->triggerTimerInitStruct.frequency - 1;
         timer->ClockDivision        = TIM_CLOCKDIVISION_DIV1;
 
         timer->AutoReloadPreload    = TIM_AUTORELOAD_PRELOAD_DISABLE;

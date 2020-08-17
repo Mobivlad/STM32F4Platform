@@ -53,6 +53,7 @@
 #include <sys/time.h>
 #include <sys/times.h>
 
+#include "SEGGER_RTT.h"
 
 /* Variables */
 //#undef errno
@@ -100,7 +101,7 @@ int _read (int file, char *ptr, int len)
 return len;
 }
 
-/*int _write(int file, char *ptr, int len)
+int _write(int file, char *ptr, int len)
 {
 	int DataIdx;
 
@@ -108,8 +109,9 @@ return len;
 	{
 		__io_putchar(*ptr++);
 	}
+	SEGGER_RTT_Write(0, ptr, len);
 	return len;
-}*/
+}
 
 caddr_t _sbrk(int incr)
 {

@@ -27,9 +27,6 @@ static void SystemClock_Config(void);
 ulHeartBeatStruct      heartBeat;
 blADCController_struct adcController;
 
-void vApplicationIdleHook( void ) {
-}
-
 void initialTask();
 void initSystemView();
 
