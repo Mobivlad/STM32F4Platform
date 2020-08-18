@@ -40,7 +40,7 @@ void blADCControllerButtonTask(void* parametr) {
     blADCController_struct* controllerStruct = (blADCController_struct*) parametr;
     while (1) {
         drvButtonRun((drvButton_struct*)controllerStruct);
-        taskYIELD();
+        vTaskDelay(5);
     }
 }
 

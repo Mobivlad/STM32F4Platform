@@ -92,7 +92,7 @@ void initialTask() {
             (xTaskHandle *) NULL);
 
     while(1) {
-        taskYIELD();
+        vTaskDelay(portMAX_DELAY);
     }
 }
 

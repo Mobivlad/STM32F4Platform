@@ -83,15 +83,15 @@ void drvButtonRun(drvButton_struct* const buttonStruct) {
             } else if (buttonStruct->click_duration > drvButtonSimplePressDuration) {
                 action = drvButton_Press;
             }
-
             buttonStruct->click_duration = 0;
             break;
 
         default:
             break;
     }
+
     if (action != drvButton_NoAction) {
-        if (buttonStruct->actionCallbacks[drvButton_LongPress] != NULL) {
+        if (buttonStruct->actionCallbacks[action] != NULL) {
             buttonStruct->actionCallbacks[action]();
         }
     }
