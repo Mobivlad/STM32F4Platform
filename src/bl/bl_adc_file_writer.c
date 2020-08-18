@@ -47,7 +47,7 @@ void blADCInitFileName(blADCFileWriter_struct* fileWriterStruct) {
 }
 
 static blADCFW_bufferCopyError clearBuffer(blADCFileWriter_struct* fileWriterStruct) {
-    memset(fileWriterStruct->fileWriteData, 0, sizeof(fileWriterStruct->fileWriteData));
+    memset(fileWriterStruct->fileWriteData, 0, WRITE_BUFFER_SIZE);
     fileWriterStruct->index = 0;
     return blADCFW_COPY_OK;
 }
@@ -96,7 +96,7 @@ blADCFW_error blADCCloseFile(blADCFileWriter_struct* fileWriterStruct) {
 
 static blADCFW_bufferCopyError addToBuffer(blADCFileWriter_struct* fileWriterStruct, char* data) {
     uint16_t dataLen = strlen(data);
-    if (fileWriterStruct->index + dataLen > WRITE_BUFFER_SIZE) {
+    if (fileWriterStruct->index + dataLen > WRITE_BUFFER_SIZE - 1) {
         return blADCFW_COPY_OVERLOAD;
     }
     memcpy(&fileWriterStruct->fileWriteData[fileWriterStruct->index], data, dataLen);

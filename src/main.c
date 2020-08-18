@@ -12,12 +12,9 @@
 
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_it.h"
-#include "stm32f769i_discovery_lcd.h"
 
 #include "ul_heart_beat.h"
-#include "ul_moving_average.h"
 #include "bl_adc_controller.h"
-#include "ul_fat_fs.h"
 
 #define BLINK_FREQUENCY_5_HZ 100
 #define ADC_FREQUENCY 1000
