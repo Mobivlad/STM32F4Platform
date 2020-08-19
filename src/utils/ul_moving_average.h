@@ -14,9 +14,13 @@
 
 #define UTIL_QUEUE_SIZE         10
 
-#define MIN_DELAY               1
 #define INCORRECT_DATA          0x1FFF
 #define DELAY_TIME              0xFF
+
+typedef enum {
+    ulMovingAvarege_STOP = 0,
+    ulMovingAvarege_START
+} ulMovingAvarege_command;
 
 typedef struct {
     drvADC_struct           adc_srtuct;
@@ -27,8 +31,8 @@ typedef struct {
     uint16_t                windowsData[WINDOW_SIZE];
     uint8_t                 windowsIndex;
 
-    uint16_t                adcValue;
-    QueueHandle_t           queue;
+    QueueHandle_t           valuesQueue;
+    QueueHandle_t           commandQueue;
 
     QueueHandle_t           fileValues;
     QueueHandle_t           displayValues;
@@ -40,12 +44,7 @@ typedef struct {
  */
 void ulMovingAvaregeInit(ulMovingAvarege_struct* ulMA_struct);
 
-void ulMovingAvaregeStart(ulMovingAvarege_struct* ulMA_struct);
-void ulMovingAvaregeStop(ulMovingAvarege_struct* ulMA_struct);
-
-/**
- * Task function for thread creation
- */
-void ulMovingAvaregeTaskFunction(void* parametr);
+void ulMovingAvaregeCalculateTask(void* parametr);
+void ulMovingAvaregeControlTask(void* parametr);
 
 #endif /* UTILS_UL_MOVING_AVERAGE_H_ */

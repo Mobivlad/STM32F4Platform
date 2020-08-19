@@ -29,10 +29,27 @@
 #define MAX_VOLTAGE             3.3f
 #define MAX_ADC_VAL             0x0FFF
 
+#define WRITER_QUEUE_SIZE       200
+
+typedef enum {
+    blADCFileWriter_StartCommand = 0,
+    blADCFileWriter_StopCommand
+} blADCFileWriter_command;
+
+typedef enum {
+    blADCFileWriter_DATA = 0,
+    blADCFileWriter_COMMAND
+} blADCFileWriter_recordType;
+
+typedef struct {
+    blADCFileWriter_recordType  recordType;
+    uint16_t                    data;
+} blADCFileWriter_record;
+
 typedef struct {
     ulFatFS_struct      fatFS;
 
-    QueueHandle_t       adcValues;
+    QueueHandle_t       fileWriterDataQueue;
 
     uint8_t             fileNumber;
 
@@ -57,12 +74,9 @@ typedef enum {
     blADCFW_COPY_OVERLOAD,
 } blADCFW_bufferCopyError;
 
-blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct, QueueHandle_t writeValues);
+blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct);
 
 void blADCFileWriterTask(void* parametr);
-
-blADCFW_error blADCCloseFile(blADCFileWriter_struct* fileWriterStruct);
-blADCFW_error blADCOpenFile(blADCFileWriter_struct* fileWriterStruct);
 
 
 #endif /* BL_BL_ADC_FILE_WRITER_H_ */

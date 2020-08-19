@@ -7,7 +7,9 @@
 
 #include "ul_heart_beat.h"
 
-void ulHeartBeatInit(ulHeartBeatStruct* const heartBeat) {
+void ulHeartBeatInit(ulHeartBeatStruct* const heartBeat, uint32_t frequency) {
+
+    heartBeat->frequency = frequency;
 
     drvLed_struct* drvLedStruct = (drvLed_struct*) heartBeat;
 

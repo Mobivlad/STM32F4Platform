@@ -21,10 +21,11 @@ static blADCFW_error initSaveFolder(blADCFileWriter_struct* fileWriterStruct) {
     return blADCFW_OK;
 }
 
-blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct, QueueHandle_t writeValues) {
+blADCFW_error blADCFileWriterInit(blADCFileWriter_struct* fileWriterStruct) {
     if (fileWriterStruct == NULL) return blADCFW_NULL_POINT;
 
-    fileWriterStruct->adcValues = writeValues;
+    fileWriterStruct->fileWriterDataQueue = xQueueCreate(WRITER_QUEUE_SIZE,
+            sizeof(blADCFileWriter_record));
 
     if (ulFatFSInit(&fileWriterStruct->fatFS) != ulFatFS_OK) {
         return blADCFW_EROOR;
@@ -52,7 +53,7 @@ static blADCFW_bufferCopyError clearBuffer(blADCFileWriter_struct* fileWriterStr
     return blADCFW_COPY_OK;
 }
 
-blADCFW_error blADCOpenFile(blADCFileWriter_struct* fileWriterStruct) {
+static blADCFW_error blADCOpenFile(blADCFileWriter_struct* fileWriterStruct) {
     if (fileWriterStruct == NULL) {
         return blADCFW_NULL_POINT;
     }
@@ -75,7 +76,7 @@ static blADCFW_error pushBuffer(blADCFileWriter_struct* fileWriterStruct) {
     return blADCFW_OK;
 }
 
-blADCFW_error blADCCloseFile(blADCFileWriter_struct* fileWriterStruct) {
+static blADCFW_error blADCCloseFile(blADCFileWriter_struct* fileWriterStruct) {
     if (fileWriterStruct == NULL) {
         return blADCFW_NULL_POINT;
     }
@@ -126,10 +127,21 @@ static blADCFW_error blADCWriteValue(blADCFileWriter_struct* fileWriterStruct, f
 void blADCFileWriterTask(void* parametr) {
     blADCFileWriter_struct* fileWriterStruct = (blADCFileWriter_struct*) parametr;
     while(1) {
-        uint16_t adcValue;
-        xQueueReceive(fileWriterStruct->adcValues, &adcValue, portMAX_DELAY);
+        blADCFileWriter_record record;
+        xQueueReceive(fileWriterStruct->fileWriterDataQueue, &record, portMAX_DELAY);
 
-        float value = (float)adcValue * MAX_VOLTAGE / MAX_ADC_VAL;
-        blADCWriteValue(fileWriterStruct, value);
+        if (record.recordType == blADCFileWriter_DATA) {
+            float value = (float) record.data * MAX_VOLTAGE / MAX_ADC_VAL;
+            blADCWriteValue(fileWriterStruct, value);
+        } else if (record.recordType == blADCFileWriter_COMMAND) {
+            switch (record.data) {
+                case blADCFileWriter_StartCommand:
+                    blADCOpenFile(fileWriterStruct);
+                    break;
+                case blADCFileWriter_StopCommand:
+                    blADCCloseFile(fileWriterStruct);
+                    break;
+            }
+        }
     }
 }

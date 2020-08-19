@@ -19,12 +19,20 @@ static void clearArea() {
     BSP_LCD_SetTextColor(LCD_COLOR_RED);
 }
 
-blADCDisplay_error blADCDisplayInit(blADCDisplay_struct* displayStruct, QueueHandle_t queueValues) {
-    if (displayStruct == NULL || queueValues == NULL) {
+static void blADCDisplaySDStatus(blADCDisplay_SDStatus sdStatus) {
+    BSP_LCD_SetFont(&Font16);
+    BSP_LCD_SetTextColor(sdStatus == blADCDisplay_SD_OK ? LCD_COLOR_GREEN : LCD_COLOR_RED);
+    BSP_LCD_DisplayStringAt(0, TEXT_Y_POS,
+            sdStatus == blADCDisplay_SD_OK ? (uint8_t*) SD_OK_TEXT : (uint8_t*) SD_ERROR_TEXT,
+            RIGHT_MODE);
+}
+
+blADCDisplay_error blADCDisplayInit(blADCDisplay_struct* displayStruct, uint8_t sdInitStatus) {
+    if (displayStruct == NULL) {
         return blADCDisplay_NULL_POINT;
     }
 
-    displayStruct->adcValues = queueValues;
+    displayStruct->displayDataQueue = xQueueCreate(DISPLAY_QUEUE_SIZE, sizeof(blADCDisplay_record));
 
     if (BSP_LCD_Init() != 0) {
         return blADCDisplay_EROOR;
@@ -43,10 +51,16 @@ blADCDisplay_error blADCDisplayInit(blADCDisplay_struct* displayStruct, QueueHan
 
     clearArea();
 
+    if (!sdInitStatus) {
+        blADCDisplaySDStatus(blADCDisplay_SD_OK);
+    } else {
+        blADCDisplaySDStatus(blADCDisplay_SD_EROOR);
+    }
+
     return blADCDisplay_OK;
 }
 
-blADCDisplay_error blADCDisplayStart(blADCDisplay_struct* displayStruct) {
+static blADCDisplay_error blADCDisplayStart(blADCDisplay_struct* displayStruct) {
     if (displayStruct == NULL) {
         return blADCDisplay_NULL_POINT;
     }
@@ -58,20 +72,11 @@ blADCDisplay_error blADCDisplayStart(blADCDisplay_struct* displayStruct) {
     return blADCDisplay_OK;
 }
 
-blADCDisplay_error blADCDisplayStop(blADCDisplay_struct* displayStruct) {
+static blADCDisplay_error blADCDisplayStop(blADCDisplay_struct* displayStruct) {
     if (displayStruct == NULL) {
         return blADCDisplay_NULL_POINT;
     }
-    // @TODO check if DisplayStop is needed
     return blADCDisplay_OK;
-}
-
-void blADCDisplaySDStatus(blADCDisplay_SDStatus sdStatus) {
-    BSP_LCD_SetFont(&Font16);
-    BSP_LCD_SetTextColor(sdStatus == blADCDisplay_SD_OK ? LCD_COLOR_GREEN : LCD_COLOR_RED);
-    BSP_LCD_DisplayStringAt(0, TEXT_Y_POS,
-            sdStatus == blADCDisplay_SD_OK ? (uint8_t*) SD_OK_TEXT : (uint8_t*) SD_ERROR_TEXT,
-            RIGHT_MODE);
 }
 
 static void redrawAll(blADCDisplay_struct* displayStruct) {
@@ -119,8 +124,20 @@ static void drawGraph(blADCDisplay_struct* displayStruct, uint16_t newVal) {
 void blADCDisplayTask(void* parametr) {
     blADCDisplay_struct* displayStruct = (blADCDisplay_struct*) parametr;
     while (1) {
-        uint16_t adcValue;
-        xQueueReceive(displayStruct->adcValues, &adcValue, portMAX_DELAY);
-        drawGraph(displayStruct, adcValue * AREA_HEIGHT / MAX_ADC_VAL);
+        blADCDisplay_record record;
+        xQueueReceive(displayStruct->displayDataQueue, &record, portMAX_DELAY);
+
+        if (record.recordType == blADCDisplay_DATA) {
+            drawGraph(displayStruct, record.data * AREA_HEIGHT / MAX_ADC_VAL);
+        } else if (record.recordType == blADCDisplay_COMMAND) {
+            switch (record.data) {
+                case blADCDisplay_StartCommand:
+                    blADCDisplayStart(displayStruct);
+                    break;
+                case blADCDisplay_StopCommand:
+                    blADCDisplayStop(displayStruct);
+                    break;
+            }
+        }
     }
 }

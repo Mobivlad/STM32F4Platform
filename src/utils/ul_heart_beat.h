@@ -21,7 +21,7 @@ typedef struct {
 /**
  * Initial function for heart beat
  */
-void ulHeartBeatInit(ulHeartBeatStruct* const heartBeat);
+void ulHeartBeatInit(ulHeartBeatStruct* const heartBeat, uint32_t frequency);
 
 /**
  * Run function for heart beat

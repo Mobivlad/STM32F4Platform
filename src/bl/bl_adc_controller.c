@@ -7,17 +7,34 @@
 
 #include "bl_adc_controller.h"
 
+static const uint8_t stopFilterCommand = ulMovingAvarege_STOP;
+static const uint8_t startFilterCommand = ulMovingAvarege_START;
+
+const static blADCDisplay_record stopDisplayCommand = {
+        blADCDisplay_COMMAND, blADCDisplay_StopCommand
+};
+const static blADCDisplay_record startDisplayCommand = {
+        blADCDisplay_COMMAND, blADCDisplay_StartCommand
+};
+
+const static blADCFileWriter_record stopFileWriterCommand = {
+        blADCFileWriter_COMMAND, blADCFileWriter_StopCommand
+};
+const static blADCFileWriter_record startFileWriterCommand = {
+        blADCFileWriter_COMMAND, blADCFileWriter_StartCommand
+};
+
 static blADCController_struct* currentStruct;
 
 static void buttonAction(){
-    xSemaphoreGive(currentStruct->startStorSemaphore);
+    xSemaphoreGive(currentStruct->switchHandlerSemaphore);
 }
 
-void blADCControllerInit(blADCController_struct* controllerStruct, uint32_t frequency) {
-    controllerStruct->startStorSemaphore    = xSemaphoreCreateBinary();
+void blADCControllerInit(blADCController_struct* controllerStruct, uint32_t frequency,
+        QueueHandle_t displayQueue, QueueHandle_t fileWriterQueue) {
+    controllerStruct->switchHandlerSemaphore    = xSemaphoreCreateBinary();
 
-    controllerStruct->displayQueue       = xQueueCreate(QUEUE_SIZE, sizeof(uint16_t));
-    controllerStruct->fileWriterQueue    = xQueueCreate(QUEUE_SIZE, sizeof(uint16_t));
+    controllerStruct->filterControlQueue = xQueueCreate(QUEUE_SIZE, sizeof(uint8_t));
 
     controllerStruct->button.button = drvButton1;
     drvButtonInit((drvButton_struct*)controllerStruct);
@@ -28,8 +45,12 @@ void blADCControllerInit(blADCController_struct* controllerStruct, uint32_t freq
     controllerStruct->movingAvarageUtil.adc = ADC_DRIVER;
     controllerStruct->movingAvarageUtil.frequency = frequency;
 
-    controllerStruct->movingAvarageUtil.fileValues      = controllerStruct->fileWriterQueue;
-    controllerStruct->movingAvarageUtil.displayValues   = controllerStruct->displayQueue;
+    controllerStruct->fileWriterQueue = fileWriterQueue;
+    controllerStruct->displayQueue    = displayQueue;
+
+    controllerStruct->movingAvarageUtil.commandQueue    = controllerStruct->filterControlQueue;
+    controllerStruct->movingAvarageUtil.fileValues = fileWriterQueue;
+    controllerStruct->movingAvarageUtil.displayValues = displayQueue;
 
     ulMovingAvaregeInit(&controllerStruct->movingAvarageUtil);
 
@@ -44,19 +65,21 @@ void blADCControllerButtonTask(void* parametr) {
     }
 }
 
+char x[6] = {0};
+
 void blADCControllerSwitchTask(void* parametr) {
     blADCController_struct* controllerStruct = (blADCController_struct*) parametr;
     while (1) {
-        xSemaphoreTake(controllerStruct->startStorSemaphore, portMAX_DELAY);
+        xSemaphoreTake(controllerStruct->switchHandlerSemaphore, portMAX_DELAY);
         if (controllerStruct->state == IN_RUN) {
-            ulMovingAvaregeStop(&controllerStruct->movingAvarageUtil);
-            blADCDisplayStop(&controllerStruct->adcd);
-            blADCCloseFile(&controllerStruct->adcw);
+            xQueueSend(controllerStruct->filterControlQueue, &stopFilterCommand, 0);
+            xQueueSend(controllerStruct->displayQueue, &stopDisplayCommand, 0);
+            xQueueSend(controllerStruct->fileWriterQueue, &stopFileWriterCommand, 0);
             controllerStruct->state = SUSPENDED;
         } else {
-            ulMovingAvaregeStart(&controllerStruct->movingAvarageUtil);
-            blADCDisplayStart(&controllerStruct->adcd);
-            blADCOpenFile(&controllerStruct->adcw);
+            xQueueSend(controllerStruct->filterControlQueue, &startFilterCommand, 0);
+            xQueueSend(controllerStruct->displayQueue, &startDisplayCommand, 0);
+            xQueueSend(controllerStruct->fileWriterQueue, &startFileWriterCommand, 0);
             controllerStruct->state = IN_RUN;
         }
     }

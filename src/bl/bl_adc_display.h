@@ -47,6 +47,23 @@
 #define START_X             GRAPH_MARGIN
 #define END_X               DISPLAY_WIDTH - GRAPH_MARGIN
 
+#define DISPLAY_QUEUE_SIZE  200
+
+typedef enum {
+    blADCDisplay_StartCommand = 0,
+    blADCDisplay_StopCommand
+} blADCDisplay_command;
+
+typedef enum {
+    blADCDisplay_DATA = 0,
+    blADCDisplay_COMMAND
+} blADCDisplay_recordType;
+
+typedef struct {
+    blADCDisplay_recordType recordType;
+    uint16_t                data;
+} blADCDisplay_record;
+
 typedef enum {
     blADCDisplay_OK = 0,
     blADCDisplay_EROOR,
@@ -59,19 +76,15 @@ typedef enum {
 } blADCDisplay_SDStatus;
 
 typedef struct {
-    QueueHandle_t       adcValues;
+    QueueHandle_t       displayDataQueue;
 
     uint16_t            Y[STEPS_COUNT];
     uint16_t            stepIndex;
 } blADCDisplay_struct;
 
-blADCDisplay_error blADCDisplayInit(blADCDisplay_struct* displayStruct, QueueHandle_t queueValues);
-void blADCDisplaySDStatus(blADCDisplay_SDStatus sdStatus);
+blADCDisplay_error blADCDisplayInit(blADCDisplay_struct* displayStruct, uint8_t sdInitStatus);
 
 void blADCDisplayTask(void* parametr);
-
-blADCDisplay_error blADCDisplayStart(blADCDisplay_struct* displayStruct);
-blADCDisplay_error blADCDisplayStop(blADCDisplay_struct* displayStruct);
 
 
 #endif /* BL_BL_ADC_DISPLAY_H_ */
