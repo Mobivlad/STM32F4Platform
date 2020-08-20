@@ -11,30 +11,33 @@
 #include "drv_com_port.h"
 #include "ul_heart_beat.h"
 #include "drv_sysclock.h"
+#include "bl_control.h"
+#include "bl_timer.h"
 
-#define BLINK_FREQUENCY_5_HZ 200
-drvCOMPort_struct comPortStruct;
-char array[255] = "Hello world!";
+#define BLINK_FREQUENCY_5_HZ 100
 
-void uartRec() {
-    drvCOMPortWriteString(&comPortStruct, "OK\r\n", NULL);
-    memset(array, 0, sizeof(array));
-    drvCOMPortReadString(&comPortStruct, array, 255, uartRec);
-}
 int main(void)
 {
     drvSysClockInit();
 
-    drvCOMPortInit(&comPortStruct, drvCOMPort1);
-    drvCOMPortWriteString(&comPortStruct, array, NULL);
-    drvCOMPortReadString(&comPortStruct, array, 255, uartRec);
-    //drvCOMPortWriteString(&comPortStruct, array, uartRec);
-
-    ulHeartBeatStruct heartBeat;
+    ulHeartBeatStruct heartBeat = {0};
     heartBeat.frequency = BLINK_FREQUENCY_5_HZ;
     ulHeartBeatInit(&heartBeat);
 
+    blTimer_struct timer = {0};
+    blTimerInit(&timer);
+
+    blCommand_struct command = {0};
+    blCommandInit(&command);
+
+    blCommandChangeLongClickAction(&command, blTimerReloadHandler);
+    blCommandChangeClickAction(&command, blTimerHandler);
+    blCommandChangeSetLimitAction(&command, blTimerSetLimit);
+    blCommandChangeClearAction(&command, blTimerClearLimit);
+
     while(1){
         ulHeartBeatRun(&heartBeat);
+        blTimerRun(&timer);
+        blCommandRun(&command);
     }
 }

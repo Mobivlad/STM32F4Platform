@@ -16,6 +16,7 @@ const static drvTimer_def timerDefenition = {
 
 void drvTimerInit(drvTimer_struct* timerStruct, drvTimerCallbackType callback) {
     halInitBaseTimerStruct initStruct;
+    initStruct.timer = timerDefenition.timer;
     initStruct.halBaseTimerPeriod = timerDefenition.period;
     initStruct.halBaseTimerPrescaler = timerDefenition.prescaller;
     initStruct.halBaseTimersClockDivision = timerDefenition.clockDiv;

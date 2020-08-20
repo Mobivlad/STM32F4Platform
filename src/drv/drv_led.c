@@ -8,7 +8,7 @@
 
 static const drvLed_data led_data[drvLed_Count] =
 {
-        { halGPIO_PortD, halGPIO_Pin13 },
+        { halGPIO_PortD, halGPIO_Pin12 },
 };
 
 void drvLedInit(const drvLed_struct* const ledStruct) {

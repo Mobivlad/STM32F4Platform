@@ -17,7 +17,7 @@
 #define TIMER_MAX       0xFF
 
 typedef enum {
-    RUN,
+    RUN = 0,
     PAUSE
 } blTimer_state;
 
@@ -31,6 +31,14 @@ typedef struct {
     blTimer_state   state;
 } blTimer_struct;
 
-void blTimer_init(blTimer_struct* timer_struct);
+void blTimerInit(blTimer_struct* timer_struct);
+
+void blTimerHandler();
+void blTimerReloadHandler();
+
+uint8_t blTimerSetLimit(uint8_t limit);
+uint8_t blTimerClearLimit();
+
+void blTimerRun(blTimer_struct* timer_struct);
 
 #endif /* BL_BL_TIMER_H_ */

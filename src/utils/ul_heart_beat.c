@@ -24,7 +24,6 @@ void ulHeartBeatRun(ulHeartBeatStruct* const heartBeat) {
 
     if (drvIsTimePased(heartBeat->startTime, heartBeat->frequency) == PASSED) {
         drvLedToggle((drvLed_struct*) heartBeat);
-
         heartBeat->startTime = drvSysClockGetTick();
     }
 }

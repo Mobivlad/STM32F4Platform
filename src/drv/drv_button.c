@@ -88,7 +88,7 @@ void drvButtonRun(drvButton_struct* const buttonStruct) {
             break;
     }
     if (action != drvButton_NoAction) {
-        if (buttonStruct->actionCallbacks[drvButton_LongPress] != NULL) {
+        if (buttonStruct->actionCallbacks[action] != NULL) {
             buttonStruct->actionCallbacks[action]();
         }
     }

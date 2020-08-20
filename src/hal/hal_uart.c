@@ -95,7 +95,7 @@ halUARTErrorCode halUARTInit(halUART_struct* uartStruct, halUARTInitStruct* init
     GPIO_PinAFConfig(usart_data[uartStruct->uart].tx.port,
             usart_data[uartStruct->uart].tx.pin_source, usart_data[uartStruct->uart].usart_af);
 
-    USART_InitTypeDef* uartInitStruct = (USART_InitTypeDef*)initStruct;
+    USART_InitTypeDef* uartInitStruct = (USART_InitTypeDef*)uartStruct;
     uartInitStruct->USART_BaudRate               = initStruct->halUARTBaudRate;
     uartInitStruct->USART_HardwareFlowControl    = USART_HardwareFlowControl_None;
     uartInitStruct->USART_Mode                   = USART_Mode_Rx | USART_Mode_Tx;
@@ -128,7 +128,7 @@ halUARTErrorCode halUARTDeinit(halUART_struct* uartStruct) {
 
 	uartStruct->uartStatus = 0;
 
-	USART_Deinit(usart_data[uartStruct->uart].usart);
+	USART_DeInit(usart_data[uartStruct->uart].usart);
 
 	USART_Cmd(usart_data[uartStruct->uart].usart, DISABLE);
 
@@ -192,7 +192,7 @@ halUARTErrorCode halUARTReceive(halUART_struct* uartStruct, halUARTDataType data
         case halUARTDataType_String:
             uartStruct->uartStatus |= RX_STRING;
             USART_ClearITPendingBit(usart_data[uartStruct->uart].usart, USART_IT_IDLE);
-            USART_ITConfig(usart_data[uartStruct->uart].usart, USART_IT_IDLE, ENABLE);
+            //USART_ITConfig(usart_data[uartStruct->uart].usart, USART_IT_IDLE, ENABLE);
             break;
     }
 
@@ -249,7 +249,11 @@ halUARTErrorCode halUARTTransfer(halUART_struct* uartStruct, halUARTDataType dat
 }
 
 static void uart_interupt(halUART uart) {
-    if (USART_GetITStatus(usart_data[uart].usart, USART_IT_IDLE) != RESET && halUART_structsPointers[uart]->r_index !=0) {
+    if (USART_GetITStatus(usart_data[uart].usart, USART_IT_IDLE) != RESET) {
+        if(halUART_structsPointers[uart]->r_index == 0){
+            USART_ITConfig(usart_data[uart].usart, USART_IT_IDLE, DISABLE);
+            return;
+        }
         USART_ITConfig(usart_data[uart].usart, USART_IT_IDLE, DISABLE);
         USART_ClearITPendingBit(usart_data[uart].usart, USART_IT_IDLE);
 
@@ -303,6 +307,7 @@ static void uart_interupt(halUART uart) {
     }
     if (USART_GetITStatus(usart_data[uart].usart, USART_IT_RXNE) != RESET) {
         if (halUART_structsPointers[uart]->uartStatus & RX_STRING) {
+            USART_ITConfig(usart_data[uart].usart, USART_IT_IDLE, ENABLE);
             if (halUART_structsPointers[uart]->r_index
                     < halUART_structsPointers[uart]->r_buffer_size) {
                 halUART_structsPointers[uart]->r_buffer[halUART_structsPointers[uart]->r_index++] =
@@ -327,7 +332,6 @@ static void uart_interupt(halUART uart) {
             }
         }
     }
-
 }
 
 void halUARTSetOverloadCallBack(halUART_struct* uart_struct, halUARTCallBack callback){

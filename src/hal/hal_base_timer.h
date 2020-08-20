@@ -44,6 +44,7 @@ typedef enum {
 } halBaseTimersClockDivision;
 
 typedef struct {
+    halBaseTimer    timer;
     uint16_t halBaseTimerPrescaler;                         /**< Timer prescaler for TIM clock division.
                                                                  Must be between 0x0000 and 0xFFFF */
     uint16_t halBaseTimerPeriod;                            /**< Value for update action interrupt

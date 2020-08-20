@@ -144,7 +144,6 @@ static void drvFRAMInitOperation(drvFRAM_operationInstruction* operation, uint16
     operation->address[1]   = SECOND_ADDRESS_BYTE(memoryAddress);
     operation->data         = data;
     operation->dataLen      = dataLen;
-    operation->step         = STEP_WREN;
 }
 
 drvFRAM_errorCode drvFRAMWriteData(drvFRAM_struct* framStruct, uint16_t memoryAddress,
@@ -171,6 +170,7 @@ drvFRAM_errorCode drvFRAMWriteData(drvFRAM_struct* framStruct, uint16_t memoryAd
 
     drvFRAMInitOperation(operation, memoryAddress, data, dataLen);
     operation->opcode = WRITE;
+    operation->step   = STEP_WREN;
 
     framStruct->state = STATE_WAIT_TO_RUN;
 
@@ -195,6 +195,9 @@ drvFRAM_errorCode drvFRAMReadData(drvFRAM_struct* framStruct, uint16_t memoryAdd
 
     drvFRAMInitOperation(operation, memoryAddress, data, dataLen);
     operation->opcode = READ;
+    operation->step   = STEP_OPERATION;
+
+    framStruct->state = STATE_WAIT_TO_RUN;
 
     return drvFRAM_OK;
 }

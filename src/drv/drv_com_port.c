@@ -11,7 +11,7 @@ static const com_port_struct com_port_data[drvCOMPort_Count] =
 {
         {
 
-                .uart       = halUART2,
+                .uart       = halUART4,
                 .baudrate   = halUARTBaudRate9600,
                 .wordlen    = USART_WordLength_8b,
                 .stopbits   = halUARTStopBits1,

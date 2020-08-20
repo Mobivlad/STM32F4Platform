@@ -109,7 +109,7 @@ drvFRAM_errorCode drvFRAMInit(drvFRAM_struct* framStruct);
  * @param framStruct FRAM data structure
  * @return execute result code
  */
-drvFRAM_errorCode drvFRAMDeinit(drvFRAM_struct* framStruct)
+drvFRAM_errorCode drvFRAMDeinit(drvFRAM_struct* framStruct);
 
 /**
  * FRAM execute function

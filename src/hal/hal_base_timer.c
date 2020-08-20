@@ -23,6 +23,9 @@ void halBaseTimerSetTimerCallback(halTimer_struct* timerStruct, halTimerCallback
 }
 
 void halBaseTimerInit(halTimer_struct* timerStruct, halInitBaseTimerStruct* halInitStruct) {
+
+    timerStruct->timerID = halInitStruct->timer;
+
     RCC_APB1PeriphClockCmd(timer_table[timerStruct->timerID].timer_rcc, ENABLE);
 
     TIM_TimeBaseInitTypeDef* initStruct = (TIM_TimeBaseInitTypeDef*)timerStruct;
@@ -36,7 +39,7 @@ void halBaseTimerInit(halTimer_struct* timerStruct, halInitBaseTimerStruct* halI
 
     TIM_ClearITPendingBit(timer_table[timerStruct->timerID].timer, TIM_IT_Update);
     TIM_ITConfig(timer_table[timerStruct->timerID].timer, TIM_IT_Update, ENABLE);
-    NVIC_EnableIRQ(timer_table[timerStruct->timerID].timer_rcc);
+    NVIC_EnableIRQ(timer_table[timerStruct->timerID].timer_irq);
 
     structPointers[timerStruct->timerID] = timerStruct;
 
@@ -46,7 +49,7 @@ void halBaseTimerDeinit(halTimer_struct* timerStruct) {
 
 	structPointers[timerStruct->timerID]->callBack = NULL;
 
-	NVIC_DisableIRQ(timer_table[timerStruct->timerID].timer_rcc);
+	NVIC_DisableIRQ(timer_table[timerStruct->timerID].timer_irq);
 	TIM_ITConfig(timer_table[timerStruct->timerID].timer, TIM_IT_Update, DISABLE);
 
 	TIM_DeInit(timer_table[timerStruct->timerID].timer);
@@ -74,9 +77,9 @@ static void halBaseTimerIncrementCounter(halBaseTimer timer) {
 
     if (TIM_GetITStatus(haltimer, TIM_IT_Update) != RESET) {
 
-        halBaseTimerStop(haltimer);
+        halBaseTimerStop(structPointers[timer]);
 
-        halTimerCallbackType callbackFunction = structPointers[timer];
+        halTimerCallbackType callbackFunction = structPointers[timer]->callBack;
 
         if (callbackFunction != 0) {
             callbackFunction();

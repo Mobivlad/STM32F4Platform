@@ -25,8 +25,8 @@ static void blCOMPortReceiveCallback() {
 
             if (currentCommandStruct->setLimitAction != NULL) {
                 currentCommandStruct->setLimitAction(commandParametr);
-                drvCOMPortWriteString(&(currentCommandStruct->comPort), OK_PHRAZE, NULL);
             }
+            drvCOMPortWriteString(&(currentCommandStruct->comPort), OK_PHRAZE, NULL);
 
         } else {
             drvCOMPortWriteString(&(currentCommandStruct->comPort), INCORRECT_PARAMETER_PHRAZE,
@@ -73,11 +73,11 @@ void blCommandChangeLongClickAction(blCommand_struct* commandStruct, void (*acti
     commandStruct->button.actionCallbacks[drvButton_LongPress] = action;
 }
 
-void blCommandChangeClearAction(blCommand_struct* commandStruct, void (*action)()) {
+void blCommandChangeClearAction(blCommand_struct* commandStruct, uint8_t (*action)()) {
     commandStruct->clearLimitAction = action;
 }
 
-void blCommandChangeSetLimitAction(blCommand_struct* commandStruct, void (*action)(uint8_t)) {
+void blCommandChangeSetLimitAction(blCommand_struct* commandStruct, uint8_t (*action)(uint8_t)) {
     commandStruct->setLimitAction = action;
 }
 
