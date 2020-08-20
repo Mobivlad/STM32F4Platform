@@ -8,10 +8,8 @@
   ******************************************************************************
 */
 
-#include "drv_com_port.h"
+#include "bl_timerControler.h"
 #include "ul_heart_beat.h"
-#include "drv_sysclock.h"
-#include "bl_control.h"
 #include "bl_timer.h"
 
 #define BLINK_FREQUENCY_5_HZ 100
@@ -27,17 +25,12 @@ int main(void)
     blTimer_struct timer = {0};
     blTimerInit(&timer);
 
-    blCommand_struct command = {0};
-    blCommandInit(&command);
-
-    blCommandChangeLongClickAction(&command, blTimerReloadHandler);
-    blCommandChangeClickAction(&command, blTimerHandler);
-    blCommandChangeSetLimitAction(&command, blTimerSetLimit);
-    blCommandChangeClearAction(&command, blTimerClearLimit);
+    blController_struct controller = {0};
+    blControllerInit(&controller, &timer);
 
     while(1){
         ulHeartBeatRun(&heartBeat);
         blTimerRun(&timer);
-        blCommandRun(&command);
+        blControllerRun(&controller);
     }
 }

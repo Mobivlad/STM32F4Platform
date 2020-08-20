@@ -54,6 +54,6 @@ void drvSSDisplayInit();
  *  Function changes the display number
  *  @param value new number
  */
-void drvSSDisplaySetValue(uint8_t value);
+void drvSSDisplaySetValue(uint16_t value);
 
 #endif /* DRV_DRV_7SEGMENT_DISPLAY_H_ */

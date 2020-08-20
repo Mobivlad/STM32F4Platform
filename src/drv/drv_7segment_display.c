@@ -166,7 +166,7 @@ static void drvSSDispalySetSymbol(uint8_t pos, uint8_t symbolDef) {
 }
 
 // Function change display number text
-void drvSSDisplaySetValue(uint8_t value) {
+void drvSSDisplaySetValue(uint16_t value) {
     for (uint8_t i = 0; i < DISPLAY_NUMBER_COUNT; i++) {
         drvSSDispalySetSymbol(i, drvSSDisplayGetSymbolDefinition((value % 10) + '0'));
         value /= 10;

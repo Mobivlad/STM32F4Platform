@@ -186,8 +186,36 @@ static halSPI_errorCode halSPICheckReadWriteOperation(halSPI_struct* spiStruct, 
     return halSPI_OK;
 }
 
-static halSPI_errorCode halSPISendReceiveIT(halSPI_struct* spiStruct, halSPI_operation operation,
-        uint8_t* data, uint16_t dataSize, halSPICallBack operationAction) {
+halSPI_errorCode halSPIReceiveIT(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
+        halSPICallBack receiveAction) {
+
+    halSPI_errorCode checkRes = halSPICheckReadWriteOperation(spiStruct, data, dataSize);
+
+    if (checkRes != halSPI_OK) {
+        return checkRes;
+    }
+
+    // reset busy status
+    spiStruct->spiStatus &= ~halSPI_Ready;
+
+    // set read flag is status
+    spiStruct->spiStatus |= halSPI_ReadOperation;
+
+    // set data operation parameters
+    spiStruct->buffer = data;
+    spiStruct->bufferSize = dataSize;
+    spiStruct->rx_index = 0;
+    spiStruct->tx_index = 0;
+    spiStruct->callback = receiveAction;
+
+    // enable all interrupts
+    SPI_I2S_ITConfig(spi_data[spiStruct->spi].spi, SPI_I2S_IT_TXE, ENABLE);
+
+    return halSPI_OK;
+}
+
+halSPI_errorCode halSPISendIT(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
+        halSPICallBack sendAction) {
     halSPI_errorCode checkRes = halSPICheckReadWriteOperation(spiStruct, data, dataSize);
 
     if(checkRes != halSPI_OK){
@@ -197,18 +225,15 @@ static halSPI_errorCode halSPISendReceiveIT(halSPI_struct* spiStruct, halSPI_ope
     // reset busy status
     spiStruct->spiStatus &= ~halSPI_Ready;
 
-    // set write or read flag is status
-    if(operation == halSPI_Read)
-        spiStruct->spiStatus |= halSPI_ReadOperation;
-    else
-        spiStruct->spiStatus &= ~halSPI_ReadOperation;
+    // set write flag in status
+    spiStruct->spiStatus &= ~halSPI_ReadOperation;
 
     // set data operation parameters
     spiStruct->buffer = data;
     spiStruct->bufferSize = dataSize;
     spiStruct->rx_index = 0;
     spiStruct->tx_index = 0;
-    spiStruct->callback = operationAction;
+    spiStruct->callback = sendAction;
 
     // enable all interrupts
     SPI_I2S_ITConfig(spi_data[spiStruct->spi].spi, SPI_I2S_IT_TXE, ENABLE);
@@ -216,22 +241,46 @@ static halSPI_errorCode halSPISendReceiveIT(halSPI_struct* spiStruct, halSPI_ope
     return halSPI_OK;
 }
 
-halSPI_errorCode halSPIReceiveIT(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
-        halSPICallBack receiveAction) {
-    return halSPISendReceiveIT(spiStruct, halSPI_Read, data, dataSize, receiveAction);
-}
-
-halSPI_errorCode halSPISendIT(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
-        halSPICallBack sendAction) {
-    return halSPISendReceiveIT(spiStruct, halSPI_Write, data, dataSize, sendAction);
-}
-
 halSPI_errorCode halSPIIsReady(halSPI_struct* spiStruct) {
     return (spiStruct->spiStatus & halSPI_Ready) ? halSPI_OK : halSPI_BUSY;
 }
 
-static halSPI_errorCode halSPISendReceive(halSPI_struct* spiStruct, halSPI_operation operation,
-        uint8_t* data, uint16_t dataSize, uint16_t timeout) {
+halSPI_errorCode halSPISend(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
+        uint16_t timeout) {
+
+    halSPI_errorCode checkRes = halSPICheckReadWriteOperation(spiStruct, data, dataSize);
+    if (checkRes != halSPI_OK) {
+        return checkRes;
+    }
+
+    // reset busy status
+    spiStruct->spiStatus &= ~halSPI_Ready;
+    uint16_t iterationTimeout = timeout;
+    for (uint16_t i = 0; i < dataSize; i++) {
+        while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_TXE) == RESET) {
+            iterationTimeout--;
+            if (iterationTimeout == 0) {
+                halSPI_structsPointers[spiStruct->spi]->spiStatus |= halSPI_Ready;
+                return halSPI_OUT_TIMEOUT;
+            }
+        }
+        SPI_I2S_SendData(spi_data[spiStruct->spi].spi, data[i]);
+        while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_RXNE) == RESET) {
+            iterationTimeout--;
+            if (iterationTimeout == 0) {
+                halSPI_structsPointers[spiStruct->spi]->spiStatus |= halSPI_Ready;
+                return halSPI_OUT_TIMEOUT;
+            }
+        }
+        SPI_I2S_ReceiveData(spi_data[spiStruct->spi].spi);
+        iterationTimeout = timeout;
+    }
+    halSPI_structsPointers[spiStruct->spi]->spiStatus |= halSPI_Ready;
+    return halSPI_OK;
+}
+
+halSPI_errorCode halSPIReceive(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
+        uint16_t timeout) {
     halSPI_errorCode checkRes = halSPICheckReadWriteOperation(spiStruct, data, dataSize);
 
     if (checkRes != halSPI_OK) {
@@ -249,7 +298,7 @@ static halSPI_errorCode halSPISendReceive(halSPI_struct* spiStruct, halSPI_opera
                 return halSPI_OUT_TIMEOUT;
             }
         }
-        SPI_I2S_SendData(spi_data[spiStruct->spi].spi, operation == halSPI_Write ? data[i] : DUMMY_DATA);
+        SPI_I2S_SendData(spi_data[spiStruct->spi].spi, DUMMY_DATA);
         while (SPI_I2S_GetFlagStatus(spi_data[spiStruct->spi].spi, SPI_I2S_FLAG_RXNE) == RESET) {
             iterationTimeout--;
             if (iterationTimeout == 0) {
@@ -257,25 +306,11 @@ static halSPI_errorCode halSPISendReceive(halSPI_struct* spiStruct, halSPI_opera
                 return halSPI_OUT_TIMEOUT;
             }
         }
-        if (operation == halSPI_Write) {
-            SPI_I2S_ReceiveData(spi_data[spiStruct->spi].spi);
-        } else {
-            data[i] = SPI_I2S_ReceiveData(spi_data[spiStruct->spi].spi);
-        }
+        data[i] = SPI_I2S_ReceiveData(spi_data[spiStruct->spi].spi);
         iterationTimeout = timeout;
     }
     halSPI_structsPointers[spiStruct->spi]->spiStatus |= halSPI_Ready;
     return halSPI_OK;
-}
-
-halSPI_errorCode halSPISend(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
-        uint16_t timeout) {
-    return halSPISendReceive(spiStruct, halSPI_Write, data, dataSize, timeout);
-}
-
-halSPI_errorCode halSPIReceive(halSPI_struct* spiStruct, uint8_t* data, uint16_t dataSize,
-        uint16_t timeout) {
-    return halSPISendReceive(spiStruct, halSPI_Read, data, dataSize, timeout);
 }
 
 // general interrupt handler

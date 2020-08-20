@@ -11,7 +11,7 @@
 #include "hal_base_timer.h"
 
 #define TIMER_MS_PRESCALER 41999
-#define TIMER_PERIOD       1999
+#define TIMER_PERIOD       199
 
 /// Callback function for timers
 typedef void(*drvTimerCallbackType)(void);
