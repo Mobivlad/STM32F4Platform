@@ -1,7 +1,7 @@
 /*
  * drv_timer.h
  *
- *  Created on: 4 черв. 2020 р.
+ *  Created on: 4 пїЅпїЅпїЅпїЅ. 2020 пїЅ.
  *      Author: vladyslav.daliavskyi
  */
 
@@ -11,7 +11,7 @@
 #include "hal_base_timer.h"
 
 #define TIMER_MS_PRESCALER 41999
-#define TIMER_PERIOD       199
+#define TIMER_PERIOD       1999
 
 /// Callback function for timers
 typedef void(*drvTimerCallbackType)(void);
