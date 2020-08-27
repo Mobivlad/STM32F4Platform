@@ -1,0 +1,39 @@
+{
+    "configurations": [
+        {
+            "name": "arm_c_cpp_properties",
+            "compilerPath": "C:/Software/GNU_Tools_ARM_Embedded/8_2019-q3-update/bin/arm-none-eabi-gcc.exe",
+            "includePath": [
+              "C:/Software/GNU_Tools_ARM_Embedded/8_2019-q3-update/arm-none-eabi/include",
+              "C:/Software/GNU_Tools_ARM_Embedded/8_2019-q3-update/arm-none-eabi/include/sys/",
+              "C:/Software/GNU_Tools_ARM_Embedded/8_2019-q3-update/arm-none-eabi/lib/**",
+
+              "${workspaceRoot}/Drivers/STM32F4xx_HAL_Driver/Inc",
+              "${workspaceRoot}/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
+              "${workspaceRoot}/Drivers/CMSIS/Device",
+              "${workspaceRoot}/Drivers/CMSIS/Include",
+              "${workspaceRoot}/Drivers/STM32F4xx_HAL_Driver/Inc",
+              "${workspaceRoot}/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
+              "${workspaceRoot}/Core/",
+              "${workspaceRoot}/Core/hal",
+              "${workspaceRoot}/Core/drv",
+              "${workspaceRoot}/Core/bl",
+              "${workspaceRoot}/Core/utils",
+              "${workspaceRoot}/Core/config",
+              "${workspaceRoot}/Drivers/RTOS/include",
+              "${workspaceRoot}/Drivers/RTOS/portable/GCC",
+              "${workspaceRoot}/Drivers/RTOS"
+            ],
+            "defines": [
+              "USE_HAL_DRIVER",
+              "STM32F429xx",
+              "M4",
+              "GCC_ARMCM4"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+			      "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}

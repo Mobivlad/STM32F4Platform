@@ -1,0 +1,5 @@
+{
+	"cortex-debug.armToolchainPath": "C:/Software/GNU_Tools_ARM_Embedded/8_2019-q3-update/bin",
+	"cortex-debug.enableTelemetry": false,
+	"cortex-debug.JLinkGDBServerPath": "C:/Software/JLink/JLinkGDBServerCL.exe"
+}
