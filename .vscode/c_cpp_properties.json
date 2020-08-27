@@ -23,6 +23,7 @@
               "${workspaceRoot}/Drivers/RTOS/include",
               "${workspaceRoot}/Drivers/RTOS/portable/GCC",
               "${workspaceRoot}/Drivers/RTOS",
+              "${workspaceRoot}/Drivers/USB/Class/CDC/Inc",
               "${workspaceRoot}/Drivers/USB/Core/Inc"
             ],
             "defines": [

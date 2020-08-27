@@ -73,7 +73,10 @@ Drivers/RTOS/timers.c \
 Drivers/USB/Core/Src/usbd_core.c \
 Drivers/USB/Core/Src/usbd_ctlreq.c \
 Drivers/USB/Core/Src/usbd_desc.c \
-Drivers/USB/Core/Src/usbd_ioreq.c 
+Drivers/USB/Core/Src/usbd_ioreq.c \
+Drivers/USB/Class/CDC/Src/usbd_cdc_if.c \
+Drivers/USB/Class/CDC/Src/usbd_cdc.c \
+Drivers/USB/Class/CDC/Src/usbd_conf.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -142,6 +145,7 @@ C_INCLUDES =  \
 -ICore/hal \
 -ICore/drv \
 -ICore/config \
+-IDrivers/USB/Class/CDC/Inc \
 -IDrivers/USB/Core/Inc 
 
 
