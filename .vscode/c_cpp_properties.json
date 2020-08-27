@@ -22,7 +22,8 @@
               "${workspaceRoot}/Core/config",
               "${workspaceRoot}/Drivers/RTOS/include",
               "${workspaceRoot}/Drivers/RTOS/portable/GCC",
-              "${workspaceRoot}/Drivers/RTOS"
+              "${workspaceRoot}/Drivers/RTOS",
+              "${workspaceRoot}/Drivers/USB/Core/Inc"
             ],
             "defines": [
               "USE_HAL_DRIVER",

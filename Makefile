@@ -70,7 +70,10 @@ Drivers/RTOS/queue.c \
 Drivers/RTOS/stream_buffer.c \
 Drivers/RTOS/tasks.c \
 Drivers/RTOS/timers.c \
-
+Drivers/USB/Core/Src/usbd_core.c \
+Drivers/USB/Core/Src/usbd_ctlreq.c \
+Drivers/USB/Core/Src/usbd_desc.c \
+Drivers/USB/Core/Src/usbd_ioreq.c 
 
 # ASM sources
 ASM_SOURCES =  \
@@ -138,7 +141,8 @@ C_INCLUDES =  \
 -ICore/utils \
 -ICore/hal \
 -ICore/drv \
--ICore/config
+-ICore/config \
+-IDrivers/USB/Core/Inc 
 
 
 # compile gcc flags
