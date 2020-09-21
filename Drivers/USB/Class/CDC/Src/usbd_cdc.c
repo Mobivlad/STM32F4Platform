@@ -508,7 +508,7 @@ static uint8_t USBD_CDC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   pdev->ep_in[CDC_CMD_EP & 0xFU].is_used = 1U;
 
   /* Init  physical Interface components */
-  ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Init();
+  ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Init(pdev);
 
   /* Init Xfer states */
   hcdc->TxState = 0U;
@@ -558,7 +558,7 @@ static uint8_t USBD_CDC_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   /* DeInit  physical Interface components */
   if (pdev->pClassData != NULL)
   {
-    ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->DeInit();
+    ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->DeInit(pdev);
     (void)USBD_free(pdev->pClassData);
     pdev->pClassData = NULL;
   }
@@ -588,7 +588,7 @@ static uint8_t USBD_CDC_Setup(USBD_HandleTypeDef *pdev,
     {
       if ((req->bmRequest & 0x80U) != 0U)
       {
-        ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(req->bRequest,
+        ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(pdev, req->bRequest,
                                                           (uint8_t *)hcdc->data,
                                                           req->wLength);
 
@@ -604,7 +604,7 @@ static uint8_t USBD_CDC_Setup(USBD_HandleTypeDef *pdev,
     }
     else
     {
-      ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(req->bRequest,
+      ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(pdev, req->bRequest,
                                                         (uint8_t *)req, 0U);
     }
     break;
@@ -694,7 +694,7 @@ static uint8_t USBD_CDC_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
   else
   {
     hcdc->TxState = 0U;
-    ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->TransmitCplt(hcdc->TxBuffer, &hcdc->TxLength, epnum);
+    ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->TransmitCplt(pdev, hcdc->TxBuffer, &hcdc->TxLength, epnum);
   }
 
   return (uint8_t)USBD_OK;
@@ -722,7 +722,7 @@ static uint8_t USBD_CDC_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
   /* USB data will be immediately processed, this allow next USB traffic being
   NAKed till the end of the application Xfer */
 
-  ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Receive(hcdc->RxBuffer, &hcdc->RxLength);
+  ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Receive(pdev, &hcdc->RxLength);
 
   return (uint8_t)USBD_OK;
 }
@@ -739,7 +739,7 @@ static uint8_t USBD_CDC_EP0_RxReady(USBD_HandleTypeDef *pdev)
 
   if ((pdev->pUserData != NULL) && (hcdc->CmdOpCode != 0xFFU))
   {
-    ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(hcdc->CmdOpCode,
+    ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(pdev, hcdc->CmdOpCode,
                                                       (uint8_t *)hcdc->data,
                                                       (uint16_t)hcdc->CmdLength);
     hcdc->CmdOpCode = 0xFFU;

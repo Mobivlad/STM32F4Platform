@@ -1,11 +1,27 @@
 #include "ul_heart_beat.h"
 #include "ul_moving_average.h"
+#include "drv_usb_cdc.h"
 
 #define BLINK_FREQUENCY_5_HZ 1000
 
 ulHeartBeatStruct heartBeat;
+drvUSBCDC_struct usb;
 
 static void SystemClock_Config(void);
+
+void initialFunction(void* parametr) {
+  ulHeartBeatInit(&heartBeat, BLINK_FREQUENCY_5_HZ);
+
+  drvUSBCDCInit(&usb, NULL);
+ 
+  xTaskCreate(ulHeartBeatTaskFunction, "HEART_BEAT", configMINIMAL_STACK_SIZE, (void*) &heartBeat,
+            1, (xTaskHandle *) NULL);
+
+  while(1) {
+    drvUSBCDCWriteStr(&usb, "HELLO\r\n");
+    vTaskDelay(1000);
+  }
+}
 
 int main(void)
 {
@@ -14,10 +30,8 @@ int main(void)
   SystemClock_Config();
   SystemCoreClockUpdate();
   
-  ulHeartBeatInit(&heartBeat, BLINK_FREQUENCY_5_HZ);
-
-  xTaskCreate(ulHeartBeatTaskFunction, "HEART_BEAT", configMINIMAL_STACK_SIZE, (void*) &heartBeat,
-            1, (xTaskHandle *) NULL);
+  xTaskCreate(initialFunction, "INITIAL TASK", configMINIMAL_STACK_SIZE, (void*) NULL,
+            1, (xTaskHandle *) NULL); 
 
   vTaskStartScheduler();
 }
@@ -34,7 +48,7 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLM = 4;
   RCC_OscInitStruct.PLL.PLLN = 168;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
   
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK

@@ -122,7 +122,8 @@ USBD_StatusTypeDef USBD_Init(USBD_HandleTypeDef *pdev,
   pdev->id = id;
 
   /* Initialize low level driver */
-  ret = USBD_LL_Init(pdev);
+  //ret = USBD_LL_Init(pdev);
+  ret = USBD_OK;
 
   return ret;
 }
@@ -236,7 +237,7 @@ USBD_StatusTypeDef USBD_Stop(USBD_HandleTypeDef *pdev)
 
   return ret;
 }
-/*  */
+
 /**
 * @brief  USBD_RunTestMode
 *         Launch test mode process

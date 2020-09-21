@@ -42,6 +42,8 @@ Core/hal/hal_gpio.c \
 Core/drv/drv_led.c \
 Core/hal/hal_adc.c \
 Core/drv/drv_adc.c \
+Core/hal/hal_usb.c \
+Core/drv/drv_usb_cdc.c \
 Core/utils/ul_moving_average.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
@@ -57,9 +59,12 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
+Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c \
+Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
+Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
 Drivers/CMSIS/Device/system_stm32f4xx.c \
 Drivers/RTOS/portable/GCC/port.c \
 Drivers/RTOS/portable/MemMang/heap_2.c \
@@ -74,9 +79,10 @@ Drivers/USB/Core/Src/usbd_core.c \
 Drivers/USB/Core/Src/usbd_ctlreq.c \
 Drivers/USB/Core/Src/usbd_desc.c \
 Drivers/USB/Core/Src/usbd_ioreq.c \
+Drivers/USB/Core/Src/usbd_conf.c \
 Drivers/USB/Class/CDC/Src/usbd_cdc_if.c \
-Drivers/USB/Class/CDC/Src/usbd_cdc.c \
-Drivers/USB/Class/CDC/Src/usbd_conf.c
+Drivers/USB/Class/CDC/Src/usbd_cdc.c
+
 
 # ASM sources
 ASM_SOURCES =  \

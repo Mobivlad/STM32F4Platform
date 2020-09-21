@@ -100,11 +100,11 @@ typedef struct
 
 typedef struct _USBD_CDC_Itf
 {
-  int8_t (* Init)(void);
-  int8_t (* DeInit)(void);
-  int8_t (* Control)(uint8_t cmd, uint8_t *pbuf, uint16_t length);
-  int8_t (* Receive)(uint8_t *Buf, uint32_t *Len);
-  int8_t (* TransmitCplt)(uint8_t *Buf, uint32_t *Len, uint8_t epnum);
+  int8_t (* Init)(USBD_HandleTypeDef* hUsb);
+  int8_t (* DeInit)(USBD_HandleTypeDef* hUsb);
+  int8_t (* Control)(USBD_HandleTypeDef* hUsb, uint8_t cmd, uint8_t *pbuf, uint16_t length);
+  int8_t (* Receive)(USBD_HandleTypeDef* hUsb, uint32_t *Len);
+  int8_t (* TransmitCplt)(USBD_HandleTypeDef* hUsb, uint8_t *Buf, uint32_t *Len, uint8_t epnum);
 } USBD_CDC_ItfTypeDef;
 
 

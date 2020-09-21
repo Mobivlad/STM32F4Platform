@@ -39,7 +39,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-
+#include "FreeRTOS.h"
+#include "task.h"
 /** @addtogroup STM32F4xx_LL_USB_DRIVER
   * @{
   */
@@ -262,7 +263,8 @@ HAL_StatusTypeDef USB_SetCurrentMode(USB_OTG_GlobalTypeDef *USBx, USB_OTG_ModeTy
   {
     return HAL_ERROR;
   }
-  HAL_Delay(50U);
+  vTaskDelay(50);
+  //vTaskDelay(50U);
 
   return HAL_OK;
 }
@@ -1125,7 +1127,7 @@ HAL_StatusTypeDef  USB_DevConnect(USB_OTG_GlobalTypeDef *USBx)
   uint32_t USBx_BASE = (uint32_t)USBx;
 
   USBx_DEVICE->DCTL &= ~USB_OTG_DCTL_SDIS;
-  HAL_Delay(3U);
+  vTaskDelay(3U);
 
   return HAL_OK;
 }
@@ -1140,7 +1142,7 @@ HAL_StatusTypeDef  USB_DevDisconnect(USB_OTG_GlobalTypeDef *USBx)
   uint32_t USBx_BASE = (uint32_t)USBx;
 
   USBx_DEVICE->DCTL |= USB_OTG_DCTL_SDIS;
-  HAL_Delay(3U);
+  vTaskDelay(3U);
 
   return HAL_OK;
 }
@@ -1410,7 +1412,7 @@ HAL_StatusTypeDef USB_HostInit(USB_OTG_GlobalTypeDef *USBx, USB_OTG_CfgTypeDef c
   /* Enable VBUS driving */
   (void)USB_DriveVbus(USBx, 1U);
 
-  HAL_Delay(200U);
+  vTaskDelay(200U);
 
   /* Disable all interrupts. */
   USBx->GINTMSK = 0U;
@@ -1499,9 +1501,9 @@ HAL_StatusTypeDef USB_ResetPort(USB_OTG_GlobalTypeDef *USBx)
              USB_OTG_HPRT_PENCHNG | USB_OTG_HPRT_POCCHNG);
 
   USBx_HPRT0 = (USB_OTG_HPRT_PRST | hprt0);
-  HAL_Delay(100U);                                 /* See Note #1 */
+  vTaskDelay(100U);                                 /* See Note #1 */
   USBx_HPRT0 = ((~USB_OTG_HPRT_PRST) & hprt0);
-  HAL_Delay(10U);
+  vTaskDelay(10U);
 
   return HAL_OK;
 }
