@@ -13,6 +13,7 @@
 /// Led enumeration
 typedef enum {
     drvLed1 = 0,
+    drvLed2,
     drvLed_Count
 } drvLed;
 

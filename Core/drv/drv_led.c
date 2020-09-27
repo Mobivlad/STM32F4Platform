@@ -9,6 +9,7 @@
 static const drvLed_def_t led_define[drvLed_Count] =
 {
         { halGPIO_PortB, halGPIO_Pin0 },
+        { halGPIO_PortB, halGPIO_Pin7 },
 };
 
 void drvLedInit(const drvLed_struct* const ledStruct) {
