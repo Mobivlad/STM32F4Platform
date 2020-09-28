@@ -19,9 +19,9 @@ static void ulMovingAvaregeStop(ulMovingAvarege_struct* ulMA_struct) {
 
 void ulMovingAvaregeInit(ulMovingAvarege_struct* ulMA_struct) {
 
-    ulMA_struct->valuesQueue      = xQueueCreate(UTIL_QUEUE_SIZE, sizeof(uint16_t));
+    ulMA_struct->ADCPeriphValuesQueue = xQueueCreate(UTIL_QUEUE_SIZE, sizeof(uint16_t));
     drvADCInit((drvADC_struct*) ulMA_struct, ulMA_struct->adc, ulMA_struct->frequency,
-            ulMA_struct->valuesQueue);
+            ulMA_struct->ADCPeriphValuesQueue);
 
     ulMovingAvaregeStop(ulMA_struct);
 }
@@ -37,11 +37,11 @@ static uint16_t getAverage(uint16_t* arr, uint16_t size) {
 void ulMovingAvaregeCalculateTask(void* parametr) {
     ulMovingAvarege_struct* const ulMA_struct = (ulMovingAvarege_struct* const ) parametr;
     while (1) {
-        xQueueReceive(ulMA_struct->valuesQueue, &(ulMA_struct->windowsData[ulMA_struct->windowsIndex++]),
+        xQueueReceive(ulMA_struct->ADCPeriphValuesQueue, &(ulMA_struct->windowsData[ulMA_struct->windowsIndex++]),
                 portMAX_DELAY);
         if ((ulMA_struct->windowsData[WINDOW_SIZE-1] != INCORRECT_DATA)) {
-            uint16_t currectADCValue = getAverage(ulMA_struct->windowsData, WINDOW_SIZE);
-            // @TODO do smth with data value
+            uint16_t filteredValue = getAverage(ulMA_struct->windowsData, WINDOW_SIZE);
+            xQueueSend(ulMA_struct->dataQueue, &filteredValue, 0); 
         }
 
         ulMA_struct->windowsIndex = ulMA_struct->windowsIndex % WINDOW_SIZE;

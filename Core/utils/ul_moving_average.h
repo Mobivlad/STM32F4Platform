@@ -31,8 +31,10 @@ typedef struct {
     uint16_t                windowsData[WINDOW_SIZE];
     uint8_t                 windowsIndex;
 
-    QueueHandle_t           valuesQueue;
+    QueueHandle_t           dataQueue;
     QueueHandle_t           commandQueue;
+
+    QueueHandle_t           ADCPeriphValuesQueue;
 
 } ulMovingAvarege_struct;
 

@@ -1,26 +1,42 @@
 #include "ul_heart_beat.h"
 #include "ul_moving_average.h"
-#include "drv_usb_cdc.h"
+#include "bl_adc_writer.h"
+#include "bl_adc_controller.h"
 
-#define BLINK_FREQUENCY_5_HZ 1000
+#define BLINK_FREQUENCY_5_HZ 100
 
 ulHeartBeatStruct heartBeat;
-drvUSBCDC_struct usb;
+blADCWriter_struct writer;
+blADCController_struct controller;
 
 static void SystemClock_Config(void);
 
 void initialFunction(void* parametr) {
   ulHeartBeatInit(&heartBeat, BLINK_FREQUENCY_5_HZ);
 
-  drvUSBCDCInit(&usb, NULL);
- 
+  blADCWriterInit(&writer);
+
+  blADCControllerInit(&controller, 100, writer.writerDataQueue);
+  
+  xTaskCreate(ulMovingAvaregeControlTask, "MOVING_AVARAGE", configMINIMAL_STACK_SIZE, (void*) &controller.movingAvarageUtil,
+            1, (xTaskHandle *) NULL);
+
+  xTaskCreate(blADCControllerTask, "ADC", configMINIMAL_STACK_SIZE, (void*) &controller,
+            1, (xTaskHandle *) NULL);
+
+  xTaskCreate(blADCControllerSwitchTask, "ADC_SWITCHER", configMINIMAL_STACK_SIZE, (void*) &controller,
+            1, (xTaskHandle *) NULL);
+
+  xTaskCreate(blADCWriterTask, "ADC_WRITER", configMINIMAL_STACK_SIZE, (void*) &writer,
+            1, (xTaskHandle *) NULL);
+
   xTaskCreate(ulHeartBeatTaskFunction, "HEART_BEAT", configMINIMAL_STACK_SIZE, (void*) &heartBeat,
             1, (xTaskHandle *) NULL);
 
   while(1) {
-    drvUSBCDCWriteStr(&usb, "HELLO\r\n");
-    vTaskDelay(1000);
+    vTaskDelay(portMAX_DELAY);
   }
+  
 }
 
 int main(void)

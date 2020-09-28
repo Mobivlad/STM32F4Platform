@@ -44,6 +44,9 @@ Core/hal/hal_adc.c \
 Core/drv/drv_adc.c \
 Core/hal/hal_usb.c \
 Core/drv/drv_usb_cdc.c \
+Core/drv/drv_button.c \
+Core/bl/bl_adc_writer.c \
+Core/bl/bl_adc_controller.c \
 Core/utils/ul_moving_average.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \

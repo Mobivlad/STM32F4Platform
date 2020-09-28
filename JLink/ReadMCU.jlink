@@ -1,4 +1,4 @@
-savebin build\stm32f4Nucleo.bin, 0x00, 0x4000
+savebin build\stm32f4Nucleo-backup.bin, 0x00, 0x4000
 r
 g
 q
