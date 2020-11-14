@@ -23,7 +23,9 @@
               "${workspaceRoot}/Drivers/RTOS/include",
               "${workspaceRoot}/Drivers/RTOS/portable/GCC",
               "${workspaceRoot}/Drivers/RTOS",
-              "${workspaceRoot}/Drivers/USB/Core/Inc"
+              "${workspaceRoot}/Drivers/USB/Host/Core/Inc",
+              "${workspaceRoot}/Drivers/USB/Host/Class/MSC/Inc",
+              "${workspaceRoot}/Drivers/FatFS"
             ],
             "defines": [
               "USE_HAL_DRIVER",

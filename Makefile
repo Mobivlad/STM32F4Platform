@@ -39,10 +39,11 @@ C_SOURCES =  \
 Core/main.c \
 Core/utils/ul_heart_beat.c \
 Core/hal/hal_gpio.c \
+Core/hal/hal_usb.c \
 Core/drv/drv_led.c \
-Core/hal/hal_adc.c \
-Core/drv/drv_adc.c \
-Core/utils/ul_moving_average.c \
+Core/drv/drv_usb_msc.c \
+Core/utils/ul_fat_fs.c \
+Core/bl/bl_file_rewriter.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
@@ -60,6 +61,8 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
+Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c \
+Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
 Drivers/CMSIS/Device/system_stm32f4xx.c \
 Drivers/RTOS/portable/GCC/port.c \
 Drivers/RTOS/portable/MemMang/heap_2.c \
@@ -70,10 +73,20 @@ Drivers/RTOS/queue.c \
 Drivers/RTOS/stream_buffer.c \
 Drivers/RTOS/tasks.c \
 Drivers/RTOS/timers.c \
-Drivers/USB/Core/Src/usbd_core.c \
-Drivers/USB/Core/Src/usbd_ctlreq.c \
-Drivers/USB/Core/Src/usbd_desc.c \
-Drivers/USB/Core/Src/usbd_ioreq.c 
+Drivers/USB/Host/Core/Src/usbh_core.c \
+Drivers/USB/Host/Core/Src/usbh_ctlreq.c \
+Drivers/USB/Host/Core/Src/usbh_pipes.c \
+Drivers/USB/Host/Core/Src/usbh_ioreq.c \
+Drivers/USB/Host/Core/Src/usbh_conf.c \
+Drivers/USB/Host/Core/Src/usbh_vbus.c \
+Drivers/USB/Host/Class/MSC/Src/usbh_msc_bot.c \
+Drivers/USB/Host/Class/MSC/Src/usbh_msc_scsi.c \
+Drivers/USB/Host/Class/MSC/Src/usbh_msc.c \
+Drivers/FatFS/ffunicode.c \
+Drivers/FatFS/ffsystem.c \
+Drivers/FatFS/ff_gen_drv.c \
+Drivers/FatFS/ff.c \
+Drivers/FatFS/diskio.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -142,7 +155,9 @@ C_INCLUDES =  \
 -ICore/hal \
 -ICore/drv \
 -ICore/config \
--IDrivers/USB/Core/Inc 
+-IDrivers/USB/Host/Class/MSC/Inc \
+-IDrivers/USB/Host/Core/Inc \
+-IDrivers/FatFS
 
 
 # compile gcc flags

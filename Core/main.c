@@ -1,9 +1,11 @@
 #include "ul_heart_beat.h"
 #include "ul_moving_average.h"
+#include "bl_file_rewriter.h"
 
 #define BLINK_FREQUENCY_5_HZ 1000
 
 ulHeartBeatStruct heartBeat;
+blFileWriter_struct fileRewriter;
 
 static void SystemClock_Config(void);
 
@@ -15,8 +17,12 @@ int main(void)
   SystemCoreClockUpdate();
   
   ulHeartBeatInit(&heartBeat, BLINK_FREQUENCY_5_HZ);
+  blFileRewriterInit(&fileRewriter);
 
   xTaskCreate(ulHeartBeatTaskFunction, "HEART_BEAT", configMINIMAL_STACK_SIZE, (void*) &heartBeat,
+            1, (xTaskHandle *) NULL);
+
+  xTaskCreate(ulFileRewriterTaskFunction, "FILE REWRITER", configMINIMAL_STACK_SIZE, (void*) &fileRewriter,
             1, (xTaskHandle *) NULL);
 
   vTaskStartScheduler();
