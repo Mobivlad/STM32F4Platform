@@ -1,3 +1,3 @@
-# STM32F7Platform
+# STM32F4Platform
 
-Project for work with STM32F7 platform
+Project for work with STM32F4 platform
